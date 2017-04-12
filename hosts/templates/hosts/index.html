@@ -1,0 +1,9 @@
+{% if subnet_list %}
+    <ul>
+    {% for subnet in subnet_list %}
+        <li><a href="/hosts/{{ subnet.id }}/">{{ subnet.ipv4_address }}/{{ subnet.prefix }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hosts are available.</p>
+{% endif %}

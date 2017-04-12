@@ -1,0 +1,9 @@
+{% if host_list %}
+    <ul>
+    {% for host in host_list %}
+        <li>{{ host.ipv4_address }},{{ host.host_name }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hosts are available.</p>
+{% endif %}
