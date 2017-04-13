@@ -1,9 +1,18 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
 {% if subnet_list %}
-    <ul>
+    <h2>Subnets Available</h2>
+    <table style="border: 1px solid black;">
+      <tr>
     {% for subnet in subnet_list %}
-        <li><a href="/hosts/{{ subnet.id }}/">{{ subnet.ipv4_address }}/{{ subnet.prefix }}</a></li>
+      <td style="border: 1px solid black; padding-right:40px"><a href="/hosts/{{ subnet.id }}/">{{ subnet.ipv4_address }}/{{ subnet.prefix }}</a></td>
+      {% if subnet.id|divisibleby:4 %}
+        <tr>
+      {% endif %}
     {% endfor %}
-    </ul>
+    </table>
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}
+{% endblock %}

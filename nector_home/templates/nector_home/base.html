@@ -1,0 +1,84 @@
+<!--
+
+
+
+███╗   ██╗███████╗ ██████╗████████╗ ██████╗ ██████╗
+████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
+██╔██╗ ██║█████╗  ██║        ██║   ██║   ██║██████╔╝
+██║╚██╗██║██╔══╝  ██║        ██║   ██║   ██║██╔══██╗
+██║ ╚████║███████╗╚██████╗   ██║   ╚██████╔╝██║  ██║
+╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+
+~~ The Next Hector ~~
+
+
+
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nector</title>
+  <meta charset='utf-8'>
+  <style>
+  .title-logo{
+    float:left;
+  }
+
+  .ip-textbox{
+    float:right;
+  }
+
+  .header-table{
+    margin:auto;
+  }
+
+  .header-table td{
+    padding-right:100px;
+  }
+
+  .desc-title{
+    font-weight:bold;
+    font-size:24px;
+  }
+
+  .desc-description{
+
+  }
+  </style>
+</head>
+<body>
+  <!-- Title -->
+  <h1 class="title-logo">
+    <a href="/">
+    Nector
+    </a>
+  </h1><br><br><br>
+  <form class="ip-textbox" action="/hosts/search/">
+    IP: <input id="input_ip" name="input_ip" type="text" placeholder="255.255.255.255" /> <input id="btn_ip" type="submit" value="Search" />
+  </form><br><br><br>
+  <!-- Header -->
+  <hr>
+    <table class="header-table">
+      <tr>
+        <td><a href="/hosts/">Subnets</a></td>
+        <td>Coming Soon!</td>
+        <td>Coming Soon!</td>
+        <td>Coming Soon!</td>
+        <td>Coming Soon!</td>
+      </tr>
+    </table>
+  <hr>
+  <!-- Content -->
+
+  <!-- Load app here -->
+  {% block content %}
+  {% endblock %}
+  <!-- / -->
+
+  <!-- Footer -->
+  <hr>
+    <p>&#9400 2017 University of Pennsylvania</p>
+</body>
+</html>
