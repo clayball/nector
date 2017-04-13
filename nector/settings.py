@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #'hosts.apps.HostsConfig',
     'hosts',
-
+    'nector_home',
 ]
 
 MIDDLEWARE_CLASSES = [
