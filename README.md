@@ -1,5 +1,5 @@
-NECTOR
-======
+NECTOR - the next hector
+========================
 
 Lets try to stick with Python2 for now.
 
