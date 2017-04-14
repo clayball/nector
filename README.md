@@ -1,6 +1,8 @@
 NECTOR - the next hector
 ========================
 
+![nector home](nector-home.png)
+
 Lets try to stick with Python2 for now.
 
 This is the main NECTOR project repo.
