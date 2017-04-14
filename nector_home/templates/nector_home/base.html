@@ -1,6 +1,7 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
 <!--
-
-
 
 ███╗   ██╗███████╗ ██████╗████████╗ ██████╗ ██████╗
 ████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
@@ -9,76 +10,53 @@
 ██║ ╚████║███████╗╚██████╗   ██║   ╚██████╔╝██║  ██║
 ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 
-~~ The Next Hector ~~
+    ~~ The Next Hector ~~
 
-
+ _  _ ___ ___ _____ ___  ___
+| \| | __/ __|_   _/ _ \| _ \
+| .` | _| (__  | || (_) |   /
+|_|\_|___\___| |_| \___/|_|_\
 
 -->
 
-
-<!DOCTYPE html>
 <html>
 <head>
-  <title>Nector</title>
-  <meta charset='utf-8'>
-  <style>
-  .title-logo{
-    float:left;
-  }
-
-  .ip-textbox{
-    float:right;
-  }
-
-  .header-table{
-    margin:auto;
-  }
-
-  .header-table td{
-    padding-right:100px;
-  }
-
-  .desc-title{
-    font-weight:bold;
-    font-size:24px;
-  }
-
-  .desc-description{
-
-  }
-  </style>
+<title>NECTOR - by haX0rs, for haX0rs</title>
+<meta charset='utf-8'>
+<link rel="stylesheet" href="{% static 'main.css' %}">
 </head>
+
 <body>
-  <!-- Title -->
-  <h1 class="title-logo">
-    <a href="/">
-    Nector
-    </a>
-  </h1><br><br><br>
-  <form class="ip-textbox" action="/hosts/search/">
-    IP: <input id="input_ip" name="input_ip" type="text" placeholder="255.255.255.255" /> <input id="btn_ip" type="submit" value="Search" />
-  </form><br><br><br>
-  <!-- Header -->
-  <hr>
-    <table class="header-table">
-      <tr>
-        <td><a href="/hosts/">Subnets</a></td>
-        <td>Coming Soon!</td>
-        <td>Coming Soon!</td>
-        <td>Coming Soon!</td>
-        <td>Coming Soon!</td>
-      </tr>
-    </table>
-  <hr>
-  <!-- Content -->
+<!-- Header -->
+<div class="header">
+<form class="ip-textbox" action="/hosts/search/">
+IP: <input id="input_ip" name="input_ip" type="text" placeholder="192.251.68.240" /><input id="btn_ip" type="submit" value="Search" />
+</form>
 
-  <!-- Load app here -->
-  {% block content %}
-  {% endblock %}
-  <!-- / -->
+<pre width="75%">
+  ███╗   ██╗███████╗ ██████╗████████╗ ██████╗ ██████╗
+  ████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
+  ██╔██╗ ██║█████╗  ██║        ██║   ██║   ██║██████╔╝
+  ██║╚██╗██║██╔══╝  ██║        ██║   ██║   ██║██╔══██╗
+  ██║ ╚████║███████╗╚██████╗   ██║   ╚██████╔╝██║  ██║
+  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 
-  <!-- Footer -->
-  <hr>
-    <p>&#9400 2017 University of Pennsylvania</p>
+       ~~ The Next Hector ~~
+</pre>
+</div>
+{% include 'nector_home/navmenu.html' %}
+{% include 'nector_home/wire.html' %}
+
+<!-- Content -->
+{% block content %}
+{% endblock %}
+
+<!-- Footer -->
+{% include 'nector_home/wire.html' %}
+{% include 'nector_home/navmenu.html' %}
+<div class="footer">
+&#9400 2017 University of Pennsylvania | School of Arts & Sciences
+</div>
+
 </body>
 </html>

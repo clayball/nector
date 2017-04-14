@@ -1,15 +1,15 @@
 {% extends 'nector_home/base.html' %}
 
 {% block content %}
-
+<div class="content">
 {% if host %}
-  <h2>Host Information</h2>
+    <h2>Host Information</h2>
     <h4 style="padding-left:10px">IPv4</h4>
-      <p style="padding-left:20px"> {{host.ipv4_address}} </p>
+    <p style="padding-left:20px"> {{host.ipv4_address}} </p>
     <h4 style="padding-left:10px">Host Name</h4>
-      <p style="padding-left:20px"> {{host.host_name}} </p>
+    <p style="padding-left:20px"> {{host.host_name}} </p>
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}
-
+</div>
 {% endblock %}

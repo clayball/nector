@@ -26,7 +26,7 @@ def detail_host(request, subnet_id, host_id):
 
 def search_host(request):
     if request.method == 'GET':
-        query = request.GET.get('input_ip', None)
+        query = request.GET.get('input_ip', None).strip()  ## causes an error if not stripped
         # Get corresponding id(s) for queried IP:
         host_id_list = Host.objects.filter(ipv4_address=query).values_list('id', flat=True)
         subnet_id_list = Subnet.objects.filter(ipv4_address=query).values_list('id', flat=True)

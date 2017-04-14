@@ -1,0 +1,99 @@
+body {
+    background-color: black;
+    color: #FDFDFD;
+    font: 12px "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+}
+
+h2 {
+
+}
+
+a:link {
+    color: green;
+    text-decoration: none;
+}
+
+a:visited {
+    color: green;
+    text-decoration: none;
+}
+
+a:hover {
+    color: yellow;
+    text-decoration: underline;
+}
+
+.nav {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+}
+
+.wire {
+    text-align: center;
+    font: 10px "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+    color: #CCC;
+}
+
+.nav_link {
+    padding: 8px;
+    text-align: center;
+}
+
+.content {
+    text-align: justify;
+    padding: 10px 20px 40px 20px;
+    margin-bottom: 30px;
+    border: 1px solid green;
+}
+
+.title-logo {
+    float:left;
+}
+
+.ip-textbox {
+    float: right;
+    padding: 2px;
+}
+
+.header {
+    padding: 4px;
+    background-color: black;
+    color: green;
+}
+
+.header-table {
+    width: 98%;
+    background-color: black;
+    color: green;
+}
+
+.header-table td {
+    padding: 2%;
+    background-color: black;
+    color: green;
+}
+
+.desc-title {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+table {
+    border: 1px solid green;
+    background-color: black;
+    color: green;
+}
+
+.td-content {
+    border: 1px solid green;
+    padding: 6px;
+    text-align: center;
+}
+
+.footer {
+    padding-top: 20px;
+    text-align: center;
+    font-size: 8px;
+    color: #666;
+}

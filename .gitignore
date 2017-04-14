@@ -3,3 +3,6 @@ db.sqlite3
 venv-nector/*
 **/*.pyc
 **/**/*.pyc
+hosts.xml
+subnets.txt
+settings.py
