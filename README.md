@@ -1,4 +1,4 @@
-# NECTOR - by haXors for haX0rs
+# NECTOR - by haX0rs for haX0rs
 
 ![nector home](nector-home.png)
 
@@ -10,13 +10,14 @@ We'll be adding small applications to this project over time.
 
 Applications:
 
-- hosts (in progress)
-- scans (in progress)
-- ipranges (todo)
-- ossec alerts (todo)
+- hosts (subnets)
+- detection
+- osint
+- events
+- reports
 
-Getting Started
----------------
+
+## Getting Started
 
 Create a virtualenv to work in and activate it.
 
