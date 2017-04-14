@@ -1,0 +1,58 @@
+body {
+    background-color: black;
+    color: #FDFDFD;
+}
+
+.content {
+    padding: 2%;
+}
+
+.title-logo {
+    float:left;
+}
+
+.ip-textbox {
+    float: right;
+    padding: 1%;
+}
+
+.header {
+    padding: 1%;
+    background-color: black;
+    color: green;
+}
+
+.header-table {
+    margin: auto;
+    width: 100%;
+    background-color: black;
+    color: green;
+}
+
+.header-table td {
+    padding-right: 2%;
+    padding-left: 2%;
+    background-color: black;
+    color: green;
+}
+
+.desc-title {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.desc-description {
+
+}
+
+table {
+    border: 1px solid green;
+    background-color: black;
+    color: green;
+    padding: 2px;
+}
+
+.td-content {
+    border: 1px solid green;
+    padding: 5px;
+}

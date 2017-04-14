@@ -1,6 +1,6 @@
+{% load staticfiles %}
+
 <!--
-
-
 
 ███╗   ██╗███████╗ ██████╗████████╗ ██████╗ ██████╗
 ████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
@@ -9,7 +9,7 @@
 ██║ ╚████║███████╗╚██████╗   ██║   ╚██████╔╝██║  ██║
 ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 
-~~ The Next Hector ~~
+    ~~ The Next Hector ~~
 
  _  _ ___ ___ _____ ___  ___
 | \| | __/ __|_   _/ _ \| _ \
@@ -18,78 +18,18 @@
 
 -->
 
-
 <!DOCTYPE html>
 <html>
 <head>
-  <title>NECTOR - by haX0rs for haX0rs</title>
-  <meta charset='utf-8'>
-    <!-- move all CSS to static -->
-  <style>
-      body {
-          color: green;
-          background-color: black;
-      }
-
-      .content {
-          padding: 2%;
-      }
-
-  .title-logo {
-    float:left;
-  }
-
-  .ip-textbox {
-      float: right;
-      padding: 1%;
-  }
-
-  .header {
-      padding: 1%;
-      background-color: black;
-      color: green;
-  }
-
-  .header-table {
-      margin: auto;
-      width: 100%;
-      background-color: black;
-      color: green;
-  }
-
-  .header-table td {
-      padding-right: 2%;
-      padding-left: 2%;
-      background-color: black;
-      color: green;
-  }
-
-  .desc-title {
-    font-weight: bold;
-    font-size: 24px;
-  }
-
-  .desc-description {
-
-  }
-      table {
-          border: 1px solid green;
-          background-color: black;
-          color: green;
-          padding: 2px;
-      }
-
-      .td-content {
-          border: 1px solid green;
-          padding: 5px;
-      }
-  </style>
+    <title>NECTOR - by haX0rs, for haX0rs</title>
+    <meta charset='utf-8'>
+    <link rel="stylesheet" href="{% static 'main.css' %}">
 </head>
 <body>
   <!-- Header -->
   <div class="header">
       <form class="ip-textbox" action="/hosts/search/">
-    IP: <input id="input_ip" name="input_ip" type="text" placeholder="255.255.255.255" /> <input id="btn_ip" type="submit" value="Search" />
+    IP: <input id="input_ip" name="input_ip" type="text" placeholder="192.251.68.240" /><input id="btn_ip" type="submit" value="Search" />
   </form>
 
     <pre width="75%">
