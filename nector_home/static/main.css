@@ -1,10 +1,50 @@
 body {
     background-color: black;
     color: #FDFDFD;
+    font: 12px "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+}
+
+h2 {
+
+}
+
+a:link {
+    color: green;
+    text-decoration: none;
+}
+
+a:visited {
+    color: green;
+    text-decoration: none;
+}
+
+a:hover {
+    color: yellow;
+    text-decoration: underline;
+}
+
+.nav {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+}
+
+.wire {
+    text-align: center;
+    font: 10px "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+    color: #CCC;
+}
+
+.nav_link {
+    padding: 8px;
+    text-align: center;
 }
 
 .content {
-    padding: 2%;
+    text-align: justify;
+    padding: 10px 20px 40px 20px;
+    margin-bottom: 30px;
+    border: 1px solid green;
 }
 
 .title-logo {
@@ -13,25 +53,23 @@ body {
 
 .ip-textbox {
     float: right;
-    padding: 1%;
+    padding: 2px;
 }
 
 .header {
-    padding: 1%;
+    padding: 4px;
     background-color: black;
     color: green;
 }
 
 .header-table {
-    margin: auto;
-    width: 100%;
+    width: 98%;
     background-color: black;
     color: green;
 }
 
 .header-table td {
-    padding-right: 2%;
-    padding-left: 2%;
+    padding: 2%;
     background-color: black;
     color: green;
 }
@@ -41,23 +79,21 @@ body {
     font-size: 24px;
 }
 
-.desc-description {
-
-}
-
 table {
     border: 1px solid green;
     background-color: black;
     color: green;
-    padding: 2px;
 }
 
 .td-content {
     border: 1px solid green;
-    padding: 5px;
+    padding: 6px;
+    text-align: center;
 }
 
 .footer {
+    padding-top: 20px;
     text-align: center;
+    font-size: 8px;
     color: #666;
 }

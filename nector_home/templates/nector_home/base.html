@@ -1,4 +1,5 @@
 {% load staticfiles %}
+<!DOCTYPE html>
 
 <!--
 
@@ -18,21 +19,21 @@
 
 -->
 
-<!DOCTYPE html>
 <html>
 <head>
-    <title>NECTOR - by haX0rs, for haX0rs</title>
-    <meta charset='utf-8'>
-    <link rel="stylesheet" href="{% static 'main.css' %}">
+<title>NECTOR - by haX0rs, for haX0rs</title>
+<meta charset='utf-8'>
+<link rel="stylesheet" href="{% static 'main.css' %}">
 </head>
-<body>
-  <!-- Header -->
-  <div class="header">
-      <form class="ip-textbox" action="/hosts/search/">
-    IP: <input id="input_ip" name="input_ip" type="text" placeholder="192.251.68.240" /><input id="btn_ip" type="submit" value="Search" />
-  </form>
 
-    <pre width="75%">
+<body>
+<!-- Header -->
+<div class="header">
+<form class="ip-textbox" action="/hosts/search/">
+IP: <input id="input_ip" name="input_ip" type="text" placeholder="192.251.68.240" /><input id="btn_ip" type="submit" value="Search" />
+</form>
+
+<pre width="75%">
   ███╗   ██╗███████╗ ██████╗████████╗ ██████╗ ██████╗
   ████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
   ██╔██╗ ██║█████╗  ██║        ██║   ██║   ██║██████╔╝
@@ -40,29 +41,22 @@
   ██║ ╚████║███████╗╚██████╗   ██║   ╚██████╔╝██║  ██║
   ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 
-        ~~ The Next Hector ~~
-    </pre>
-      
-  <!-- Header -->
-      <table class="header-table">
-      <tr>
-          <td><a href="/">H 0 M 3</a></td>
-          <td><a href="/hosts/">SubNet$</a></td>
-          <td>0SINT</td>
-          <td>Det3cTi0n</td>
-          <td>Even7s</td>
-          <td>Rep0rt$</td>
-          <td></td>
-      </tr>
-    </table>
-  </div>
-  <!-- Content -->
+       ~~ The Next Hector ~~
+</pre>
+</div>
+{% include 'nector_home/navmenu.html' %}
+{% include 'nector_home/wire.html' %}
 
-  {% block content %}
-  {% endblock %}
+<!-- Content -->
+{% block content %}
+{% endblock %}
 
-  <!-- Footer -->
-  <br>
-    <p class="footer">&#9400 2017 University of Pennsylvania | School of Arts & Sciences</p>
+<!-- Footer -->
+{% include 'nector_home/wire.html' %}
+{% include 'nector_home/navmenu.html' %}
+<div class="footer">
+&#9400 2017 University of Pennsylvania | School of Arts & Sciences
+</div>
+
 </body>
 </html>
