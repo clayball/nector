@@ -1,9 +1,9 @@
 {% extends 'nector_home/base.html' %}
 
 {% block content %}
-
+<div class="content">
 {% if host_list %}
-  <h2>Hosts Available</h2>
+  <h2>Hosts</h2>
     <ul>
     {% for host in host_list %}
         <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}, {{ host.host_name }}</a></li>
@@ -12,5 +12,5 @@
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}
-
+</div>
 {% endblock %}
