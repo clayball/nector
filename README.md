@@ -1,5 +1,4 @@
-NECTOR - the next hector
-========================
+# NECTOR - by haXor2 for haX0rs
 
 ![nector home](nector-home.png)
 
