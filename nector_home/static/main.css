@@ -56,3 +56,8 @@ table {
     border: 1px solid green;
     padding: 5px;
 }
+
+.footer {
+    text-align: center;
+    color: #666;
+}
