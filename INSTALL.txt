@@ -70,8 +70,7 @@ Next, rename the two files to:
 
 Then run
 	python import-hosts.py
-This will add the imported hosts and subnets, along with their respective 
- tables, to the db.sqlite3 database.
+This will add the imported hosts and subnets to the db.sqlite3 database.
 
 ----------------
  
