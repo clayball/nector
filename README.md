@@ -54,3 +54,5 @@ Open a browser and goto 127.0.0.1:8000
 
 When you're done working run ```$ deactivate```.
 
+TODO: remove: Testing for issue #8.. will remove.
+
