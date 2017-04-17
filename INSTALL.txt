@@ -20,7 +20,8 @@ NECTOR requires the following be installed:
 - Python 2 (see https://www.python.org )
 - Pip (comes with Python 2.7.9+)
 - Django ( pip install Django==1.10 )
-	Note: You may use any version of Django past 1.10. NECTOR was developed 	with Django 1.10, but newer versions should work. 1.10 guarantees
+	Note: You may use any version of Django past 1.10. NECTOR was developed
+	 with Django 1.10, but newer versions should work. 1.10 guarantees
 	 usability, however.
 - [OPTIONAL] nmap (see https://nmap.org/download.html )
 	Note: nmap is only necessary for gathering hosts/subnets for the 
@@ -37,6 +38,18 @@ Find the line
 	SECRET_KEY = 'THISISTOPSECR3t,MAN!'
 and replace it with your own Django secret key. 
 You can generate one at http://www.miniwebtool.com/django-secret-key-generator/
+
+----------------
+
+ Migrate Models
+
+----------------
+
+The models must be migrated into a database.
+Run the following command:
+	python manage.py migrate
+This will create a database named db.sqlite3 that will be populated with
+ tables and info relevant to our project.
 
 -------------------------
 
@@ -57,8 +70,8 @@ Next, rename the two files to:
 
 Then run
 	python import-hosts.py
-This will create a database called db.sqlite3 that contains the imported hosts 
- and subnets.
+This will add the imported hosts and subnets, along with their respective 
+ tables, to the db.sqlite3 database.
 
 ----------------
  
