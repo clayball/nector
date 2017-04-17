@@ -26,6 +26,9 @@ Applications:
 - events
 - reports
 
+## Installing
+
+View INSTALL.txt for more info.
 
 ## Getting Started
 
