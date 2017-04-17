@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     #'hosts.apps.HostsConfig',
     'hosts',
     'nector_home',
+    'hibp',
 ]
 
 MIDDLEWARE_CLASSES = [
