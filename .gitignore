@@ -5,4 +5,5 @@ venv-nector/*
 **/**/*.pyc
 hosts.xml
 subnets.txt
+nector/settings.py
 settings.py
