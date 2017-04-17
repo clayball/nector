@@ -1,0 +1,24 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<!-- Todo: Replace old tags (ie <center>) with good ol' CSS. -->
+  <center>
+  <h1>Have I Been Pwned?</h1>
+  <h2>Username / Email: </h2>
+  <form class="pwn_account" action="/hibp/account/">
+    <input type="text" name="input_user" id="input_user" placeholder="Account"/>
+    <input id="btn_pwn_account" type="submit" value="Check" />
+  </form>
+{% if account %}
+<!-- use hibp api -->
+  {% if titles %}
+  <h2>Breaches found for {{account}}!</h2>
+    {% for title in titles %}
+      <h3>{{title}}<h3>
+    {% endfor %}
+  {% else %}
+  <h2>No breaches for {{account}}!</h2>
+  {% endif %}
+{% endif %}
+  </center><br><br>
+{% endblock %}
