@@ -54,11 +54,3 @@ Open a browser and goto 127.0.0.1:8000
 
 When you're done working run ```$ deactivate```.
 
-I created a superuser account for by doing the following.
-
-```
-$ python manage.py createsuperuser --username=clayw --email=clayw@sas.upenn.edu
-```
-
-Login by going to 127.0.0.1:8000/admin
-
