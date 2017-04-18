@@ -12,12 +12,35 @@
 {% if account %}
 <!-- use hibp api -->
   {% if titles %}
+  <!-- Display breach information -->
   <h2>Breaches found for {{account}}!</h2>
-    {% for title in titles %}
-      <h3>{{title}}<h3>
+    {% for title, date, description, leak in breach_data %}
+      <h3>{{title}} | {{date}}</h3>
+        {% autoescape off %}
+        <p>{{description}}</p>
+        {% endautoescape %}
+        <!-- Get comp. data and format it nicely -->
+        <p>Compromised Information:
+        {% for l in leak|slice:":-1" %}
+          {{l}},
+        {% endfor %}
+          & {{leak|last}}
+        </p>
     {% endfor %}
   {% else %}
   <h2>No breaches for {{account}}!</h2>
+  {% endif %}
+  {% if sources %}
+    <!-- Display paste information -->
+    <br><br><h2>Pastes found for {{account}}!</h2>
+    <table>
+    <tr><td class="td-content">Title</td><td class="td-content">Source</td><td class="td-content">ID</td><td class="td-content">Date</td></tr>
+    {% for source, id, date, title in paste_data %}
+      <tr><td>{{title}}</td><td>{{source}}</td><td>{{id}}</td><td>{{date}}</td></tr>
+    {% endfor %}
+    </table>
+  {% else %}
+  <br><br><h2>No pastes for {{account}}!</h2>
   {% endif %}
 {% endif %}
   </center><br><br>
