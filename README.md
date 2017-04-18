@@ -56,3 +56,11 @@ When you're done working run ```$ deactivate```.
 
 TODO: remove: Testing for issue #8.. will remove.
 
+## Events
+
+TODO: Add more to this section.
+
+- An event is an observed change to the normal behavior of a system, environment, process, workflow or person. Examples: router ACLs were updated, firewall policy was pushed.
+- An alert is a notification that a particular event (or series of events) has occurred, which is sent to responsible parties for the purpose of spawning action. Examples: the events above sent to on-call personnel.
+- An incident is a human-caused, malicious event that leads to (or may lead to) a significant disruption of business. Examples: attacker posts company credentials online, attacker steals customer credit card database, worm spreading through network.*
+
