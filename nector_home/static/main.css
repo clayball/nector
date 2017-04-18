@@ -59,8 +59,10 @@ a:hover {
 
 .content {
     text-align: justify;
-    padding: 10px 20px 40px 20px;
-    margin-bottom: 30px;
+    padding: 12px 12px 40px 12px;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 40px;
     border: 1px solid green;
 }
 
@@ -77,6 +79,11 @@ a:hover {
     padding: 4px;
     background-color: black;
     color: green;
+}
+
+.search {
+    color: white;
+    margin-right: 10px;
 }
 
 .header-table {
@@ -97,13 +104,13 @@ a:hover {
 }
 
 table {
-    border: 1px solid green;
+    border: 1px solid white;
     background-color: black;
     color: green;
 }
 
 .td-content {
-    border: 1px solid green;
+    border: 1px solid white;
     padding: 6px;
     text-align: center;
 }
