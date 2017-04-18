@@ -1,10 +1,9 @@
 {% extends 'nector_home/base.html' %}
 
 {% block content %}
-<!-- Todo: Replace old tags (ie <center>) with good ol' CSS. -->
-  <center>
-  <h1>Have I Been Pwned?</h1>
-  <h2>Username / Email: </h2>
+<div class="content">
+  <h2>Have I Been Pwned?</h2>
+  Username / Email: 
   <form class="pwn_account" action="/hibp/account/">
     <input type="text" name="input_user" id="input_user" placeholder="Account"/>
     <input id="btn_pwn_account" type="submit" value="Check" />
@@ -17,7 +16,7 @@
     {% for title, date, description, leak in breach_data %}
       <h3>{{title}} | {{date}}</h3>
         {% autoescape off %}
-        <p>{{description}}</p>
+        <p class="p-left">{{description}}</p>
         {% endautoescape %}
         <!-- Get comp. data and format it nicely -->
         <p>Compromised Information:
@@ -43,5 +42,5 @@
   <br><br><h2>No pastes for {{account}}!</h2>
   {% endif %}
 {% endif %}
-  </center><br><br>
+<br><br>
 {% endblock %}
