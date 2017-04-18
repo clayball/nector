@@ -4,11 +4,20 @@
 
 ## About NECTOR
 
- NECTOR is an open source successor to the HECTOR project, both of which have been sponspored by the University of Pennsylvania School of Arts & Sciences. The purpose of NECTOR is to increase security awareness among institutions by demonstrating potential security vulnerabilities. NECTOR is a powerful and expandable framework used in the collection, analysis, and sharing of security intelligence information.
+NECTOR is an open source successor to the HECTOR project, both of which have
+been sponsored by the University of Pennsylvania School of Arts & Sciences.
 
-NECTOR takes advantage of the functionality and stability of the Django framework, and incorporates a SQLite database backend with a minimalistic frontend. The project is being developed without the use of JavaScript in order to promote anti-XSS and anti-clickjacking protection.
+The purpose of NECTOR is to increase security awareness among institutions
+by demonstrating potential security vulnerabilities. NECTOR is a powerful and
+expandable framework used in the collection, analysis, and sharing of security
+intelligence information.
 
-NECTOR's intuitive web-based frontend allows for easy data analysis, scan configuration, incident reporting, and more. 
+NECTOR takes advantage of the functionality and stability of the Django
+framework, and incorporates a SQLite database backend with a minimalistic
+frontend. The project is being developed without the use of JavaScript.
+
+NECTOR's intuitive web-based frontend allows for easy data analysis, scan
+configuration, incident reporting,  and more. 
 
 ## Misc. Notes
 
