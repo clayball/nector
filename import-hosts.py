@@ -13,6 +13,7 @@ infile2 = 'subnets.txt'
 import sys
 import os
 import django
+from django.db import transaction # Optimizes saving time.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nector.settings")
 ##sys.path.append(nector_path)
 django.setup()
@@ -24,22 +25,33 @@ from hosts.models import Host
 f = open(infile, 'r')
 f2 = open(infile2, 'r')
 
-for line in f:
-    # remove cruft from the end of the line
-    l = line.rstrip()
-    # if the last character in the string is ')'
-    if l[-1] == ')':
-        lsplit = l.split(' ')
-        ipv4 = lsplit[5].strip('()') 
-        hostname = lsplit[4].strip()
-        h = Host(ipv4_address=ipv4, host_name=hostname)
-        h.save()
+#@transaction.commit_manually
+def populate_hosts():
+    with transaction.atomic():
+        for line in f:
+            # remove cruft from the end of the line
+            l = line.rstrip()
+            # if the last character in the string is ')'
+            if l[-1] == ')':
+                lsplit = l.split(' ')
+                ipv4 = lsplit[5].strip('()')
+                hostname = lsplit[4].strip()
+                h = Host(ipv4_address=ipv4, host_name=hostname)
+                h.save()
+#    transaction.commit()
 
-for line in f2:
-    l = line.rstrip()
-    temp = l.split("/")
-    s = Subnet(ipv4_address=temp[0], prefix=temp[1])
-    s.save()
+#@transaction.commit_manually
+def populate_subnets():
+    with transaction.atomic():
+        for line in f2:
+            l = line.rstrip()
+            temp = l.split("/")
+            s = Subnet(ipv4_address=temp[0], prefix=temp[1])
+            s.save()
+#    transaction.commit()
+
+populate_hosts()
+populate_subnets()
 
 # Close files
 f.close()
