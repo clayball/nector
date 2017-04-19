@@ -4,6 +4,7 @@ from django.template import loader
 
 from .models import Host
 from .models import Subnet
+from vulnerabilities.models import Vulnerability
 
 # Create your views here.
 
@@ -21,7 +22,8 @@ def detail(request, subnet_id):
 
 def detail_host(request, subnet_id, host_id):
     host = get_object_or_404(Host, pk=host_id)
-    context = {'host': host, 'subnet_id' : subnet_id}
+    vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
+    context = {'host': host, 'subnet_id' : subnet_id, 'vuln_list' : vuln_list}
     return render(request, 'hosts/detail_host.html', context)
 
 def search_host(request):
@@ -38,9 +40,9 @@ def search_host(request):
             for i in range(0, len(host_id_list)):
                 # Get corresponding Host object(s) for id(s):
                 host_list.append(get_object_or_404(Host, pk=host_id_list[i]))
-            context = {'host': host_list[0] }
+            vuln_list = Vulnerability.objects.filter(ipv4_address=host_list[0].ipv4_address)
+            context = {'host': host_list[0] , 'vuln_list' : vuln_list}
             return render(request, 'hosts/detail_host.html', context)
     except:
         ## Inputted IP not found in our db, so load page with no host.
         return render(request, 'hosts/detail_host.html')
-

@@ -18,6 +18,15 @@
     <p style="padding-left:20px"> {{host.location}} </p>
     <h4 style="padding-left:10px">Tags</h4>
     <p style="padding-left:20px"> {{host.tags}} </p>
+    {% if vuln_list %}
+    <h4 style="padding-left:10px">Vulnerabilities</h4>
+    <table style="margin-left:20px">
+        <tr><td class="td-content">Plugin ID</td><td class="td-content">Plugin Name</td><td class="td-content">Severity</td><td class="td-content">IPv4</td><td class="td-content">Host Name</td></tr>
+      {% for vuln in vuln_list %}
+        <tr><td>{{vuln.plugin_id}}</td><td>{{vuln.plugin_name}}</td><td>{{vuln.severity}}</td><td>{{ vuln.ipv4_address }}</td><td>{{ vuln.host_name }}</td></tr>
+      {% endfor %}
+    </table>
+    {% endif %}
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}
