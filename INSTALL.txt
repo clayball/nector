@@ -22,7 +22,7 @@ NECTOR requires the following be installed:
 	 usability, however.
 - [OPTIONAL] nmap (see https://nmap.org/download.html )
 	Note: nmap is only necessary for gathering hosts/subnets for the 
-	 Hosts/Subnets feature. (See 'Import Hosts/Subnets' below.)
+	 Hosts/Subnets feature. (See 'Import Hosts/Subnets/Vulnerabilities' below.)
 
  
 Add Key to settings.py
@@ -51,26 +51,28 @@ This will create a database named db.sqlite3 that will be populated with
 tables and info relevant to our project.
 
 
-Import Hosts/Subnets
-====================
+Import Hosts/Subnets/Vulnerabilities
+====================================
 
-Once the above is installed, IF YOU INTEND ON USING THE SUBNETS/HOSTS FEATURE
-(recommended), modify the following files to fit your needs:
+Once the above is installed, IF YOU INTEND ON USING THE SUBNETS/HOSTS and VULNZ FEATURES (recommended), modify the following files to fit your needs:
 
 - sample-hosts.xml
 	- Collection of hosts gathered through nmap.
 - sample-subnets.txt
 	- Collection of subnets.
+- sample-vulnlist.csv
+	- Collection of vulnerabilities related to hosts.
 
-Next, rename the two files to:
+Next, rename the three files to:
 - hosts.xml
 - subnets.txt
+- vulnlist.csv
 
 Next, run
 
 $ python import-hosts.py
 
-This will add the imported hosts and subnets to the db.sqlite3 database.
+This will add the imported hosts, subnets, and vulnerabilities to the db.sqlite3 database.
 
  
 Running NECTOR
