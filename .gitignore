@@ -8,4 +8,3 @@ subnets.txt
 nector/settings.py
 settings.py
 vulnlist.csv
-**/migrations/*.py*
