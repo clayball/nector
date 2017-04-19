@@ -64,6 +64,7 @@ a:hover {
     margin-right: 40px;
     margin-bottom: 40px;
     border: 1px solid green;
+    color: #FDFDFD;
 }
 
 .title-logo {
@@ -106,7 +107,6 @@ a:hover {
 table {
     border: 1px solid white;
     background-color: black;
-    color: green;
 }
 
 .td-content {
