@@ -1,0 +1,20 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+  {% if vuln_list %}
+    <h2>Vulnerabilities</h2>
+    <!-- TODO: Format better -->
+      <ul>
+            <b>
+          <li>Plugin ID, Plugin Name, Severity, IPv4, Host Name</li>
+            </b>
+      {% for vuln in vuln_list %}
+          <li>{{vuln.plugin_id}}, {{vuln.plugin_name}}, {{vuln.severity}}, {{ vuln.ipv4_address }}, {{ vuln.host_name }}</li>
+      {% endfor %}
+      </ul>
+  {% else %}
+      <p>No vulnerabilities are available.</p>
+  {% endif %}
+</div>
+{% endblock %}
