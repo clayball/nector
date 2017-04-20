@@ -15,7 +15,8 @@ def index(request):
     try:
         for vuln in vuln_list:
             vuln_ip = vuln.ipv4_address
-            host_list.append(Host.objects.get(ipv4_address=vuln_ip))
+            corresponding_host = Host.objects.get(ipv4_address=vuln_ip)
+            host_list.append(corresponding_host)
             subnet_address = vuln_ip.rsplit('.', 1)
             subnet_list.append(Subnet.objects.get(ipv4_address__startswith=subnet_address[0]))
     except:

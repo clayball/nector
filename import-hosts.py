@@ -1,16 +1,16 @@
 #!/usr/bin/env python2
 
 # import-hosts.py
-# Purpose: Uses provided Subnets, Hosts, and Vulnerabilities to populate a database which is queried throughout NECTOR.
-# Preconditions: hosts.xml, subnets.txt, and vulnlist.csv must exist in the current directory, contain desired information, and be formatted properly (see sample_hosts.xml, sample_subnets.txt, and sample-vulnlist.csv).
-# Postconditions: db.sqlite3 will be populated with Hosts, Subnets, and Vulnerabilities specified in hosts.xml, subnets.txt, and vulnlist.csv.
+# Purpose: Uses provided Subnets, Hosts, Vulnerabilities, & Events to populate a database which is queried throughout NECTOR.
+# Preconditions: hosts.xml, subnets.txt, vulnlist.csv, & report.csv must exist in the current directory, contain desired information, and be formatted properly (see sample_hosts.xml, sample_subnets.txt, sample-vulnlist.csv, and sample-report.csv).
+# Postconditions: db.sqlite3 will be populated with Hosts, Subnets, Vulnerabilities, & Events specified in hosts.xml, subnets.txt, vulnlist.csv, and report.csv.
 
 
 # Import necessary libraries.
 import sys
 import os
 import django
-import csv # Used for parsing vulnlist.csv
+import csv # Used for parsing vulnlist.csv and report.csv
 from django.db import transaction # Used in optimization of runtime.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nector.settings")
 django.setup()
@@ -19,17 +19,21 @@ django.setup()
 from hosts.models import Subnet
 from hosts.models import Host
 from vulnerabilities.models import Vulnerability
+from events.models import Event
 
 # Get names of files containing Host, Subnet, and Vulnerability data that we want to import.
 host_file_name = 'hosts.xml'
 subnet_file_name = 'subnets.txt'
 vulnerability_file_name = 'vulnlist.csv'
+events_file_name = 'report.csv'
 
 # Open files
 host_file = open(host_file_name, 'r')
 subnet_file = open(subnet_file_name, 'r')
 vulnerability_file = open(vulnerability_file_name, 'r')
 vulnerability_csv = csv.reader(vulnerability_file)
+events_file = open(events_file_name, 'r')
+events_csv = csv.reader(events_file)
 
 # Adds Hosts to db.sqlite3
 def populate_hosts():
@@ -38,14 +42,18 @@ def populate_hosts():
         for line in host_file:
             # Remove cruft from the end of the line:
             l = line.rstrip()
-            # If the last character in the string is ')':
+            # If host has a hostname:
             if l[-1] == ')':
                 lsplit = l.split(' ')
                 ipv4 = lsplit[5].strip('()')
                 hostname = lsplit[4].strip()
                 h = Host(ipv4_address=ipv4, host_name=hostname)
                 # Save Host to db (won't actually happen until 'with transaction.atomic()' is completed):
-                h.save()
+                try:
+                    h.save()
+                except:
+                    # Duplicate entry, so do nothing.
+                    pass
 
 # Adds Subnets to db.sqlite3
 def populate_subnets():
@@ -56,7 +64,11 @@ def populate_subnets():
             temp = l.split("/")
             s = Subnet(ipv4_address=temp[0], prefix=temp[1])
             # Save Subnet to db (won't actually happen until 'with transaction.atomic()' is completed):
-            s.save()
+            try:
+                s.save()
+            except:
+                # Duplicate entry, so do nothing.
+                pass
 
 # Adds Vulnerabilities to db.sqlite3
 def populate_vulnerabilities():
@@ -66,14 +78,36 @@ def populate_vulnerabilities():
         for row in vulnerability_csv:
             v = Vulnerability(plugin_id=row[0], plugin_name=row[1], severity=row[2], ipv4_address=row[3], host_name=row[4])
             # Save Vulnerability to db (won't actually happen until 'with transaction.atomic()' is completed):
-            v.save()
+            try:
+                v.save()
+            except:
+                # Duplicate entry, so do nothing.
+                pass
+
+# Adds Events to db.sqlite3
+def populate_events():
+    # Only allow changes to be made to db after nested blocks have been complete:
+    with transaction.atomic():
+        next(events_csv) # Skips the first entry of the csv file, which is just a header.
+        for row in events_csv:
+            e = Event(request_number=row[0], date_submitted=row[1], title=row[2], status=row[3], date_last_edited=row[4], submitters=row[5], assignees=row[6].split(":")[0])
+            # We only want to save Closed events:
+            if e.status == "Closed":
+                # Save Event to db (won't actually happen until 'with transaction.atomic()' is completed):
+                try:
+                    e.save()
+                except:
+                    # Duplicate entry, so do nothing.
+                    pass
 
 # Call funcitons.
 populate_hosts()
 populate_subnets()
 populate_vulnerabilities()
+populate_events()
 
 # Close files.
 host_file.close()
 subnet_file.close()
 vulnerability_file.close()
+events_file.close()

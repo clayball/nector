@@ -1,4 +1,3 @@
 "Plugin","Plugin Name","Severity","IP Address","DNS Name"
-"11213","HTTP TRACE / TRACK Methods Allowed","Medium","123.45.67.xx","some.example.com"
-"11213","HTTP TRACE / TRACK Methods Allowed","Medium","123.45.67.xy","other.example.com"
-"26928","SSL Weak Cipher Suites Supported","Medium","123.45.67.yy","yet.another.example.com"
+"11213","HTTP TRACE / TRACK Methods Allowed","Medium","123.45.67.xxx","fake.example.com"
+"26928","SSL Weak Cipher Suites Supported","Medium","104.108.168.140","conficturaindustries.com"
