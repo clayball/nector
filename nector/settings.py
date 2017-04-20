@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'nector_home',
     'hibp',
     'vulnerabilities',
+    'events',
 ]
 
 MIDDLEWARE_CLASSES = [

@@ -1,0 +1,30 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+  {% if events %}
+    <h2>Events</h2>
+      <table>
+          <tr>
+            <td class="td-content">Request #</td>
+            <td class="td-content">Date Submitted</td>
+            <td class="td-content">Title</td>
+            <td class="td-content">Status</td>
+            <td class="td-content">Date Last Edited</td>
+            <td class="td-content">Submitters</td>
+            <td class="td-content">Assignees</td></tr>
+      {% for event in events %}
+          <tr><td class="td-content">{{event.request_number}}</td>
+            <td class="td-content">{{event.date_submitted}}</td>
+            <td class="td-content">{{event.title}}</td>
+            <td class="td-content">{{event.status}}</td>
+            <td class="td-content">{{event.date_last_edited}}</td>
+            <td class="td-content">{{event.submitters}}</td>
+            <td class="td-content">{{event.assignees}}</td></tr>
+      {% endfor %}
+    </table>
+  {% else %}
+      <p>There are no events to show.</p>
+  {% endif %}
+</div>
+{% endblock %}

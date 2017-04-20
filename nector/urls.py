@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^hosts/', include('hosts.urls')),
     url(r'^hibp/', include('hibp.urls')),
     url(r'^vulnz/', include('vulnerabilities.urls')),
+    url(r'^events/', include('events.urls')),
     url(r'^$', views.index, name='index'),
 ]
