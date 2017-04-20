@@ -1,0 +1,5 @@
+Request Number,Date Submitted,Title,Status,Last Edit Date,Submitted By,Assignees
+74362,03/22/2017,[isc.upenn.edu #437588] MALWARE-CNC Win.Trojan.Reventon variant outbound connection from 128.91.9.16,Closed,03/31/2017,investigation@rt.security.isc.upenn.edu,History: . SASC Security:
+74460,03/25/2017,[isc.upenn.edu #438106] MALWARE-CNC Win.Trojan.Sality variant outbound connection from 128.91.84.232,Closed,04/04/2017,investigation@rt.security.isc.upenn.edu,Biology: . SASC Security:
+74654,04/02/2017,He [isc.upenn.edu #439022] MALWARE-CNC Win.Trojan.Sality variant outbound connection from 128.91.68.217,Closed,04/05/2017,investigation@rt.security.isc.upenn.edu,Biology: . SASC Security:
+74973,04/13/2017,[isc.upenn.edu #440243] MALWARE-CNC Win.Trojan.Sality variant outbound connection from 128.91.68.217,Open,04/17/2017,investigation@rt.security.isc.upenn.edu,Biology: . SASC Security:

@@ -38,14 +38,18 @@ def populate_hosts():
         for line in host_file:
             # Remove cruft from the end of the line:
             l = line.rstrip()
-            # If the last character in the string is ')':
+            # If host has a hostname:
             if l[-1] == ')':
                 lsplit = l.split(' ')
                 ipv4 = lsplit[5].strip('()')
                 hostname = lsplit[4].strip()
                 h = Host(ipv4_address=ipv4, host_name=hostname)
                 # Save Host to db (won't actually happen until 'with transaction.atomic()' is completed):
-                h.save()
+                try:
+                    h.save()
+                except:
+                    # Duplicate entry, so do nothing.
+                    pass
 
 # Adds Subnets to db.sqlite3
 def populate_subnets():
@@ -56,7 +60,11 @@ def populate_subnets():
             temp = l.split("/")
             s = Subnet(ipv4_address=temp[0], prefix=temp[1])
             # Save Subnet to db (won't actually happen until 'with transaction.atomic()' is completed):
-            s.save()
+            try:
+                s.save()
+            except:
+                # Duplicate entry, so do nothing.
+                pass
 
 # Adds Vulnerabilities to db.sqlite3
 def populate_vulnerabilities():
@@ -66,7 +74,11 @@ def populate_vulnerabilities():
         for row in vulnerability_csv:
             v = Vulnerability(plugin_id=row[0], plugin_name=row[1], severity=row[2], ipv4_address=row[3], host_name=row[4])
             # Save Vulnerability to db (won't actually happen until 'with transaction.atomic()' is completed):
-            v.save()
+            try:
+                v.save()
+            except:
+                # Duplicate entry, so do nothing.
+                pass
 
 # Call funcitons.
 populate_hosts()
