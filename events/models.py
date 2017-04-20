@@ -8,7 +8,7 @@ from django.db import models
 class Event(models.Model):
     """Model for individual events, consisting of a request number,
     submission date, title, status, last edit date, submitters, and assignees."""
-    request_number = models.CharField(max_length=10, default='')
+    request_number = models.CharField(max_length=10, default='', unique=True)
     title = models.CharField(max_length=120, default='')
     date_submitted = models.CharField(max_length=12, default='')
     status = models.CharField(max_length=10, default='')
