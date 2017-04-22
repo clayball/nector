@@ -19,6 +19,12 @@ frontend. The project is being developed without the use of JavaScript.
 NECTOR's intuitive web-based frontend allows for easy data analysis, scan
 configuration, incident reporting,  and more. 
 
+
+## Installing
+
+View INSTALL.txt for more info.
+
+
 ## Misc. Notes
 
 Lets try to stick with Python2 for now.
@@ -35,9 +41,6 @@ Applications:
 - events
 - reports
 
-## Installing
-
-View INSTALL.txt for more info.
 
 ## Getting Started
 
