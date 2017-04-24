@@ -17,7 +17,7 @@ def detail(request, subnet_id):
     subnet = get_object_or_404(Subnet, pk=subnet_id)
     address = subnet.ipv4_address.rsplit('.', 1)
     host_list = Host.objects.filter(ipv4_address__startswith=address[0])
-    context = {'host_list': host_list, 'subnet_id' : subnet_id}
+    context = {'host_list': host_list, 'subnet_id' : subnet_id, 'limit' : 'online'}
     return render(request, 'hosts/detail.html', context)
 
 def detail_host(request, subnet_id, host_id):
@@ -25,6 +25,38 @@ def detail_host(request, subnet_id, host_id):
     vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
     context = {'host': host, 'subnet_id' : subnet_id, 'vuln_list' : vuln_list}
     return render(request, 'hosts/detail_host.html', context)
+
+# Used for sorting hosts by dropdown menu.
+def limit_hosts(request, subnet_id):
+    try:
+        if request.method == 'GET':
+            query = request.GET.get('select_hosts', None)
+            subnet = get_object_or_404(Subnet, pk=subnet_id)
+            address = subnet.ipv4_address.rsplit('.', 1)
+            # Get queryset of (probably unordered) hosts.
+            host_set = Host.objects.filter(ipv4_address__startswith=address[0])
+            unsorted_host_list = get_ip_list(host_set)
+            # Generate sorted queryset based on the newly sorted IP addresses.
+            sorted_host_list = sort_ip_list(unsorted_host_list)
+            sorted_host_set = []
+            for h in sorted_host_list:
+                sorted_host_set.append(Host.objects.get(ipv4_address=h))
+            context = {'host_list': sorted_host_set, 'limit' : query, 'subnet_id' : subnet_id}
+            return render(request, 'hosts/detail.html', context)
+    except:
+        return render(request, 'hosts/detail.html')
+
+# Extract IPv4 addresses from QuerySet of Host objects.
+def get_ip_list(queryset):
+    unsorted_host_list = []
+    for h in queryset:
+        ip = str(h).split(',', 1)[0]
+        unsorted_host_list.append(ip)
+    return unsorted_host_list
+
+# Return sorted list of IP addresses.
+def sort_ip_list(unsorted_host_list):
+    return sorted(unsorted_host_list, key=lambda ip: long(''.join(["%02X" % long(i) for i in ip.split('.')]), 16))
 
 def search_host(request):
     try:

@@ -65,6 +65,19 @@ def populate_hosts():
                         print 'Unique Error: Duplicate host ' + ipv4 + ', ' + hostname
                     else:
                         pass
+            elif l[0] != '#':
+                # Host has no hostname, therefore it's down.
+                # '#' indicates last line of Nmap scan.
+                ipv4 = l.split(' ')[4]
+                h = Host(ipv4_address=ipv4, notes="Offline")
+                try:
+                    h.save()
+                except:
+                    # Duplicate entry, so do nothing.
+                    if verbose:
+                        print 'Unique Error: Duplicate host ' + ipv4 + ', Offline'
+                    else:
+                        pass
     if verbose:
         print '\nHosts: Done!\n---------------------\n'
 
