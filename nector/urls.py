@@ -23,5 +23,7 @@ urlpatterns = [
     url(r'^hibp/', include('hibp.urls')),
     url(r'^vulnz/', include('vulnerabilities.urls')),
     url(r'^events/', include('events.urls')),
+    url(r'^osint/', views.osint, name='osint'),
+    url(r'^detection/', views.detection, name='detection'),
     url(r'^$', views.index, name='index'),
 ]

@@ -30,7 +30,7 @@ Run Demo (OPTIONAL)
 NOTE: This step is entirely optional. Performing this step may interfere with the semantics of future steps, but will not render them unusable.
 If you want to see what NECTOR is like before committing to the rest of the install instructions, run:
 
-	$ make make-demo
+	$ make -f make-demo
 
 This will perform model migrations, rename the sample files, and run the server automatically.
 All you'll have to do now is open a browser and go to http://127.0.0.1:8000/
@@ -47,19 +47,6 @@ and replace it with your own Django secret key.
 
 You can generate one at
 http://www.miniwebtool.com/django-secret-key-generator/
-
-
-Migrate Models
-==============
-
-The models must be migrated into a database.
-
-Run the following command:
-
-  $ python manage.py migrate
-
-This will create a database named db.sqlite3 that will be populated with
-tables and info relevant to our project.
 
 
 Import Hosts/Subnets/Vulnerabilities
@@ -82,20 +69,15 @@ Next, rename the three files to:
 - vulnlist.csv
 - report.csv
 
-Next, run
-
-$ python import-hosts.py
-
-This will add the imported hosts, subnets, vulnerabilities, and events to the db.sqlite3 database.
-
 
 Running NECTOR
 ==============
 
-To utilize NECTOR, run manage.py with the argument "runserver":
+To utilize NECTOR, run the provided makefile:
 
-$ python manage.py runserver
+$ make
 
+This performs necessary migrations and imports, then runs a NECTOR server.
 Finally, open your favorite internet browser and enter the address:
 
 127.0.0.1:8000
