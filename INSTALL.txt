@@ -22,7 +22,7 @@ NECTOR requires the following be installed:
 	 usability, however.
 - [OPTIONAL] nmap (see https://nmap.org/download.html )
 	Note: nmap is only necessary for gathering hosts/subnets for the
-	 Hosts/Subnets feature. 
+	 Hosts/Subnets feature.
        (See 'Import Hosts/Subnets/Vulnerabilities' below.)
 
 Run Demo (OPTIONAL)
@@ -37,7 +37,7 @@ install instructions, run:
 	$ make demo
 
 This will perform model migrations, copy the sample files, and run the server
-automatically. All you'll have to do after this is open a browser and go to 
+automatically. All you'll have to do after this is open a browser and go to
 
     http://127.0.0.1:8000/
 
@@ -71,7 +71,7 @@ needs:
 	- Collection of subnets.
 - sample-vulnlist.csv
 	- Collection of vulnerabilities related to hosts.
-- sample-report.csv
+- sample-events.csv
 	- Collection of events.
 
 Next, rename the three files to:
@@ -79,7 +79,7 @@ Next, rename the three files to:
 - hosts.xml
 - subnets.txt
 - vulnlist.csv
-- report.csv
+- events.csv
 
 
 Running NECTOR
@@ -103,4 +103,3 @@ Contributing
 Contributions are always welcome! Please see CONTRIBUTING.md.
 
 Bug reports are always welcome! Please see CONTRIBUTING.md.
-

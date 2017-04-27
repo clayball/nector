@@ -9,4 +9,4 @@ nector/settings.py
 settings.py
 vulnlist.csv
 reports.csv
-report.csv
+events.csv
