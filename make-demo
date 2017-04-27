@@ -7,10 +7,10 @@
 .PHONY : run_demo
 
 run_demo :
-	mv -i sample-hosts.xml hosts.xml
-	mv -i sample-subnets.txt subnets.txt
-	mv -i sample-vulnlist.csv vulnlist.csv
-	mv -i sample-report.csv report.csv
+	cp -i sample-hosts.xml hosts.xml
+	cp -i sample-subnets.txt subnets.txt
+	cp -i sample-vulnlist.csv vulnlist.csv
+	cp -i sample-report.csv report.csv
 	python manage.py migrate
-	python import-hosts.py
+	python import-data.py
 	python manage.py runserver

@@ -9,5 +9,5 @@
 run :
 	python manage.py makemigrations
 	python manage.py migrate
-	python import-hosts.py
+	python import-data.py
 	python manage.py runserver
