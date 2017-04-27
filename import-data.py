@@ -10,17 +10,17 @@ which is queried throughout NECTOR.
 Prerequisites
 =============
 
-hosts.xml, subnets.txt, vulnlist.csv, & report.csv must exist in the current
+hosts.xml, subnets.txt, vulnlist.csv, & events.csv must exist in the current
 directory, contain desired information, and be formatted properly.
 
 Sample data files: sample_hosts.xml, sample_subnets.txt, sample-vulnlist.csv,
-and sample-report.csv
+and sample-events.csv
 
 Postconditions
 ==============
 
 db.sqlite3 will be populated with Hosts, Subnets, Vulnerabilities, & Events
-specified in hosts.xml, subnets.txt, vulnlist.csv, and report.csv.
+specified in hosts.xml, subnets.txt, vulnlist.csv, and events.csv.
 '''
 
 # Import necessary libraries.
@@ -28,7 +28,7 @@ import sys
 import os
 import django
 from optparse import OptionParser # Used for getting args
-import csv # Used for parsing vulnlist.csv and report.csv
+import csv # Used for parsing vulnlist.csv and events.csv
 from django.db import transaction # Used in optimization of runtime.
 from django.db import IntegrityError
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nector.settings")
@@ -45,7 +45,7 @@ from events.models import Event
 host_file_name = 'hosts.xml'
 subnet_file_name = 'subnets.txt'
 vulnerability_file_name = 'vulnlist.csv'
-events_file_name = 'report.csv'
+events_file_name = 'events.csv'
 
 # Open files
 host_file = open(host_file_name, 'r')
@@ -57,7 +57,7 @@ events_csv = csv.reader(events_file)
 
 # Get & Set Options / Args
 parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
-parser.add_option("-v", "--verbose", action="store_true", dest="verbose", 
+parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
         help="Print error/success messages. Useful in debugging.")
 (options, args) = parser.parse_args()
 verbose = options.verbose
@@ -76,14 +76,14 @@ def populate_hosts():
                 ipv4 = lsplit[5].strip('()')
                 hostname = lsplit[4].strip()
                 h = Host(ipv4_address=ipv4, host_name=hostname)
-                # Save Host to db (won't actually happen until 
+                # Save Host to db (won't actually happen until
                 #  'with transaction.atomic()' is completed):
                 try:
                     h.save()
                 except:
                     # Duplicate entry, so do nothing.
                     if verbose:
-                        print 'Unique Error: Duplicate host ' + ipv4 + ', ' 
+                        print 'Unique Error: Duplicate host ' + ipv4 + ', '
                         + hostname
                     else:
                         pass
@@ -97,7 +97,7 @@ def populate_hosts():
                 except:
                     # Duplicate entry, so do nothing.
                     if verbose:
-                        print 'Unique Error: Duplicate host ' + ipv4 
+                        print 'Unique Error: Duplicate host ' + ipv4
                         + ', Offline'
                     else:
                         pass
@@ -113,14 +113,14 @@ def populate_subnets():
             l = line.rstrip()
             temp = l.split("/")
             s = Subnet(ipv4_address=temp[0], prefix=temp[1])
-            # Save Subnet to db (won't actually happen until 
+            # Save Subnet to db (won't actually happen until
             #  'with transaction.atomic()' is completed):
             try:
                 s.save()
             except:
                 # Duplicate entry, so do nothing.
                 if verbose:
-                    print 'Unique Error: Duplicate subnet ' + temp[0] 
+                    print 'Unique Error: Duplicate subnet ' + temp[0]
                     + '/' + temp[1]
                 else:
                     pass
@@ -133,10 +133,10 @@ def populate_subnets():
 def populate_vulnerabilities():
     next(vulnerability_csv) # Skip first entry of the csv file, a header.
     for row in vulnerability_csv:
-        v = Vulnerability(plugin_and_host=row[0]+row[4], plugin_id=row[0], 
-                plugin_name=row[1], severity=row[2], ipv4_address=row[3], 
+        v = Vulnerability(plugin_and_host=row[0]+row[4], plugin_id=row[0],
+                plugin_name=row[1], severity=row[2], ipv4_address=row[3],
                 host_name=row[4])
-        # Save Vulnerability to db (won't actually happen until 
+        # Save Vulnerability to db (won't actually happen until
         #  'with transaction.atomic()' is completed):
         try:
             with transaction.atomic():
@@ -144,7 +144,7 @@ def populate_vulnerabilities():
         except IntegrityError as e:
             # Duplicate entry, so do nothing.
             if verbose:
-                print 'Unique Error: Duplicate vulnerability ' + row[0] 
+                print 'Unique Error: Duplicate vulnerability ' + row[0]
                 + ', ' + row[3]
             else:
                 pass
@@ -160,11 +160,11 @@ def populate_events():
         next(events_csv) # Skip first entry of the csv file, a header.
         for row in events_csv:
             e = Event(request_number=row[0], date_submitted=row[1],
-                    title=row[2], status=row[3], date_last_edited=row[4], 
+                    title=row[2], status=row[3], date_last_edited=row[4],
                     submitters=row[5], assignees=row[6].split(":")[0])
             # We only want to save Closed events
             if e.status == "Closed":
-                # Save Event to db (won't actually happen until 
+                # Save Event to db (won't actually happen until
                 #  'with transaction.atomic()' is completed):
                 try:
                     e.save()
@@ -188,4 +188,3 @@ host_file.close()
 subnet_file.close()
 vulnerability_file.close()
 events_file.close()
-
