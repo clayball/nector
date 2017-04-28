@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'hibp',
     'vulnerabilities',
     'events',
+    'blacklist',
 ]
 
 MIDDLEWARE_CLASSES = [
