@@ -1,0 +1,28 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+  <h2>Blacklist</h2>
+  <h5><a href='http://www.talosintelligence.com/'>From Talos Intelligence</a></h5>
+
+  <div style="float:right">
+    <form method="GET" action="/blacklist/limit-hosts/">
+      <select name="select_hosts">
+        <option value="my_hosts" selected="selected">My Malicious Hosts</option>
+        <option value="all_hosts">All Malicious Hosts</option>
+      </select>
+      <input type="submit" value="View"/>
+    </form>
+  </div>
+    <ul>
+{% if bad_ips %}
+    {% for bad_ip in bad_ips %}
+          <li>{{ bad_ip }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No malicious hosts found.</p>
+{% endif %}
+
+</div>
+{% endblock %}

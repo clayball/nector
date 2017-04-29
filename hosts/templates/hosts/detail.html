@@ -5,7 +5,7 @@
 {% if host_list %}
   <h2>Hosts</h2>
   <div style="float:right">
-    <form method="GET" action="/hosts/limit-hosts/{{ subnet_id }}"/>
+    <form method="GET" action="/hosts/limit-hosts/{{ subnet_id }}">
       <select name="select_hosts">
         <option value="online" selected="selected">Online Hosts</option>
         <option value="offline">Offline Hosts</option>
