@@ -8,20 +8,79 @@
   <div style="float:right">
     <form method="GET" action="/blacklist/limit-hosts/">
       <select name="select_hosts">
+        {% if selected == 'all_hosts' %}
+        <option value="my_hosts">My Malicious Hosts</option>
+        <option value="all_hosts" selected="selected">All Malicious Hosts</option>
+        {% else %}
         <option value="my_hosts" selected="selected">My Malicious Hosts</option>
         <option value="all_hosts">All Malicious Hosts</option>
+        {% endif %}
       </select>
       <input type="submit" value="View"/>
     </form>
+      {% if bad_ips %}
+        {% if selected == 'my_hosts' %}
+          <pre style='color:red'>
+        {% else %}
+          <pre style='color:green'>
+        {% endif %}
+      {% else %}
+          <pre style='color:green'>
+      {% endif %}
+
+                 uuuuuuu
+             uu$$$$$$$$$$$uu
+          uu$$$$$$$$$$$$$$$$$uu
+         u$$$$$$$$$$$$$$$$$$$$$u
+        u$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$"   "$$$"   "$$$$$$u
+       "$$$$"      u$u       $$$$"
+        $$$u       u$u       u$$$
+        $$$u      u$$$u      u$$$
+         "$$$$uu$$$   $$$uu$$$$"
+          "$$$$$$$"   "$$$$$$$"
+            u$$$$$$$u$$$$$$$u
+             u$"$"$"$"$"$"$u
+  uuu        $$u$ $ $ $ $u$$       uuu
+ u$$$$        $$$$$u$u$u$$$       u$$$$
+  $$$$$uu      "$$$$$$$$$"     uu$$$$$$
+u$$$$$$$$$$$uu    """""    uuuu$$$$$$$$$$
+$$$$"""$$$$$$$$$$uuu   uu$$$$$$$$$"""$$$"
+ """      ""$$$$$$$$$$$uu ""$"""
+           uuuu ""$$$$$$$$$$uuu
+  u$$$uuu$$$$$$$$$uu ""$$$$$$$$$$$uuu$$$
+  $$$$$$$$$$""""           ""$$$$$$$$$$$"
+   "$$$$$"                      ""$$$$""
+     $$$"                         $$$$"
+        </pre>
   </div>
     <ul>
 {% if bad_ips %}
+  {% if selected == 'all_hosts' %}
     {% for bad_ip in bad_ips %}
           <li>{{ bad_ip }}</li>
     {% endfor %}
+  {% else %}
+    {% for bad_ip, bad_ip_subnet in bad_ip_data %}
+        <li><a style="color:red" href="/hosts/{{ bad_ip_subnet.id }}/host/{{ bad_ip.id }}">{{ bad_ip }}</a></li>
+    {% endfor %}
+  {% endif %}
     </ul>
 {% else %}
+  {% if selected == 'my_hosts' %}
+    <p>No malicious hosts found in database.</p>
+  {% else %}
     <p>No malicious hosts found.</p>
+  {% endif %}
+{% endif %}
+
+<!-- Add whitespace for skull -->
+{% if bad_ips|length <= 34 %}
+  {% for i in "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx" %}
+    <br>
+  {% endfor %}
 {% endif %}
 
 </div>

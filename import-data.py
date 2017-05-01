@@ -83,7 +83,7 @@ def populate_hosts():
                 except:
                     # Duplicate entry, so do nothing.
                     if verbose:
-                        print 'Unique Error: Duplicate host ' + ipv4 + ', '
+                        print 'Unique Error: Duplicate host ' + ipv4 + ', ' \
                         + hostname
                     else:
                         pass
@@ -97,7 +97,7 @@ def populate_hosts():
                 except:
                     # Duplicate entry, so do nothing.
                     if verbose:
-                        print 'Unique Error: Duplicate host ' + ipv4
+                        print 'Unique Error: Duplicate host ' + ipv4 \
                         + ', Offline'
                     else:
                         pass
@@ -120,7 +120,7 @@ def populate_subnets():
             except:
                 # Duplicate entry, so do nothing.
                 if verbose:
-                    print 'Unique Error: Duplicate subnet ' + temp[0]
+                    print 'Unique Error: Duplicate subnet ' + temp[0] \
                     + '/' + temp[1]
                 else:
                     pass
@@ -144,7 +144,7 @@ def populate_vulnerabilities():
         except IntegrityError as e:
             # Duplicate entry, so do nothing.
             if verbose:
-                print 'Unique Error: Duplicate vulnerability ' + row[0]
+                print 'Unique Error: Duplicate vulnerability ' + row[0] \
                 + ', ' + row[3]
             else:
                 pass
