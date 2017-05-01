@@ -48,6 +48,8 @@ def check_pwn_breaches(request):
                 leak.append(i['DataClasses'])
         except urllib2.HTTPError as err:
             pass
+        except ValueError as e:
+            pass
         context = {'account' : user, 'titles' : title, 'breachdates' : date, 'descriptions' : description, 'leaks' : leak, 'breach_data' : zip(title, date, description, leak)}
         return context
 
@@ -78,6 +80,8 @@ def check_pwn_pastes(request):
                 date.append(i['Date'])
                 source_title.append(i['Title'])
         except urllib2.HTTPError as err:
+            pass
+        except ValueError as e:
             pass
         context = {'sources' : source, 'source_ids' : source_id, 'pastedates' : date, 'source_title' : source_title, 'paste_data' : zip(source, source_id, date, source_title)}
         return context
