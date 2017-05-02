@@ -1,0 +1,31 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+  <h2>Censys</h2>
+  <h5><a href='https://www.censys.io/'>From Censys</a></h5>
+  Search for Web Server:
+  <form class="search_host" action="/censys/search/">
+    <input type="text" name="input_censys_query" id="input_censys_query" placeholder="Web Server"/>
+    <input id="btn_search_host" type="submit" value="Search" />
+  </form>
+  {% if status == '1' %}
+    <h3>Rate Limit reached!</h3>
+    <h4>Not all results will be shown.<br>
+        Try again in 5 minutes, or try narrowing down your query.</h4>
+    <br><br>
+  {% endif %}
+  {% if ips %}
+    {% for ip, proto, title, server in zip_data %}
+      <div>
+        <h4>IP: {{ip}}</h4>
+        <h4>Protocol(s): {{proto}}</h4>
+        <h4>Title: {{title}}</h4>
+        <h4>Server: {{server}}</h4>
+        <br><br>
+      </div>
+    {% endfor %}
+  {% endif %}
+<br><br>
+</div>
+{% endblock %}

@@ -10,3 +10,4 @@ settings.py
 vulnlist.csv
 reports.csv
 events.csv
+censys-keys.csv

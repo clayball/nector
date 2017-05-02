@@ -50,7 +50,14 @@ def check_pwn_breaches(request):
             pass
         except ValueError as e:
             pass
-        context = {'account' : user, 'titles' : title, 'breachdates' : date, 'descriptions' : description, 'leaks' : leak, 'breach_data' : zip(title, date, description, leak)}
+        context = {
+                    'account' : user,
+                    'titles' : title,
+                    'breachdates' : date,
+                    'descriptions' : description,
+                    'leaks' : leak,
+                    'breach_data' : zip(title, date, description, leak)
+                  }
         return context
 
 def check_pwn_pastes(request):
@@ -83,5 +90,11 @@ def check_pwn_pastes(request):
             pass
         except ValueError as e:
             pass
-        context = {'sources' : source, 'source_ids' : source_id, 'pastedates' : date, 'source_title' : source_title, 'paste_data' : zip(source, source_id, date, source_title)}
+        context = {
+                    'sources' : source,
+                    'source_ids' : source_id,
+                    'pastedates' : date,
+                    'source_title' : source_title,
+                    'paste_data' : zip(source, source_id, date, source_title)
+                  }
         return context
