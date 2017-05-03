@@ -6,11 +6,21 @@ from .models import Host
 from .models import Subnet
 from vulnerabilities.models import Vulnerability
 
-# Create your views here.
 
 def index(request):
     subnet_list = Subnet.objects.all()
-    context = {'subnet_list': subnet_list}
+    no_mask_list = []
+    # Remove the mask for ease of sorting.
+    for i in subnet_list:
+        no_mask_list.append(str(i).split('/')[0])
+    # Sort the IPs.
+    sorted_subnet_list = sort_ip_list(no_mask_list)
+    sorted_subnet_set = []
+    # Get sorted Subnet objects using sorted IPs.
+    # (Aka "convert" list to QuerySet)
+    for s in sorted_subnet_list:
+        sorted_subnet_set.append(Subnet.objects.get(ipv4_address__startswith=s))
+    context = {'subnet_list': sorted_subnet_set}
     return render(request, 'hosts/index.html', context)
 
 def detail(request, subnet_id):
@@ -62,19 +72,49 @@ def search_host(request):
     try:
         if request.method == 'GET':
             query = request.GET.get('input_ip', None).strip()
-            # Get corresponding id(s) for queried IP:
-            host_id_list = Host.objects.filter(ipv4_address=query).values_list('id', flat=True)
-            subnet_id_list = Subnet.objects.filter(ipv4_address=query).values_list('id', flat=True)
-            print subnet_id_list
-            host_list = []
-            # Note, if len(host_list) > 1, then there are duplicate entries in the db.
-            # We /should/ only want 1 of these entries, since they'll be exactly the same.
-            for i in range(0, len(host_id_list)):
-                # Get corresponding Host object(s) for id(s):
-                host_list.append(get_object_or_404(Host, pk=host_id_list[i]))
-            vuln_list = Vulnerability.objects.filter(ipv4_address=host_list[0].ipv4_address)
-            context = {'host': host_list[0] , 'vuln_list' : vuln_list}
+            context = {}
+            if is_ip(query):
+                # Get corresponding id(s) for queried IP:
+                host_id_list = Host.objects.filter(ipv4_address=query).values_list('id', flat=True)
+                host = get_object_or_404(Host, pk=host_id_list[0])
+                vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
+                context = {'host': host, 'vuln_list' : vuln_list}
+                return render(request, 'hosts/detail_host.html', context)
+            elif is_subnet(query):
+                # Get corresponding id(s) for queried Subnet:
+                ip_no_mask = query.split('/')[0]
+                subnet_id_list = Subnet.objects.filter(ipv4_address=ip_no_mask).values_list('id', flat=True)
+                subnet_id = subnet_id_list[0]
+                subnet = get_object_or_404(Subnet, pk=subnet_id)
+                address = subnet.ipv4_address.rsplit('.', 1)
+                host_list = Host.objects.filter(ipv4_address__startswith=address[0])
+                context = {'host_list': host_list, 'limit' : 'online', 'subnet_id' : subnet_id}
+                return render(request, 'hosts/detail.html', context)
+            # Assume hostname:
+            else:
+                # Get corresponding id(s) for queried Hostname:
+                host_id_list = Host.objects.filter(host_name__iexact=query).values_list('id', flat=True)
+                host_id = host_id_list[0]
+                host = get_object_or_404(Host, pk=host_id)
+                vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
+                context = {'host': host, 'vuln_list' : vuln_list}
+                return render(request, 'hosts/detail_host.html', context)
             return render(request, 'hosts/detail_host.html', context)
     except:
         ## Inputted IP not found in our db, so load page with no host.
         return render(request, 'hosts/detail_host.html')
+
+def is_subnet(query):
+    if '/' in query:
+        mask_split = query.split('/')
+        bits = mask_split[0].split('.')
+        if len(bits) != 4: return False
+        try: return all(0<=int(p)<256 for p in bits)
+        except ValueError: return False
+    return False
+
+def is_ip(query):
+    pieces = query.split('.')
+    if len(pieces) != 4: return False
+    try: return all(0<=int(p)<256 for p in pieces)
+    except ValueError: return False
