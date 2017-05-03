@@ -6,11 +6,21 @@ from .models import Host
 from .models import Subnet
 from vulnerabilities.models import Vulnerability
 
-# Create your views here.
 
 def index(request):
     subnet_list = Subnet.objects.all()
-    context = {'subnet_list': subnet_list}
+    no_mask_list = []
+    # Remove the mask for ease of sorting.
+    for i in subnet_list:
+        no_mask_list.append(str(i).split('/')[0])
+    # Sort the IPs.
+    sorted_subnet_list = sort_ip_list(no_mask_list)
+    sorted_subnet_set = []
+    # Get sorted Subnet objects using sorted IPs.
+    # (Aka "convert" list to QuerySet)
+    for s in sorted_subnet_list:
+        sorted_subnet_set.append(Subnet.objects.get(ipv4_address__startswith=s))
+    context = {'subnet_list': sorted_subnet_set}
     return render(request, 'hosts/index.html', context)
 
 def detail(request, subnet_id):
