@@ -7,13 +7,24 @@
   <div style="float:right">
     <form method="GET" action="/hosts/limit-hosts/{{ subnet_id }}">
       <select name="select_hosts">
+        {% if limit == 'online' %}
         <option value="online" selected="selected">Online Hosts</option>
         <option value="offline">Offline Hosts</option>
         <option value="all">All Hosts</option>
+        {% elif limit == 'offline' %}
+        <option value="online">Online Hosts</option>
+        <option value="offline" selected="selected">Offline Hosts</option>
+        <option value="all">All Hosts</option>
+        {% else %}
+        <option value="online">Online Hosts</option>
+        <option value="offline">Offline Hosts</option>
+        <option value="all" selected="selected">All Hosts</option>
+        {% endif %}
       </select>
       <input type="submit" value="View"/>
     </form>
   </div>
+
     <ul>
     {% for host in host_list %}
         {% if limit == 'online' %}

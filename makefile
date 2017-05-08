@@ -21,6 +21,7 @@ demo :
 	cp -i sample-subnets.txt subnets.txt
 	cp -i sample-vulnlist.csv vulnlist.csv
 	cp -i sample-events.csv events.csv
+	cp -i sample-censys-keys.csv censys-keys.csv
 	python manage.py migrate
 	python import-data.py
 	python manage.py runserver

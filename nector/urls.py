@@ -18,13 +18,14 @@ from django.contrib import admin
 from nector_home import views
 
 urlpatterns = [
+    url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^hosts/', include('hosts.urls')),
+    url(r'^osint/', views.osint, name='osint'),
     url(r'^hibp/', include('hibp.urls')),
+    url(r'^censys/', include('censys.urls')),
+    url(r'^detection/', views.detection, name='detection'),
     url(r'^vulnz/', include('vulnerabilities.urls')),
     url(r'^blacklist/', include('blacklist.urls')),
     url(r'^events/', include('events.urls')),
-    url(r'^osint/', views.osint, name='osint'),
-    url(r'^detection/', views.detection, name='detection'),
-    url(r'^$', views.index, name='index'),
 ]
