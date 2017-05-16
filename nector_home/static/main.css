@@ -23,6 +23,11 @@ a:hover {
     text-decoration: underline;
 }
 
+.logo-link:hover {
+    color: yellow;
+    text-decoration: none;
+}
+
 .nav {
     font-size: 16px;
     color: #666;
