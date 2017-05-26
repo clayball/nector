@@ -103,7 +103,7 @@ def search_host(request):
                         port_status_list.append(port_json[p][0])
                         port_info_list.append(port_json[p][1])
                         port_date_list.append(port_json[p][2])
-                    context = {'host': host, 'vuln_list' : vuln_list, 'port_data' : zip(port_list, port_status_list, port_info_list, port_date_list)}
+                    context = {'host': host, 'subnet_id' : subnet_id, 'vuln_list' : vuln_list, 'port_data' : zip(port_list, port_status_list, port_info_list, port_date_list)}
                 else:
                     context = {'host': host, 'subnet_id' : subnet_id, 'vuln_list' : vuln_list, 'port_data' : None}
                 return render(request, 'hosts/detail_host.html', context)
