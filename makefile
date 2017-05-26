@@ -13,6 +13,7 @@ run :
 	python manage.py makemigrations
 	python manage.py migrate
 	python import-data.py
+	python import-ports.py
 	python manage.py runserver
 
 
@@ -24,4 +25,5 @@ demo :
 	cp -i sample-censys-keys.csv censys-keys.csv
 	python manage.py migrate
 	python import-data.py
+	python import-ports.py
 	python manage.py runserver
