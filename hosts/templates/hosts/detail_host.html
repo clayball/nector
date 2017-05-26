@@ -8,8 +8,15 @@
     <p style="padding-left:20px"> {{host.ipv4_address}} </p>
     <h4 style="padding-left:10px">Host Name</h4>
     <p style="padding-left:20px"> {{host.host_name}} </p>
+    {% if port_data %}
     <h4 style="padding-left:10px">Ports</h4>
-    <p style="padding-left:20px"> {{host.ports}} </p>
+    <table style="margin-left:20px">
+        <tr><td class="td-content">Port</td><td class="td-content">Status</td><td class="td-content">Info</td><td class="td-content">Date Last Changed</td></tr>
+        {% for port, status, info, date in port_data %}
+            <tr><td>{{port}}</td><td>{{status}}</td><td>{{info}}</td><td>{{date}}</td></tr>
+        {% endfor %}
+    </table>
+    {% endif %}
     <h4 style="padding-left:10px">OS</h4>
     <p style="padding-left:20px"> {{host.os}} </p>
     <h4 style="padding-left:10px">LSP</h4>

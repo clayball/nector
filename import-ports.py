@@ -58,9 +58,17 @@ def import_ports():
         # completed. (aka whenever we finish reading a file.)
         with transaction.atomic():
             port = ''
+            date = ''
+            # Get date from filename (var scan)
+            if '.' in str(scan):
+                # Has extension.
+                date = str(scan)[-10:][:-4]
+            else:
+                date = str(scan)[-6:]
             print '-> Importing %s' % scan
             with open(scans_dir_name + '/' + scan) as csvfile:
                 scan_file = csv.reader(csvfile)
+                host_list = []
                 for row in scan_file:
                     if row[0] != HEADER:
                         ip = row[0]
@@ -69,13 +77,14 @@ def import_ports():
                         proto = row[3]
                         try:
                             host = get_object_or_404(Host, ipv4_address=ip)
-                            dict_ports = "{\"%s\" : [\"%s\", \"%s\"]}" % (port, status, proto)
+                            host_list.append(host)
+                            dict_ports = "{\"%s\" : [\"%s\", \"%s\", \"%s\"]}" % (port, status, proto, date)
                             if not host.ports:
                                 host.ports = dict_ports
                             else:
-                                host_json = json.loads(host.ports)
-                                host_json[port] = [status, proto]
-                                host.ports = json.dumps(host_json)
+                                new_port_info = json.loads(host.ports)
+                                new_port_info[port] = [status, proto, date]
+                                host.ports = json.dumps(new_port_info)
                                 if verbose:
                                     print host.ports
                             # Save Host to db (won't actually happen until
@@ -93,6 +102,15 @@ def import_ports():
                             print '==================================='
                             print 'Could not find host %s' % ip
                             print '==================================='
+                hosts_w_port = Host.objects.filter(ports__icontains=port+"\":")
+                # If port is now closed, then we wanna close it:
+                for h in hosts_w_port:
+                    if h not in host_list:
+                        closed_port = json.loads(h.ports)
+                        if closed_port[port][0] == "open":
+                            closed_port[port] = ["closed", str(closed_port[port][1]), date]
+                            h.ports = json.dumps(closed_port)
+                            h.save()
             print '[Port %s] Saving to database...\n' % port
     print '=============================='
     print 'Database successfully updated!\n'
