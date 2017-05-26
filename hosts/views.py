@@ -90,8 +90,19 @@ def search_host(request):
                 # Get corresponding id(s) for queried IP:
                 host_id_list = Host.objects.filter(ipv4_address=query).values_list('id', flat=True)
                 host = get_object_or_404(Host, pk=host_id_list[0])
+                if host.ports:
+                    port_json = json.loads(host.ports)
+                    port_list = []
+                    port_status_list = []
+                    port_info_list = []
+                    port_date_list = []
+                    for p in port_json:
+                        port_list.append(p)
+                        port_status_list.append(port_json[p][0])
+                        port_info_list.append(port_json[p][1])
+                        port_date_list.append(port_json[p][2])
                 vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
-                context = {'host': host, 'vuln_list' : vuln_list}
+                context = {'host': host, 'vuln_list' : vuln_list, 'port_data' : zip(port_list, port_status_list, port_info_list, port_date_list)}
                 return render(request, 'hosts/detail_host.html', context)
             elif is_subnet(query):
                 # Get corresponding id(s) for queried Subnet:
