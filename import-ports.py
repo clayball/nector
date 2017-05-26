@@ -62,9 +62,7 @@ def import_ports():
             with open(scans_dir_name + '/' + scan) as csvfile:
                 scan_file = csv.reader(csvfile)
                 for row in scan_file:
-                    if not row:
-                        next(scan_file)
-                    elif row[0] == HEADER:
+                    if row[0] == HEADER:
                         next(scan_file)
                     else:
                         ip = row[0]
