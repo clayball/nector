@@ -11,3 +11,4 @@ vulnlist.csv
 reports.csv
 events.csv
 censys-keys.csv
+port-scans/*

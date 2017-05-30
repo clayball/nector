@@ -17,7 +17,7 @@ framework, and incorporates a SQLite database backend with a minimalistic
 frontend. The project is being developed without the use of JavaScript.
 
 NECTOR's intuitive web-based frontend allows for easy data analysis, scan
-configuration, incident reporting,  and more. 
+configuration, incident reporting,  and more.
 
 
 ## Installing
@@ -27,7 +27,7 @@ View INSTALL.txt for more info.
 
 ## Misc. Notes
 
-Lets try to stick with Python2 for now.
+Let's try to stick with Python2 for now.
 
 This is the main NECTOR project repo.
 
@@ -46,11 +46,11 @@ Applications:
 
 Create a virtualenv to work in and activate it.
 
-'''
+```
 $ virtualenv-2 venv-nector
 $ source venv-nector/bin/activate
 $ pip install < requirements.txt
-'''
+```
 
 Apply the migrations. TODO: explain this
 
@@ -59,14 +59,13 @@ Apply the migrations. TODO: explain this
 
 Start the server.
 
-'''$ python manage.py runserver'''
+```$ python manage.py runserver```
 
 
 Open a browser and goto 127.0.0.1:8000
 
 When you're done working run ```$ deactivate```.
 
-TODO: remove: Testing for issue #8.. will remove.
 
 ## Events
 
@@ -75,4 +74,3 @@ TODO: Add more to this section.
 - An event is an observed change to the normal behavior of a system, environment, process, workflow or person. Examples: router ACLs were updated, firewall policy was pushed.
 - An alert is a notification that a particular event (or series of events) has occurred, which is sent to responsible parties for the purpose of spawning action. Examples: the events above sent to on-call personnel.
 - An incident is a human-caused, malicious event that leads to (or may lead to) a significant disruption of business. Examples: attacker posts company credentials online, attacker steals customer credit card database, worm spreading through network.*
-
