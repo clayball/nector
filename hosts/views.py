@@ -1,10 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.template import loader
+from django.template.context_processors import csrf
 
 from .models import Host
 from .models import Subnet
 from vulnerabilities.models import Vulnerability
+from forms import HostForm
 
 import json
 
@@ -49,6 +52,21 @@ def detail_host(request, subnet_id, host_id):
     else:
         context = {'host': host, 'subnet_id' : subnet_id, 'vuln_list' : vuln_list, 'port_data' : None}
     return render(request, 'hosts/detail_host.html', context)
+
+
+def edit(request):
+    if request.POST:
+        form = HostForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'hosts/index.html')
+    else:
+        form = HostForm()
+    context = {}
+    context.update(csrf(request))
+    context['form'] = form
+    return render(request, 'hosts/edit_host.html', context)
+
 
 # Used for sorting hosts by dropdown menu.
 def limit_hosts(request, subnet_id):
