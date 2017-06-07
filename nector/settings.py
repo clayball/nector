@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'events',
     'blacklist',
     'censys',
+    'scans',
 ]
 
 MIDDLEWARE_CLASSES = [

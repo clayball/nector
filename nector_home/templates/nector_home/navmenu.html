@@ -1,6 +1,7 @@
 <!-- NavMenu -->
 <div class="nav">
     <a href="/hosts/" class="nav_link">SubNeTs</a> &#8226;
+
     <span class="dropdown">
       <span><a href="/osint/" class="nav_link">0SINT</a> &#8226;</span>
       <div class="dropdown-content">
@@ -14,6 +15,13 @@
         {% include 'nector_home/detection-tools.html' %}
       </div>
     </span>
+
     <a href="/events/" class="nav_link">Ev3nTs</a> &#8226;
-    <a href="/" class="nav_link">R3p0rTs</a>
+
+    <span class="dropdown">
+      <span><a href="/reports/" class="nav_link">R3p0rTs</a></span>
+      <div class="dropdown-content">
+        {% include 'nector_home/reports-tools.html' %}
+      </div>
+    </span>
 </div>

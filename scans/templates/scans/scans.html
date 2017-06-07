@@ -1,0 +1,74 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+
+    <h2>Sc4ns</h2>
+
+    <div style="float:right">
+        <pre style="color:white">
+
+
+                     ..,,;;;;;;,,,,
+               .,;'';;,..,;;;,,,,,.''';;,..
+            ,,''                    '';;;;,;''
+           ;'    ,;@@;'  ,@@;, @@, ';;;@@;,;';.
+          ''  ,;@@@@@'  ;@@@@; ''    ;;@@@@@;;;;
+             ;;@@@@@;    '''     .,,;;;@@@@@@@;;;
+            ;;@@@@@@;           , ';;;@@@@@@@@;;;.
+             '';@@@@@,.  ,   .   ',;;;@@@@@@;;;;;;
+                .   '';;;;;;;;;,;;;;@@@@@;;' ,.:;'
+                  ''..,,     ''''    '  .,;'
+                       ''''''::''''''''
+
+        </pre>
+    </div>
+
+    <div id="filters">
+        <h3>Information to include:</h3>
+        <input type="checkbox" name="checks" id="ipv4_address" value="ipv4_address" checked/>
+        <label for="ipv4_address">IPv4 Address</label>
+
+        <input type="checkbox" name="checks" id="host_name" value="host_name" checked/>
+        <label for="host_name">Host Name</label>
+
+        <input type="checkbox" name="checks" id="os" value="os" checked/>
+        <label for="os">OS</label>
+
+        <input type="checkbox" name="checks" id="lsp" value="lsp" checked/>
+        <label for="lsp">LSP</label>
+
+        <input type="checkbox" name="checks" id="location" value="location" checked/>
+        <label for="location">Location</label>
+
+        <input type="checkbox" name="checks" id="tags" value="tags" checked/>
+        <label for="tags">Tags</label>
+
+        <input type="checkbox" name="checks" id="host_groups" value="host_groups" checked/>
+        <label for="host_groups">Host Groups</label>
+
+        <input type="checkbox" name="checks" id="notes" value="notes" checked/>
+        <label for="notes">Notes</label>
+
+        <input type="checkbox" name="checks" id="ports" value="ports" checked/>
+        <label for="ports">Ports</label>
+    </div>
+    <div id="search">
+        <h3>Search By: (Leave blank for everything)</h3>
+        IPv4 Address: <input type="text">
+        Host Name: <input type="text">
+        OS: <input type="text"><br><br>
+        LSP: <input type="text">
+        Tags: <input type="text">
+        Host Groups: <input type="text"><br><br>
+        Notes: <input type="text">
+        Ports: <input type="text">
+    </div>
+    <br><br>
+    <div id="generate">
+        <input type="submit" value="Generate" />
+    </div>
+
+
+</div>
+{% endblock %}
