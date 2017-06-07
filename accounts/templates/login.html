@@ -1,0 +1,21 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+
+{% if form.errors %}
+    <p class="error">Sorry, invalid username or password.</p>
+{% endif %}
+
+<center>
+<form action="/accounts/auth/" method="post">{% csrf_token %}
+    <label for="username">Username:</label>
+    <input type="text" name="username" value="" id="username" />
+    <label for="password">Password:</label>
+    <input type="password" name="password" value="" id="password" />
+    <input type="submit" value="login" />
+</form>
+
+<p><a href="/accounts/register/">Register for an account.</a></p>
+</center>
+
+{% endblock %}

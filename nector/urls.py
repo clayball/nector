@@ -20,6 +20,7 @@ from nector_home import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
+    url(r'^accounts/', include('accounts.urls')),
     url(r'^hosts/', include('hosts.urls')),
     url(r'^osint/', views.osint, name='osint'),
     url(r'^hibp/', include('hibp.urls')),
