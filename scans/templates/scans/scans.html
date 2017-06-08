@@ -9,6 +9,9 @@
         <pre style="color:white">
 
 
+
+
+
                      ..,,;;;;;;,,,,
                .,;'';;,..,;;;,,,,,.''';;,..
             ,,''                    '';;;;,;''
@@ -24,7 +27,9 @@
         </pre>
     </div>
 
-    <div id="filters">
+    <form class="scan_search" action="/scans/" method="post">{% csrf_token %}
+
+        <div id="filters">
         <h3>Information to include:</h3>
         <input type="checkbox" name="checks" id="ipv4_address" value="ipv4_address" checked/>
         <label for="ipv4_address">IPv4 Address</label>
@@ -32,11 +37,17 @@
         <input type="checkbox" name="checks" id="host_name" value="host_name" checked/>
         <label for="host_name">Host Name</label>
 
+        <input type="checkbox" name="checks" id="ports" value="ports" checked/>
+        <label for="ports">Open Ports</label>
+
         <input type="checkbox" name="checks" id="os" value="os" checked/>
         <label for="os">OS</label>
 
         <input type="checkbox" name="checks" id="lsp" value="lsp" checked/>
         <label for="lsp">LSP</label>
+
+        <input type="checkbox" name="checks" id="host_groups" value="host_groups" checked/>
+        <label for="host_groups">Host Groups</label>
 
         <input type="checkbox" name="checks" id="location" value="location" checked/>
         <label for="location">Location</label>
@@ -44,31 +55,117 @@
         <input type="checkbox" name="checks" id="tags" value="tags" checked/>
         <label for="tags">Tags</label>
 
-        <input type="checkbox" name="checks" id="host_groups" value="host_groups" checked/>
-        <label for="host_groups">Host Groups</label>
-
         <input type="checkbox" name="checks" id="notes" value="notes" checked/>
         <label for="notes">Notes</label>
 
-        <input type="checkbox" name="checks" id="ports" value="ports" checked/>
-        <label for="ports">Ports</label>
-    </div>
-    <div id="search">
-        <h3>Search By: (Leave blank for everything)</h3>
-        IPv4 Address: <input type="text">
-        Host Name: <input type="text">
-        OS: <input type="text"><br><br>
-        LSP: <input type="text">
-        Tags: <input type="text">
-        Host Groups: <input type="text"><br><br>
-        Notes: <input type="text">
-        Ports: <input type="text">
-    </div>
-    <br><br>
-    <div id="generate">
-        <input type="submit" value="Generate" />
-    </div>
+        </div>
 
+        <div id="search">
+        <h3>Filter By:</h3>
+
+            <table>
+                <tr>
+                    <td class="td-content-scans">{{ form.ipv4_address.errors }} {{ form.ipv4_address.label_tag }} {{ form.ipv4_address}}</td>
+                    <td class="td-content-scans">{{ form.host_name.errors }} {{ form.host_name.label_tag }} {{ form.host_name}}</td>
+                    <td class="td-content-scans">{{ form.ports.errors }} {{ form.ports.label_tag }} {{ form.ports}}</td>
+
+                </tr>
+                <tr>
+                    <td class="td-content-scans">{{ form.os.errors }} {{ form.os.label_tag }} {{ form.os}}</td>
+                    <td class="td-content-scans">{{ form.lsp.errors }} {{ form.lsp.label_tag }} {{ form.lsp}}</td>
+                    <td class="td-content-scans">{{ form.host_groups.errors }} {{ form.host_groups.label_tag }} {{ form.host_groups}}</td>
+                </tr>
+                <tr>
+                    <td class="td-content-scans">{{ form.location.errors }} {{ form.location.label_tag }} {{ form.location}}</td>
+                    <td class="td-content-scans">{{ form.tags.errors }} {{ form.tags.label_tag }} {{ form.tags}}</td>
+                    <td class="td-content-scans">{{ form.notes.errors }} {{ form.notes.label_tag }} {{ form.notes}}</td>
+                </tr>
+
+                <tr>
+                    <td class="td-content-scans-btn"><input type="submit" value="Generate" /></td>
+                </tr>
+            </table>
+            </div>
+        </form>
+
+    <br><br>
+    {% if host_list %}
+    <form class="scan_export" action="/scans/export" method="post">{% csrf_token %}
+    <table>
+    <tr>
+    <td class="td-content-scans-btn"><input type="submit" value="Export" /></td> <td><b><i><-- Does not work yet.</i></b></td>
+    </tr>
+        <tr>
+            {% if 'ipv4_address' in checks %}
+            <td class="td-content">IPv4</td>
+            {% endif %}
+            {% if 'host_name' in checks %}
+            <td class="td-content">Host Name</td>
+            {% endif %}
+            {% if 'ports' in checks %}
+            <td class="td-content">Ports</td>
+            {% endif %}
+            {% if 'os' in checks %}
+            <td class="td-content">OS</td>
+            {% endif %}
+            {% if 'lsp' in checks %}
+            <td class="td-content">LSP</td>
+            {% endif %}
+            {% if 'host_groups' in checks %}
+            <td class="td-content">Host Groups</td>
+            {% endif %}
+            {% if 'location' in checks %}
+            <td class="td-content">Location</td>
+            {% endif %}
+            {% if 'tags' in checks %}
+            <td class="td-content">Tags</td>
+            {% endif %}
+            {% if 'notes' in checks %}
+            <td class="td-content">Notes</td>
+            {% endif %}
+      </tr>
+      {% if checks %}
+        {% for host in host_list %}
+        <tr>
+            {% if 'ipv4_address' in checks %}
+            <td class="td-content">{{host.ipv4_address}}</td>
+            {% endif %}
+            {% if 'host_name' in checks %}
+            <td class="td-content">{{host.host_name}}</td>
+            {% endif %}
+            {% if 'ports' in checks %}
+            <td class="td-content">
+            {{open_ports.host.ipv4_address}}
+            {{host.ports}}
+            </td>
+            {% endif %}
+            {% if 'os' in checks %}
+            <td class="td-content">{{host.os}}</td>
+            {% endif %}
+            {% if 'lsp' in checks %}
+            <td class="td-content">{{host.lsp}}</td>
+            {% endif %}
+            {% if 'host_groups' in checks %}
+            <td class="td-content">{{host.host_groups}}</td>
+            {% endif %}
+            {% if 'location' in checks %}
+            <td class="td-content">{{host.location}}</td>
+            {% endif %}
+            {% if 'tags' in checks %}
+            <td class="td-content">{{host.tags}}</td>
+            {% endif %}
+            {% if 'notes' in checks %}
+            <td class="td-content">{{host.notes}}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    {% endif %}
+        <tr>
+        <td class="td-content-scans-btn"><input type="submit" value="Export" /></td>
+    </tr>
+    </table>
+</form>
+    {% endif %}
 
 </div>
 {% endblock %}

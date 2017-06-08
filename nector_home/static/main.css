@@ -120,6 +120,17 @@ table {
     text-align: center;
 }
 
+.td-content-scans {
+    border: 1px solid white;
+    padding:8px;
+    text-align: right;
+}
+
+.td-content-scans-btn {
+    padding:10px;
+    text-align: left;
+}
+
 .p-left {
     text-align: left;
     padding: 4px;
