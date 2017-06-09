@@ -12,6 +12,7 @@
 
 
 
+
                      ..,,;;;;;;,,,,
                .,;'';;,..,;;;,,,,,.''';;,..
             ,,''                    '';;;;,;''
@@ -31,32 +32,80 @@
 
         <div id="filters">
         <h3>Information to include:</h3>
+
+        {% if 'ipv4_address' in checks %}
         <input type="checkbox" name="checks" id="ipv4_address" value="ipv4_address" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="ipv4_address" value="ipv4_address"/>
+        {% endif %}
         <label for="ipv4_address">IPv4 Address</label>
 
+        {% if 'host_name' in checks %}
         <input type="checkbox" name="checks" id="host_name" value="host_name" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="host_name" value="host_name"/>
+        {% endif %}
         <label for="host_name">Host Name</label>
 
+        {% if 'ports' in checks %}
         <input type="checkbox" name="checks" id="ports" value="ports" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="ports" value="ports"/>
+        {% endif %}
         <label for="ports">Open Ports</label>
 
+        {% if 'os' in checks %}
         <input type="checkbox" name="checks" id="os" value="os" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="os" value="os"/>
+        {% endif %}
         <label for="os">OS</label>
 
+        {% if 'lsp' in checks %}
         <input type="checkbox" name="checks" id="lsp" value="lsp" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="lsp" value="lsp"/>
+        {% endif %}
         <label for="lsp">LSP</label>
 
+        {% if 'host_groups' in checks %}
         <input type="checkbox" name="checks" id="host_groups" value="host_groups" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="host_groups" value="host_groups"/>
+        {% endif %}
         <label for="host_groups">Host Groups</label>
 
+        {% if 'location' in checks %}
         <input type="checkbox" name="checks" id="location" value="location" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="location" value="location"/>
+        {% endif %}
         <label for="location">Location</label>
 
+        {% if 'tags' in checks %}
         <input type="checkbox" name="checks" id="tags" value="tags" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="tags" value="tags"/>
+        {% endif %}
         <label for="tags">Tags</label>
 
+        {% if 'notes' in checks %}
         <input type="checkbox" name="checks" id="notes" value="notes" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="notes" value="notes"/>
+        {% endif %}
         <label for="notes">Notes</label>
+
+        <br><br>
+
+        <input type="radio" name="rad" id="online" value="online" checked/>
+        <label for="online">Online-Only</label>
+
+        <input type="radio" name="rad" id="offline" value="offline"/>
+        <label for="offline">Offline-Only</label>
+
+        <input type="radio" name="rad" id="all" value="all"/>
+        <label for="all">All Hosts</label>
 
         </div>
 
@@ -90,10 +139,10 @@
 
     <br><br>
     {% if host_list %}
-    <form class="scan_export" action="/scans/export" method="post">{% csrf_token %}
+    <form class="scan_export" action="/scans/export/" method="post">{% csrf_token %}
     <table>
     <tr>
-    <td class="td-content-scans-btn"><input type="submit" value="Export" /></td> <td><b><i><-- Does not work yet.</i></b></td>
+    <td class="td-content-scans-btn"><input type="submit" value="Export" /></td>
     </tr>
         <tr>
             {% if 'ipv4_address' in checks %}
@@ -125,37 +174,77 @@
             {% endif %}
       </tr>
       {% if checks %}
-        {% for host in host_list %}
+        {% for host, subnet in host_data %}
         <tr>
             {% if 'ipv4_address' in checks %}
-            <td class="td-content">{{host.ipv4_address}}</td>
+                <td class="td-content"><a href="/hosts/{{ subnet.id }}/host/{{ host.id }}">
+                    {{host.ipv4_address}}
+                    <input type="hidden" name="scan-ipv4_address" value={{host.ipv4_address}}>
+                </a></td>
+            {% else %}
+                <input type="hidden" name="scan-ipv4_address" value="">
             {% endif %}
+
             {% if 'host_name' in checks %}
-            <td class="td-content">{{host.host_name}}</td>
+                <td class="td-content">{{host.host_name}}</td>
+                <input type="hidden" name="scan-host_name" value={{host.host_name}}>
+            {% else %}
+                <input type="hidden" name="scan-host_name" value="">
             {% endif %}
+
             {% if 'ports' in checks %}
-            <td class="td-content">
-            {{open_ports.host.ipv4_address}}
-            {{host.ports}}
-            </td>
+                <td class="td-content">
+                {% for tuple in open_ports.items %}
+                    {% if tuple.0 == host.ipv4_address %}
+                        {{tuple.1}}
+                        <input type="hidden" name="scan-open_ports" value="{{tuple.1}}">
+                    {% endif %}
+                {% endfor %}
+                </td>
+            {% else %}
+                <input type="hidden" name="scan-open_ports" value="">
             {% endif %}
+
             {% if 'os' in checks %}
-            <td class="td-content">{{host.os}}</td>
+                <td class="td-content">{{host.os}}</td>
+                <input type="hidden" name="scan-os" value={{host.os}}>
+            {% else %}
+                <input type="hidden" name="scan-os" value="">
             {% endif %}
+
             {% if 'lsp' in checks %}
-            <td class="td-content">{{host.lsp}}</td>
+                <td class="td-content">{{host.lsp}}</td>
+                <input type="hidden" name="scan-lsp" value={{host.lsp}}>
+            {% else %}
+                <input type="hidden" name="scan-lsp" value="">
             {% endif %}
+
             {% if 'host_groups' in checks %}
-            <td class="td-content">{{host.host_groups}}</td>
+                <td class="td-content">{{host.host_groups}}</td>
+                <input type="hidden" name="scan-host_groups" value={{host.host_groups}}>
+            {% else %}
+                <input type="hidden" name="scan-host_groups" value="">
             {% endif %}
+
             {% if 'location' in checks %}
-            <td class="td-content">{{host.location}}</td>
+                <td class="td-content">{{host.location}}</td>
+                <input type="hidden" name="scan-location" value={{host.location}}>
+            {% else %}
+                <input type="hidden" name="scan-location" value="">
             {% endif %}
+
             {% if 'tags' in checks %}
-            <td class="td-content">{{host.tags}}</td>
+                <td class="td-content">{{host.tags}}</td>
+                <input type="hidden" name="scan-tags" value={{host.tags}}>
+            {% else %}
+                <input type="hidden" name="scan-tags" value="">
             {% endif %}
+
             {% if 'notes' in checks %}
-            <td class="td-content">{{host.notes}}</td>
+                <td class="td-content">{{host.notes}}</td>
+                <input type="hidden" name="scan-notes" value={{host.notes}}>
+            {% else %}
+                <input type="hidden" name="scan-notes" value="">
             {% endif %}
         </tr>
         {% endfor %}
