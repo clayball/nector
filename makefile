@@ -18,10 +18,10 @@ run :
 
 
 demo :
-	cp -i sample-hosts.xml hosts.xml
-	cp -i sample-subnets.txt subnets.txt
-	cp -i sample-vulnlist.csv vulnlist.csv
-	cp -i sample-events.csv events.csv
+	cp -i sample-data/sample-hosts.xml hosts.xml
+	cp -i sample-data/sample-subnets.txt subnets.txt
+	cp -i sample-data/sample-vulnlist.csv vulnlist.csv
+	cp -i sample-data/sample-events.csv events.csv
 	python manage.py migrate
 	python import-data.py
 	python import-ports.py
