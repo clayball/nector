@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #'hosts.apps.HostsConfig',
+    'accounts',
     'hosts',
     'nector_home',
     'hibp',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'events',
     'blacklist',
     'censys',
+    'scans',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -99,6 +101,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',

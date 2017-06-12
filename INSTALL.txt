@@ -76,14 +76,19 @@ needs:
 - sample-censys-keys.csv
 	- Censys API Key & Secret Key.
 	- Note: Keys can be obtained by making an account here: https://censys.io/
+- port-scans/sample-port-22-open-170502.csv
+	- Collection of hosts with port 22 open.
+	- Note: Create new files for each port, following the same format.
+	- Note: The filename is important, as NECTOR uses the date at the end.
 
-Next, rename the five files to:
+Next, rename the six files to:
 
 - hosts.xml
 - subnets.txt
 - vulnlist.csv
 - events.csv
 - censys.csv
+- port-22-open-170502.csv
 
 
 Running NECTOR
