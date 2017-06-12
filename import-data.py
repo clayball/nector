@@ -4,25 +4,28 @@
 Purpose
 =======
 
-Uses provided Subnets, Hosts, Vulnerabilities, Events, & Censys keys
-to populate a database which is queried throughout NECTOR.
+Uses provided Subnets, Hosts, Vulnerabilities, Events data to populate the
+Nector database.
+
 
 Prerequisites
 =============
 
-hosts.xml, subnets.txt, vulnlist.csv, events.csv, & censys-keys.csv must
-exist in the current directory, contain desired information, and be
-formatted properly.
+hosts.xml, subnets.txt, vulnlist.csv, and events.csv must exist in the current
+directory, contain desired information, and be formatted properly.
 
-Sample data files: sample_hosts.xml, sample_subnets.txt, sample-vulnlist.csv,
-sample-events.csv, & sample-censys-keys.csv.
+Sample data files: 
+- sample_hosts.xml
+- sample_subnets.txt
+- sample-vulnlist.csv
+- sample-events.csv
+
 
 Postconditions
 ==============
 
-db.sqlite3 will be populated with Hosts, Subnets, Vulnerabilities, Events,
-and Censys Keys specified in hosts.xml, subnets.txt, vulnlist.csv, events.csv,
-& censys-keys.csv
+The database will be populated with Hosts, Subnets, Vulnerabilities, and Events
+specified in hosts.xml, subnets.txt, vulnlist.csv, and events.csv.
 '''
 
 # Import necessary libraries.
@@ -33,6 +36,7 @@ from optparse import OptionParser # Used for getting args
 import csv # Used for parsing vulnlist.csv, events.csv, & censys-keys.csv
 from django.db import transaction # Used in optimization of runtime.
 from django.db import IntegrityError
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nector.settings")
 django.setup()
 
@@ -49,7 +53,6 @@ host_file_name = 'hosts.xml'
 subnet_file_name = 'subnets.txt'
 vulnerability_file_name = 'vulnlist.csv'
 events_file_name = 'events.csv'
-censys_file_name = 'censys-keys.csv'
 
 # Open files
 host_file = open(host_file_name, 'r')
@@ -58,8 +61,6 @@ vulnerability_file = open(vulnerability_file_name, 'r')
 vulnerability_csv = csv.reader(vulnerability_file)
 events_file = open(events_file_name, 'r')
 events_csv = csv.reader(events_file)
-censys_file = open(censys_file_name, 'r')
-censys_csv = csv.reader(censys_file)
 
 # Get & Set Options / Args
 parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
@@ -183,38 +184,15 @@ def populate_events():
     if verbose:
         print '\nEvents: Done!\n====================\n'
 
-# Adds Censys keys to db.sqlite3
-def populate_censys():
-    # Allow changes to be made to db after nested blocks have been
-    # completed.
-    with transaction.atomic():
-        next(censys_csv) # Skip first entry of the csv file, a header.
-        for row in censys_csv:
-            a = Account(api_key=row[0], secret=row[1])
-            # Save Account to db (won't actually happen until
-            #  'with transaction.atomic()' is completed):
-            try:
-                a.save()
-            except:
-                # Duplicate entry, so do nothing.
-                if verbose:
-                    print 'Unique Error: Duplicate event ' + row[0]
-                else:
-                    pass
-    if verbose:
-        print '\nCensys Account: Done!\n====================\n'
-
 
 # Call funcitons.
 populate_hosts()
 populate_subnets()
 populate_vulnerabilities()
 populate_events()
-populate_censys()
 
 # Close files.
 host_file.close()
 subnet_file.close()
 vulnerability_file.close()
 events_file.close()
-censys_file.close()

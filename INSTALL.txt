@@ -73,9 +73,6 @@ needs:
 	- Collection of vulnerabilities related to hosts.
 - sample-events.csv
 	- Collection of events.
-- sample-censys-keys.csv
-	- Censys API Key & Secret Key.
-	- Note: Keys can be obtained by making an account here: https://censys.io/
 
 Next, rename the five files to:
 
@@ -83,7 +80,6 @@ Next, rename the five files to:
 - subnets.txt
 - vulnlist.csv
 - events.csv
-- censys.csv
 
 
 Running NECTOR
