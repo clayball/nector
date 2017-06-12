@@ -1,0 +1,24 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+
+<center>
+<h2>Register</h2>
+<form action="/accounts/register/" method="post">{% csrf_token %}
+    <br>
+    {{form.username.label_tag}} {{form.username}}<br><br>
+    {{form.password1.label_tag}} {{form.password1}}<br><br>
+    {{form.password2.label_tag}} {{form.password2}}<br><br>
+    <br><br>
+    <b>Note</b>: For security reasons, please ensure your password adheres to the following guidelines:
+    <ol>
+        <li>Bears no resemblance to username.</li>
+        <li>Is at least 8 characters long.</li>
+        <li>Is not a common word.</li>
+        <li>Is not entirely numeric.</li>
+    </ol>
+    <input type="submit" value="Register" />
+</form>
+</center>
+
+{% endblock %}

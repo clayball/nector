@@ -9,9 +9,11 @@
 {% for subnet in subnet_list %}
     <td class="td-content"><a href="/hosts/{{ subnet.id }}/">{{ subnet.ipv4_address }}/{{ subnet.prefix }}</a></td>
     {% if forloop.counter|divisibleby:6 %}
+</tr>
 <tr>
     {% endif %}
 {% endfor %}
+</tr>
 </table>
 {% else %}
     <p>No hosts are available.</p>

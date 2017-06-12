@@ -20,12 +20,16 @@ from nector_home import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
-    url(r'^hosts/', include('hosts.urls')),
-    url(r'^osint/', views.osint, name='osint'),
-    url(r'^hibp/', include('hibp.urls')),
+    url(r'^accounts/', include('accounts.urls')),
+    url(r'^blacklist/', include('blacklist.urls')),
     url(r'^censys/', include('censys.urls')),
     url(r'^detection/', views.detection, name='detection'),
-    url(r'^vulnz/', include('vulnerabilities.urls')),
-    url(r'^blacklist/', include('blacklist.urls')),
     url(r'^events/', include('events.urls')),
+    url(r'^hibp/', include('hibp.urls')),
+    url(r'^hosts/', include('hosts.urls')),
+    url(r'^osint/', views.osint, name='osint'),
+    url(r'^reports/', views.reports, name='reports'),
+    url(r'^scans/', include('scans.urls')),
+    url(r'^vulnz/', include('vulnerabilities.urls')),
+
 ]

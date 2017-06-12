@@ -73,13 +73,18 @@ needs:
 	- Collection of vulnerabilities related to hosts.
 - sample-events.csv
 	- Collection of events.
+- port-scans/sample-port-22-open-170502.csv
+	- Collection of hosts with port 22 open.
+	- Note: Create new files for each port, following the same format.
+	- Note: The filename is important, as NECTOR uses the date at the end.
 
-Next, rename the five files to:
+Next, rename the six files to:
 
 - hosts.xml
 - subnets.txt
 - vulnlist.csv
 - events.csv
+- port-22-open-170502.csv
 
 
 Running NECTOR

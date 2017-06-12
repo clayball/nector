@@ -1,0 +1,15 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+    <h2>Host Information</h2>
+
+    <a href="/hosts/"><input type="button" value="Cancel" /></a><br><br>
+    <form action="/hosts/edit/" method="post">{% csrf_token %}
+        <ul>
+            {{form.as_ul}}
+        </ul>
+        <input type="submit" name="submit" value="Save Host">
+    </form>
+</div>
+{% endblock %}

@@ -11,3 +11,6 @@ def osint(request):
 
 def detection(request):
     return render(request, 'nector_home/detection.html')
+
+def reports(request):
+    return render(request, 'nector_home/reports.html')
