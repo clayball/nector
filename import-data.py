@@ -14,7 +14,7 @@ Prerequisites
 hosts.xml, subnets.txt, vulnlist.csv, and events.csv must exist in the current
 directory, contain desired information, and be formatted properly.
 
-Sample data files: 
+Sample data files stored in sample-data/ 
 - sample_hosts.xml
 - sample_subnets.txt
 - sample-vulnlist.csv
