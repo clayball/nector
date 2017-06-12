@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'vulnerabilities',
     'events',
     'blacklist',
-    'censys',
 ]
 
 MIDDLEWARE_CLASSES = [
