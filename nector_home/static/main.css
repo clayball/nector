@@ -126,9 +126,14 @@ table {
     text-align: right;
 }
 
-.td-content-scans-btn {
+.td-content-scans-btn-generate {
     padding:10px;
     text-align: left;
+}
+
+.td-content-scans-btn-export {
+    padding:10px;
+    text-align: right;
 }
 
 .p-left {

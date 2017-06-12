@@ -27,6 +27,9 @@ def index(request):
     so display a table of the query made.
     Otherwise, just display the form.
     '''
+    exporting = False
+    if request.POST.get("export"):
+        exporting = True
     if request.method == "POST":
         form = ScansForm(request.POST)
         if form.is_valid():
@@ -39,6 +42,8 @@ def index(request):
             context['host_data'] = zip(context['host_list'], context['subnet_list'])
             context.update(csrf(request))
             context['form'] = form
+            if exporting:
+                return export(request, context)
             return render_to_response('scans/scans.html', context)
     context = {}
     context.update(csrf(request))
@@ -103,9 +108,9 @@ def process_query(form, checks, rad):
 
     # Did we select Online-Only or Offline-Only or All Hosts?
     if 'online' in rad:
-        host_list = host_list.exclude(notes='Offline')
+        host_list = host_list.exclude(notes__icontains='Offline')
     elif 'offline' in rad:
-        host_list = host_list.exclude(notes='Online')
+        host_list = host_list.filter(notes__icontains='Offline')
 
     return host_list
 
@@ -157,36 +162,108 @@ def get_subnet_list(host_list):
 
 
 class Echo(object):
-    """An object that implements just the write method of the file-like
+    '''
+    An object that implements just the write method of the file-like
     interface.
-    """
+    '''
     def write(self, value):
-        """Write the value by returning it, instead of storing in a buffer."""
+        '''Write the value by returning it, instead of storing in a buffer.'''
         return value
 
-def export(request):
-    response = ''
-    if request.method == "POST":
-        ipv4_addresses = request.POST.getlist('scan-ipv4_address')
-        host_names = request.POST.getlist('scan-host_name')
-        open_ports = request.POST.getlist('scan-open_ports')
-        oses = request.POST.getlist('scan-os')
-        lsps = request.POST.getlist('scan-lsp')
-        host_groups = request.POST.getlist('scan-host_groups')
-        locations = request.POST.getlist('scan-location')
-        tags = request.POST.getlist('scan-tags')
-        notes = request.POST.getlist('scan-notes')
-        host_data = zip(ipv4_addresses, host_names, open_ports, oses, lsps,
-                        host_groups, locations, tags, notes)
-        output = []
-        #pseudo_buffer = Echo() #new
-        #writer = csv.writer(pseudo_buffer) #new
-        response = HttpResponse(content_type='text/csv')
-        writer = csv.writer(response)
-        writer.writerow(['ip', 'name', 'port', 'os', 'lsp', 'group', 'loc', 'tag', 'note'])
-        for ip, name, port, os, lsp, group, loc, tag, note in host_data:
-            output.append([ip, name, port, os, lsp, group, loc, tag, note])
-        #response = StreamingHttpResponse(writer.writerows(output), content_type="text/csv") #new
-        writer.writerows(output)
-        #response['Content-Disposition'] = 'attachment; filename="export.csv"' #new
+def export(request, context):
+    '''
+    Looks at what info the user wants exported, and parses that out of
+    'context'.
+    Returns a response that creates a popup on the page asking the user
+    to download a CSV file.
+    Uses the Echo class (above) as a means of storing data in a buffer.
+    '''
+
+    existing_header_columns = []
+
+    # Bools to keep track of what was selected.
+    # Will be used for determining what gets outputted to csv file.
+    sel_ip = sel_name = sel_ports = sel_os = sel_lsp = sel_groups \
+    = sel_location = sel_tags = sel_notes = False
+
+    if 'ipv4_address' in context['checks']:
+        existing_header_columns.append('IPv4')
+        sel_ip = True
+    if 'host_name' in context['checks']:
+        existing_header_columns.append('Name')
+        sel_name = True
+    if 'ports' in context['checks']:
+        existing_header_columns.append('Ports')
+        sel_ports = True
+    if 'os' in context['checks']:
+        existing_header_columns.append('OS')
+        sel_os = True
+    if 'lsp' in context['checks']:
+        existing_header_columns.append('LSP')
+        sel_lsp = True
+    if 'host_groups' in context['checks']:
+        existing_header_columns.append('Host Groups')
+        sel_groups = True
+    if 'location' in context['checks']:
+        existing_header_columns.append('Location')
+        sel_location = True
+    if 'tags' in context['checks']:
+        existing_header_columns.append('Tags')
+        sel_tags = True
+    if 'notes' in context['checks']:
+        existing_header_columns.append('Notes')
+        sel_notes = True
+
+    ipv4_addresses = [host.ipv4_address for host in context['host_list']]
+    host_names = [host.host_name for host in context['host_list']]
+    open_ports = context['open_ports']
+    oses = [host.os for host in context['host_list']]
+    lsps = [host.lsp for host in context['host_list']]
+    host_groups = [host.host_groups for host in context['host_list']]
+    locations = [host.location for host in context['host_list']]
+    tags = [host.tags for host in context['host_list']]
+    notes = [host.notes for host in context['host_list']]
+
+    host_data = zip(ipv4_addresses, host_names, oses, lsps,
+                    host_groups, locations, tags, notes)
+
+    # NOTE: Lines with #new utilize a buffer and a stream.
+    #       They're great for dealing with large CSV files.
+    #       Lines with #old just write lines one-by-one into the file.
+
+    pseudo_buffer = Echo() #new
+    writer = csv.writer(pseudo_buffer) #new
+    #response = HttpResponse(content_type='text/csv') #old
+    #writer = csv.writer(response) #old
+    output = []
+    output.append(existing_header_columns)
+
+    for ip, name, os, lsp, group, loc, tag, note in host_data:
+        tmp = []
+        if sel_ip:
+            tmp.append(ip)
+        if sel_name:
+            tmp.append(name)
+        if sel_ports:
+            if ip in open_ports:
+                tmp.append(open_ports[ip])
+            else:
+                tmp.append('')
+        if sel_os:
+            tmp.append(os)
+        if sel_lsp:
+            tmp.append(lsp)
+        if sel_groups:
+            tmp.append(group)
+        if sel_location:
+            tmp.append(loc)
+        if sel_tags:
+            tmp.append(tag)
+        if sel_notes:
+            tmp.append(note)
+        output.append(tmp)
+    response = StreamingHttpResponse((writer.writerow(row) for row in output),
+                                        content_type="text/csv") #new
+    #writer.writerows(output) #old
+    response['Content-Disposition'] = 'attachment; filename="export.csv"' #new
     return response

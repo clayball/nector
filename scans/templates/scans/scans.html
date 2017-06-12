@@ -98,13 +98,25 @@
 
         <br><br>
 
+        {% if 'online' in rad or not rad %}
         <input type="radio" name="rad" id="online" value="online" checked/>
+        {% else %}
+        <input type="radio" name="rad" id="online" value="online"/>
+        {% endif %}
         <label for="online">Online-Only</label>
 
+        {% if 'offline' in rad %}
+        <input type="radio" name="rad" id="offline" value="offline" checked/>
+        {% else %}
         <input type="radio" name="rad" id="offline" value="offline"/>
+        {% endif %}
         <label for="offline">Offline-Only</label>
 
+        {% if 'all' in rad %}
+        <input type="radio" name="rad" id="all" value="all" checked/>
+        {% else %}
         <input type="radio" name="rad" id="all" value="all"/>
+        {% endif %}
         <label for="all">All Hosts</label>
 
         </div>
@@ -131,7 +143,9 @@
                 </tr>
 
                 <tr>
-                    <td class="td-content-scans-btn"><input type="submit" value="Generate" /></td>
+                    <td class="td-content-scans-btn-generate"><input name="generate" type="submit" value="Generate" /></td>
+                    <td></td>
+                    <td class="td-content-scans-btn-export"><input name="export" type="submit" value="Export" /></td>
                 </tr>
             </table>
             </div>
@@ -139,11 +153,7 @@
 
     <br><br>
     {% if host_list %}
-    <form class="scan_export" action="/scans/export/" method="post">{% csrf_token %}
     <table>
-    <tr>
-    <td class="td-content-scans-btn"><input type="submit" value="Export" /></td>
-    </tr>
         <tr>
             {% if 'ipv4_address' in checks %}
             <td class="td-content">IPv4</td>
@@ -249,12 +259,8 @@
         </tr>
         {% endfor %}
     {% endif %}
-        <tr>
-        <td class="td-content-scans-btn"><input type="submit" value="Export" /></td>
-    </tr>
     </table>
-</form>
-    {% endif %}
+{% endif %}
 
 </div>
 {% endblock %}
