@@ -96,6 +96,13 @@
         {% endif %}
         <label for="notes">Notes</label>
 
+        {% if 'status' in checks %}
+        <input type="checkbox" name="checks" id="status" value="status" checked/>
+        {% else %}
+        <input type="checkbox" name="checks" id="status" value="status"/>
+        {% endif %}
+        <label for="notes">Status</label>
+
         <br><br>
 
         {% if 'online' in rad or not rad %}
@@ -182,6 +189,9 @@
             {% if 'notes' in checks %}
             <td class="td-content">Notes</td>
             {% endif %}
+            {% if 'status' in checks %}
+            <td class="td-content">Status</td>
+            {% endif %}
       </tr>
       {% if checks %}
         {% for host, subnet in host_data %}
@@ -256,6 +266,16 @@
             {% else %}
                 <input type="hidden" name="scan-notes" value="">
             {% endif %}
+
+            {% if 'status' in checks %}
+                <td class="td-content">
+                    {{host.status}}
+                    <input type="hidden" name="scan-status" value={{host.status}}>
+                </td>
+            {% else %}
+                <input type="hidden" name="scan-status" value="">
+            {% endif %}
+
         </tr>
         {% endfor %}
     {% endif %}

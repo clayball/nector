@@ -28,15 +28,15 @@
     <ul>
     {% for host in host_list %}
         {% if limit == 'online' %}
-          {% if host.host_name %}
+          {% if host.status == 'Online' %}
           <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}, {{ host.host_name }}</a></li>
           {% endif %}
         {% elif limit == 'offline' %}
-          {% if not host.host_name %}
+          {% if host.status == 'Offline' %}
           <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></li>
           {% endif %}
         {% elif limit == 'all' %}
-          {% if host.host_name %}
+          {% if host.status == 'Online' %}
             <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}, {{ host.host_name }}</a></li>
           {% else %}
             <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></li>

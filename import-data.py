@@ -14,7 +14,7 @@ Prerequisites
 hosts.xml, subnets.txt, vulnlist.csv, and events.csv must exist in the current
 directory, contain desired information, and be formatted properly.
 
-Sample data files stored in sample-data/ 
+Sample data files stored in sample-data/
 - sample_hosts.xml
 - sample_subnets.txt
 - sample-vulnlist.csv
@@ -45,7 +45,6 @@ from hosts.models import Subnet
 from hosts.models import Host
 from vulnerabilities.models import Vulnerability
 from events.models import Event
-from censys.models import Account
 
 # Get names of files containing Host, Subnet, Vulnerability, Events, & censys
 # data that we want to import.
@@ -69,6 +68,7 @@ parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
 (options, args) = parser.parse_args()
 verbose = options.verbose
 
+
 # Adds Hosts to db.sqlite3
 def populate_hosts():
     # Allow changes to be made to db after nested blocks have been
@@ -82,7 +82,7 @@ def populate_hosts():
                 lsplit = l.split(' ')
                 ipv4 = lsplit[5].strip('()')
                 hostname = lsplit[4].strip()
-                h = Host(ipv4_address=ipv4, host_name=hostname)
+                h = Host(ipv4_address=ipv4, host_name=hostname, status="Online")
                 # Save Host to db (won't actually happen until
                 #  'with transaction.atomic()' is completed):
                 try:
@@ -98,7 +98,7 @@ def populate_hosts():
                 # Host has no hostname, therefore it's down.
                 # '#' indicates last line of Nmap scan.
                 ipv4 = l.split(' ')[4]
-                h = Host(ipv4_address=ipv4, notes="Offline")
+                h = Host(ipv4_address=ipv4, status="Offline")
                 try:
                     h.save()
                 except:
@@ -110,6 +110,7 @@ def populate_hosts():
                         pass
     if verbose:
         print '\nHosts: Done!\n====================\n'
+
 
 # Adds Subnets to db.sqlite3
 def populate_subnets():
@@ -133,7 +134,6 @@ def populate_subnets():
                     pass
     if verbose:
         print '\nSubnets: Done!\n====================\n'
-
 
 
 # Adds Vulnerabilities to db.sqlite3
