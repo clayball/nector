@@ -15,6 +15,7 @@ class Host(models.Model):
     host_groups = models.CharField(max_length=125, default='')
     notes = models.CharField(max_length=320, default='')
     ports = models.TextField(default='')
+    status = models.CharField(max_length=120, default='')
 
     def __str__(self):
         return "%s, %s" % (self.ipv4_address, self.host_name)

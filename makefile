@@ -22,6 +22,7 @@ demo :
 	cp -i sample-data/sample-subnets.txt subnets.txt
 	cp -i sample-data/sample-vulnlist.csv vulnlist.csv
 	cp -i sample-data/sample-events.csv events.csv
+	python manage.py makemigrations
 	python manage.py migrate
 	python import-data.py
 	python import-ports.py

@@ -12,3 +12,4 @@ reports.csv
 events.csv
 censys-keys.csv
 port-scans/*
+hosts/migrations/*

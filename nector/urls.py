@@ -22,7 +22,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^blacklist/', include('blacklist.urls')),
-    url(r'^censys/', include('censys.urls')),
     url(r'^detection/', views.detection, name='detection'),
     url(r'^events/', include('events.urls')),
     url(r'^hibp/', include('hibp.urls')),
