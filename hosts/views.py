@@ -59,38 +59,70 @@ def detail_host(request, subnet_id, host_id):
 
 
 def edit(request):
-    if request.POST:
-        form = HostForm(request.POST)
+    context = {}
+    if request.GET:
+        host_ip = request.GET.get('host')
+        host = get_object_or_404(Host, ipv4_address=host_ip)
+        str_ports = ""
+        if host.ports:
+            json_ports = json.loads(host.ports)
+            for p in json_ports:
+                str_ports += p + ', '
+        form = HostForm(instance=host, initial={'ports':str_ports})
+    elif request.POST:
+        host_ip = request.POST['ipv4_address']
+        host = get_object_or_404(Host, ipv4_address=host_ip)
+        form = HostForm(request.POST, instance=host)
         if form.is_valid():
             # Need to put ports into JSON format:
             if request.POST['ports']:
-                json_ports = ports_to_json(request.POST['ports'])
+                json_ports = ports_to_json_format(
+                                                  request.POST['ports'],
+                                                  request.POST['port_state'],
+                                                  request.POST['port_protocol'],
+                                                  request.POST['port_date']
+                                                  )
                 post = copy.deepcopy(request.POST)
                 post['ports'] = json_ports
-                form = HostForm(post)
-                print form
+                form = HostForm(post, instance=host)
             form.save()
             new_ip = request.POST['ipv4_address']
             return HttpResponseRedirect('/hosts/search/?input_ip=%s' % new_ip)
     else:
         form = HostForm()
-    context = {}
     context.update(csrf(request))
     context['form'] = form
     return render(request, 'hosts/edit_host.html', context)
 
 
-def ports_to_json(ports):
+def ports_to_json_format(ports, states, protos, dates):
     dict_ports = {}
-    ports = ports.split(',')
-    for p in ports:
-        p = p.strip()
+
+    ports  = ports.split(',')
+    states = states.split(',')
+    protos = protos.split(',')
+    dates  = dates.split(',')
+
+    print max(ports, states, protos, dates)
+
+    port_data = zip(ports, states, protos, dates)
+
+    for port, state, proto, date in port_data:
+
+        port  = port.strip()
+        state = state.strip()
+        proto = proto.strip()
+        date  = date.strip()
+
+        # TODO, make sure these lists are the same size.
+        # If any of them are too small, add empty strings as elements until they're equal.
+
         tmp_dict_ports = {}
         if dict_ports:
             tmp_dict_ports = json.loads(dict_ports)
-        tmp_dict_ports[p] = ['', '', ''] # status, proto, date last changed
+        tmp_dict_ports[port] = [state, proto, date] # status, proto, date last changed
         dict_ports = json.dumps(tmp_dict_ports)
-    print dict_ports
+
     return dict_ports
 
 

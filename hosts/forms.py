@@ -4,6 +4,13 @@ from django.utils.translation import ugettext_lazy as _
 
 class HostForm(forms.ModelForm):
 
+    port_state = forms.CharField(label='State(s)', required=False,
+                                 widget=forms.TextInput(attrs={'placeholder': 'open, closed'}))
+    port_protocol = forms.CharField(label='Protocol(s)', required=False,
+                                 widget=forms.TextInput(attrs={'placeholder': 'Apache2, Apache2'}))
+    port_date = forms.CharField(label='Date(s)', required=False,
+                                 widget=forms.TextInput(attrs={'placeholder': '170424, 170509'}))
+
     def __init__(self, *args, **kwargs):
         super(HostForm, self).__init__(*args, **kwargs)
         self.fields['ipv4_address'].required = True

@@ -9,7 +9,8 @@
         <table>
             <tr>
                 <td class="td-content-edit-hosts">
-                    {{ form.ipv4_address.errors }} {{ form.ipv4_address.label_tag }} {{ form.ipv4_address}}
+                    {{ form.ipv4_address.errors }} {{ form.ipv4_address.label_tag }}
+                     {{ form.ipv4_address }}
                 </td>
             </tr>
             <tr>
@@ -20,6 +21,15 @@
             <tr>
                 <td class="td-content-edit-hosts">
                     {{ form.ports.errors }} {{ form.ports.label_tag }} {{ form.ports}}
+                </td>
+                <td class="td-content-edit-hosts">
+                    {{ form.port_state.errors }} {{ form.port_state.label_tag }} {{ form.port_state }}
+                </td>
+                <td class="td-content-edit-hosts">
+                    {{ form.port_protocol.errors }} {{ form.port_protocol.label_tag }} {{ form.port_protocol }}
+                </td>
+                <td class="td-content-edit-hosts">
+                    {{ form.port_date.errors }} {{ form.port_date.label_tag }} {{ form.port_date }}
                 </td>
             </tr>
             <tr>
