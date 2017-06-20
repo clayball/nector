@@ -10,6 +10,8 @@ from vulnerabilities.models import Vulnerability
 from forms import HostForm
 
 import json
+import copy
+
 
 def index(request):
     subnet_list = Subnet.objects.all()
@@ -27,12 +29,14 @@ def index(request):
     context = {'subnet_list': sorted_subnet_set}
     return render(request, 'hosts/index.html', context)
 
+
 def detail(request, subnet_id):
     subnet = get_object_or_404(Subnet, pk=subnet_id)
     address = subnet.ipv4_address.rsplit('.', 1)
     host_list = Host.objects.filter(ipv4_address__startswith=address[0])
     context = {'host_list': host_list, 'subnet_id' : subnet_id, 'limit' : 'online'}
     return render(request, 'hosts/detail.html', context)
+
 
 def detail_host(request, subnet_id, host_id):
     host = get_object_or_404(Host, pk=host_id)
@@ -58,14 +62,36 @@ def edit(request):
     if request.POST:
         form = HostForm(request.POST)
         if form.is_valid():
+            # Need to put ports into JSON format:
+            if request.POST['ports']:
+                json_ports = ports_to_json(request.POST['ports'])
+                post = copy.deepcopy(request.POST)
+                post['ports'] = json_ports
+                form = HostForm(post)
+                print form
             form.save()
-            return render(request, 'hosts/index.html')
+            new_ip = request.POST['ipv4_address']
+            return HttpResponseRedirect('/hosts/search/?input_ip=%s' % new_ip)
     else:
         form = HostForm()
     context = {}
     context.update(csrf(request))
     context['form'] = form
     return render(request, 'hosts/edit_host.html', context)
+
+
+def ports_to_json(ports):
+    dict_ports = {}
+    ports = ports.split(',')
+    for p in ports:
+        p = p.strip()
+        tmp_dict_ports = {}
+        if dict_ports:
+            tmp_dict_ports = json.loads(dict_ports)
+        tmp_dict_ports[p] = ['', '', ''] # status, proto, date last changed
+        dict_ports = json.dumps(tmp_dict_ports)
+    print dict_ports
+    return dict_ports
 
 
 # Used for sorting hosts by dropdown menu.
@@ -88,6 +114,7 @@ def limit_hosts(request, subnet_id):
     except:
         return render(request, 'hosts/detail.html')
 
+
 # Extract IPv4 addresses from QuerySet of Host objects.
 def get_ip_list(queryset):
     unsorted_host_list = []
@@ -96,9 +123,11 @@ def get_ip_list(queryset):
         unsorted_host_list.append(ip)
     return unsorted_host_list
 
+
 # Return sorted list of IP addresses.
 def sort_ip_list(unsorted_host_list):
     return sorted(unsorted_host_list, key=lambda ip: long(''.join(["%02X" % long(i) for i in ip.split('.')]), 16))
+
 
 def search_host(request):
     try:
@@ -149,6 +178,7 @@ def search_host(request):
         ## Inputted IP not found in our db, so load page with no host.
         return render(request, 'hosts/detail_host.html')
 
+
 def is_subnet(query):
     if '/' in query:
         mask_split = query.split('/')
@@ -157,6 +187,7 @@ def is_subnet(query):
         try: return all(0<=int(p)<256 for p in bits)
         except ValueError: return False
     return False
+
 
 def is_ip(query):
     pieces = query.split('.')

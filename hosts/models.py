@@ -6,7 +6,7 @@ from django.db import models
 
 class Host(models.Model):
     """Model for individual hosts, consisting of an ip and a hostname"""
-    ipv4_address = models.GenericIPAddressField(protocol='ipv4', default='0.0.0.0', unique=True)
+    ipv4_address = models.GenericIPAddressField(protocol='ipv4', unique=True)
     host_name = models.CharField(max_length=80)
     os = models.CharField(max_length=50, default='')
     lsp = models.CharField(max_length=50, default='')

@@ -1,2 +1,0 @@
-host,port,state,info
-"104.108.168.140","80","open","Apache httpd 2.2.22 (Ubuntu)"

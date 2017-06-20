@@ -120,6 +120,18 @@ table {
     text-align: center;
 }
 
+.td-content-edit-hosts {
+    border: 1px solid white;
+    padding:8px;
+    text-align: right;
+}
+
+.td-content-edit-hosts-status {
+    border: 1px solid white;
+    padding:8px;
+    text-align: left;
+}
+
 .td-content-scans {
     border: 1px solid white;
     padding:8px;
