@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import loader
 from django.template.context_processors import csrf
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
 
 from .models import Host
 from .models import Subnet
@@ -106,6 +108,10 @@ def detail_host(request, subnet_id, host_id):
     return render(request, 'hosts/detail_host.html', context)
 
 
+@login_required
+# @permission_required permissions are being saved to host model -> Meta
+# consider making a separate permission for each lsp
+#@permission_required('hosts.edit_host', raise_exception=True)
 def edit(request):
     '''Edit a host's information.'''
 

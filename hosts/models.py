@@ -20,6 +20,11 @@ class Host(models.Model):
     def __str__(self):
         return "%s, %s" % (self.ipv4_address, self.host_name)
 
+    class Meta:
+        permissions = (
+            ("edit_host", "Can edit host information"),
+        )
+
 
 class Subnet(models.Model):
     """Model for subnets, consisting of an ip address and a network prefix"""

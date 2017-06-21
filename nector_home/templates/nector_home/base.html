@@ -32,9 +32,22 @@
 <!-- Header -->
 <div class="header">
 <form class="ip-textbox" action="/hosts/search/">
-<p class="search">Host/Subnet Address
+<p class="base_search">Host/Subnet Address
     <input id="input_ip" name="input_ip" type="text" placeholder="192.251.68.240" />
     <input id="btn_ip" type="submit" value="Search" />
+</p>
+
+<p class="base_login base_search">
+    {% if user.is_authenticated %}
+        Welcome, {{ user.username }}!
+        <a href="/accounts/logout">
+            <input id="btn_logout" name="btn_logout" type="button" value="Logout" />
+        </a>
+    {% else %}
+        <a href="/accounts/login">
+            <input id="btn_login" name="btn_login" type="button" value="Login" />
+        </a>
+    {% endif %}
 </p>
 </form>
 

@@ -87,9 +87,13 @@ a:hover {
     color: green;
 }
 
-.search {
+.base_search {
     color: white;
     margin-right: 10px;
+}
+
+.base_login {
+    float: right;
 }
 
 .header-table {
