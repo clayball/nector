@@ -5,11 +5,11 @@ from django.utils.translation import ugettext_lazy as _
 class HostForm(forms.ModelForm):
 
     port_state = forms.CharField(label='State(s)', required=False,
-                                 widget=forms.TextInput(attrs={'placeholder': 'open, closed'}))
+                                 widget=forms.TextInput(attrs={'placeholder': 'open, open, closed, open'}))
     port_protocol = forms.CharField(label='Protocol(s)', required=False,
-                                 widget=forms.TextInput(attrs={'placeholder': 'Apache2, Apache2'}))
+                                 widget=forms.TextInput(attrs={'placeholder': 'Apache2, Apache2, , OpenSSH'}))
     port_date = forms.CharField(label='Date(s)', required=False,
-                                 widget=forms.TextInput(attrs={'placeholder': '170424, 170509'}))
+                                 widget=forms.TextInput(attrs={'placeholder': '170424, 170509, , 170621'}))
 
     def __init__(self, *args, **kwargs):
         super(HostForm, self).__init__(*args, **kwargs)
@@ -45,6 +45,6 @@ class HostForm(forms.ModelForm):
         widgets = {
             'ipv4_address'  : forms.TextInput(attrs={'placeholder':'0.0.0.0'}),
             'host_name'     : forms.TextInput(attrs={'placeholder':'conficturaindustries.com'}),
-            'ports'         : forms.TextInput(attrs={'placeholder':'80, 443'}),
+            'ports'         : forms.TextInput(attrs={'placeholder':'80, 443, 445, 22'}),
             'status'        : forms.RadioSelect(choices=CHOICES),
         }

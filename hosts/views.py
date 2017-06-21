@@ -64,11 +64,23 @@ def edit(request):
         host_ip = request.GET.get('host')
         host = get_object_or_404(Host, ipv4_address=host_ip)
         str_ports = ""
+        state_ports = ""
+        proto_ports = ""
+        date_ports = ""
         if host.ports:
             json_ports = json.loads(host.ports)
             for p in json_ports:
-                str_ports += p + ', '
-        form = HostForm(instance=host, initial={'ports':str_ports})
+                if p:
+                    str_ports += p + ', '
+                    state_ports += json_ports[p][0] + ', '
+                    proto_ports += json_ports[p][1] + ', '
+                    date_ports += json_ports[p][2] + ', '
+        form = HostForm(instance=host, initial={
+                                                'ports':str_ports,
+                                                'port_state':state_ports,
+                                                'port_protocol':proto_ports,
+                                                'port_date':date_ports,
+                                                })
     elif request.POST:
         host_ip = request.POST['ipv4_address']
         host = get_object_or_404(Host, ipv4_address=host_ip)
@@ -103,7 +115,17 @@ def ports_to_json_format(ports, states, protos, dates):
     protos = protos.split(',')
     dates  = dates.split(',')
 
-    print max(ports, states, protos, dates)
+    # Make sure lists are all the same length.
+    # Necessary for below for-loop.
+    max_len = max(len(ports), len(states), len(protos), len(dates))
+    while len(ports) != max_len:
+        ports.append('')
+    while len(states) != max_len:
+        states.append('')
+    while len(protos) != max_len:
+        protos.append('')
+    while len(dates) != max_len:
+        dates.append('')
 
     port_data = zip(ports, states, protos, dates)
 
@@ -113,9 +135,6 @@ def ports_to_json_format(ports, states, protos, dates):
         state = state.strip()
         proto = proto.strip()
         date  = date.strip()
-
-        # TODO, make sure these lists are the same size.
-        # If any of them are too small, add empty strings as elements until they're equal.
 
         tmp_dict_ports = {}
         if dict_ports:
