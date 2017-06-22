@@ -27,12 +27,23 @@ def index(request):
     so display a table of the query made.
     Otherwise, just display the form.
     '''
+
     exporting = False
+
     if request.POST.get("export"):
+        # User pressed Export button.
         exporting = True
+
     if request.method == "POST":
+        # User is either Generating a table to the page (exporting=False)
+        #             or Exporting to a CSV file (exporting=True).
+
+        # Get form information.
         form = ScansForm(request.POST)
+
         if form.is_valid():
+
+            # Append important info to context.
             context = {}
             context['checks'] = request.POST.getlist('checks')
             context['rad'] = request.POST.getlist('rad')
@@ -42,9 +53,14 @@ def index(request):
             context['host_data'] = zip(context['host_list'], context['subnet_list'])
             context.update(csrf(request))
             context['form'] = form
+
+            # If we're exporting, export!
             if exporting:
                 return export(request, context)
+
+            # We're not exporting, so render the page with a table.
             return render_to_response('scans/scans.html', context)
+
     context = {}
     context.update(csrf(request))
     context['form'] = ScansForm()

@@ -6,7 +6,7 @@ from django.db import models
 
 class Host(models.Model):
     """Model for individual hosts, consisting of an ip and a hostname"""
-    ipv4_address = models.GenericIPAddressField(protocol='ipv4', default='0.0.0.0', unique=True)
+    ipv4_address = models.GenericIPAddressField(protocol='ipv4', unique=True)
     host_name = models.CharField(max_length=80)
     os = models.CharField(max_length=50, default='')
     lsp = models.CharField(max_length=50, default='')
@@ -19,6 +19,11 @@ class Host(models.Model):
 
     def __str__(self):
         return "%s, %s" % (self.ipv4_address, self.host_name)
+
+    class Meta:
+        permissions = (
+            ("edit_host", "Can edit host information"),
+        )
 
 
 class Subnet(models.Model):

@@ -6,9 +6,69 @@
 
     <a href="/hosts/"><input type="button" value="Cancel" /></a><br><br>
     <form action="/hosts/edit/" method="post">{% csrf_token %}
-        <ul>
-            {{form.as_ul}}
-        </ul>
+        <table>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.ipv4_address.errors }} {{ form.ipv4_address.label_tag }}
+                     {{ form.ipv4_address }}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.host_name.errors }} {{ form.host_name.label_tag }} {{ form.host_name}}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.ports.errors }} {{ form.ports.label_tag }} {{ form.ports}}
+                </td>
+                <td class="td-content-edit-hosts">
+                    {{ form.port_state.errors }} {{ form.port_state.label_tag }} {{ form.port_state }}
+                </td>
+                <td class="td-content-edit-hosts">
+                    {{ form.port_protocol.errors }} {{ form.port_protocol.label_tag }} {{ form.port_protocol }}
+                </td>
+                <td class="td-content-edit-hosts">
+                    {{ form.port_date.errors }} {{ form.port_date.label_tag }} {{ form.port_date }}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.os.errors }} {{ form.os.label_tag }} {{ form.os}}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.lsp.errors }} {{ form.lsp.label_tag }} {{ form.lsp}}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.host_groups.errors }} {{ form.host_groups.label_tag }} {{ form.host_groups}}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.location.errors }} {{ form.location.label_tag }} {{ form.location}}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.tags.errors }} {{ form.tags.label_tag }} {{ form.tags}}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts">
+                    {{ form.notes.errors }} {{ form.notes.label_tag }} {{ form.notes}}
+                </td>
+            </tr>
+            <tr>
+                <td class="td-content-edit-hosts-status">
+                    {{ form.status.errors }} {{ form.status.label_tag }} {{ form.status }}
+                </td>
+            </tr>
+        </table>
+        <br>
         <input type="submit" name="submit" value="Save Host">
     </form>
 </div>
