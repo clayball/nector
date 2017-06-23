@@ -2,17 +2,17 @@
 
 {% block content %}
 <div class="content">
-    <h2>Host Information</h2>
+    <h1>Host Information</h1>
+    <h3>Editing: {{ host.ipv4_address }}</h3>
 
-    <a href="/hosts/"><input type="button" value="Cancel" /></a><br><br>
+    {% if not host %}
+    <p>No host selected!</p>
+    {% endif %}
+
+    {% if host %}
     <form action="/hosts/edit/" method="post">{% csrf_token %}
+        <input type="hidden" name="update_form" />
         <table>
-            <tr>
-                <td class="td-content-edit-hosts">
-                    {{ form.ipv4_address.errors }} {{ form.ipv4_address.label_tag }}
-                     {{ form.ipv4_address }}
-                </td>
-            </tr>
             <tr>
                 <td class="td-content-edit-hosts">
                     {{ form.host_name.errors }} {{ form.host_name.label_tag }} {{ form.host_name}}
@@ -20,26 +20,7 @@
             </tr>
             <tr>
                 <td class="td-content-edit-hosts">
-                    {{ form.ports.errors }} {{ form.ports.label_tag }} {{ form.ports}}
-                </td>
-                <td class="td-content-edit-hosts">
-                    {{ form.port_state.errors }} {{ form.port_state.label_tag }} {{ form.port_state }}
-                </td>
-                <td class="td-content-edit-hosts">
-                    {{ form.port_protocol.errors }} {{ form.port_protocol.label_tag }} {{ form.port_protocol }}
-                </td>
-                <td class="td-content-edit-hosts">
-                    {{ form.port_date.errors }} {{ form.port_date.label_tag }} {{ form.port_date }}
-                </td>
-            </tr>
-            <tr>
-                <td class="td-content-edit-hosts">
                     {{ form.os.errors }} {{ form.os.label_tag }} {{ form.os}}
-                </td>
-            </tr>
-            <tr>
-                <td class="td-content-edit-hosts">
-                    {{ form.lsp.errors }} {{ form.lsp.label_tag }} {{ form.lsp}}
                 </td>
             </tr>
             <tr>
@@ -69,7 +50,9 @@
             </tr>
         </table>
         <br>
-        <input type="submit" name="submit" value="Save Host">
+        <input type="submit" name="submit" value="Save">
+        <a href="/hosts/"><input style="margin-left:140px" type="button" value="Cancel" /></a>
     </form>
+    {% endif %}
 </div>
 {% endblock %}

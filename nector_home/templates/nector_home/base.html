@@ -40,15 +40,9 @@
 <p class="base_login base_search">
     {% if user.is_authenticated %}
         Welcome, {{ user.username }}!
-        <a href="/accounts/logout">
-            <input id="btn_logout" name="btn_logout" type="button" value="Logout" />
-        </a>
-    {% else %}
-        <a href="/accounts/login">
-            <input id="btn_login" name="btn_login" type="button" value="Login" />
-        </a>
     {% endif %}
 </p>
+
 </form>
 
 

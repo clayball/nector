@@ -27,9 +27,9 @@ class Host(models.Model):
 
 
 class Subnet(models.Model):
-    """Model for subnets, consisting of an ip address and a network prefix"""
-    ipv4_address = models.GenericIPAddressField(protocol='ipv4', default='0.0.0.0', unique=True)
-    prefix = models.IntegerField()
+    """Model for subnets, consisting of an ip address and a suffix"""
+    ipv4_address = models.GenericIPAddressField(protocol='ipv4', default='0.0.0', unique=True)
+    suffix = models.CharField(max_length=2, default='.x')
 
     def __str__(self):
-        return "%s/%s" % (self.ipv4_address, self.prefix)
+        return "%s%s" % (self.ipv4_address, self.suffix)
