@@ -48,7 +48,7 @@ def index(request):
             context['checks'] = request.POST.getlist('checks')
             context['rad'] = request.POST.getlist('rad')
             processed_query = process_query(form, context['checks'], context['rad'])
-            context['host_list'] = get_open_ports_and_new_list(processed_query)
+            context['open_ports'], context['host_list'] = get_open_ports_and_new_list(processed_query)
             context['subnet_list'] = get_subnet_list(context['host_list'])
             context['host_data'] = zip(context['host_list'], context['subnet_list'])
             context.update(csrf(request))
@@ -133,11 +133,16 @@ def process_query(form, checks, rad):
 
 def get_open_ports_and_new_list(host_list):
     '''
-    Returns list of hosts that only have open ports.
+    Returns a tuple following (open_ports, host_list).
+    open_ports is a dict following {ip: [ports]}.
     host_list is a QuerySet.
+    Example return value:
+        {'123.45.67.89': ['80', '443']}, <Host QuerySet>
+    If a port is not open, then we won't add the port to the dict.
     If a port is not open, then we will remove the respective Host
     from the host_list since we don't want to display that Host.
     '''
+    open_ports = {}
     for h in host_list:
         if h.ports: # If the host has ports:
             port_json = json.loads(h.ports)
@@ -153,7 +158,11 @@ def get_open_ports_and_new_list(host_list):
                     host_list = host_list.exclude(ipv4_address=h.ipv4_address)
                 else:
                     print 'Something went wrong! (scans/views.py -> get_open_ports_and_new_list())'
-    return host_list
+            # Make sure it has an open port before we add it to the final dict.
+            # Otherwise, we are throwing in an empty list, and who needs that?
+            if has_open_port:
+                open_ports[str(h.ipv4_address)] = h_ports
+    return open_ports, host_list
 
 
 def get_subnet_list(host_list):
