@@ -2,12 +2,13 @@
 
 {% block content %}
 <div class="content">
+
 {% if subnet_list %}
 <h1>SubNeTs</h1>
 {% for narrowed_subnet in narrowed_subnet_dict %}
     <h2>{{ narrowed_subnet }}.x.x</h2>
     <table>
-        <tr>
+    <tr>
     {% for k, v in narrowed_subnet_dict.items %}
         {% if narrowed_subnet in k %}
           {% for s in v %}
@@ -21,11 +22,11 @@
     {% endfor %}
     </tr>
     </table>
-
 {% endfor %}
 
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}
+
 </div>
 {% endblock %}

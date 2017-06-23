@@ -43,7 +43,7 @@ def index(request):
         narrowed_subnet = s.rsplit('.', 1)[0]
         sorted_narrowed_subnet_list.add(narrowed_subnet)
 
-    # narrowed_subnet_dict['10.0'] returns '10.0.0.1 10.0.0.2 ...'
+    # narrowed_subnet_dict['10.0'] returns '[SubnetA, SubnetB, ...]'
     narrowed_subnet_dict = {}
     for n in sorted_narrowed_subnet_list:
         narrowed_subnet_dict[n] = []
@@ -51,7 +51,6 @@ def index(request):
             if n in s.ipv4_address:
                 narrowed_subnet_dict[n].append(s)
 
-    print narrowed_subnet_dict
     # Context to pass to hosts/index.html so we can use its key,value pairs as
     # variables in the template.
     context = {'subnet_list': sorted_subnet_qset,
@@ -76,7 +75,7 @@ def detail(request, subnet_id):
     # Context to pass to hosts/index.html so we can use its key,value pairs as
     # variables in the template.
     context = {'host_list': host_list, 'subnet_id' : subnet_id,
-               'subnet' : subnet, 'limit' : 'online'}
+               'subnet' : subnet, 'limit' : 'online',}
     return render(request, 'hosts/detail.html', context)
 
 
@@ -138,7 +137,6 @@ def detail_host(request, subnet_id, host_id):
 #@permission_required('hosts.edit_host', raise_exception=True)
 def edit(request):
     '''Edit a host's information.'''
-
     # The request method used (GET, POST, etc) determines what dict 'context'
     # gets filled with.
     context = {}
@@ -175,12 +173,19 @@ def edit(request):
                 # Get ip addr of updated Host so we can direct user to its page
                 # after editing.
                 new_ip = request.session['last-host']
+
                 return HttpResponseRedirect('/hosts/search/?input_ip=%s' % new_ip)
 
     # Request method was empty, so user wants to create new Host.
     # Create empty form.
     else:
-        form = HostForm()
+        if 'last-host' in request.session:
+            host_ip = request.session['last-host']
+            host = get_object_or_404(Host, ipv4_address=host_ip)
+            context['host'] = host
+            form = HostForm(instance=host)
+        else:
+            form = HostForm()
 
     # Add new CSRF token and form to context.
     context.update(csrf(request))

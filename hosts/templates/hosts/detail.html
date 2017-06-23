@@ -46,7 +46,7 @@
           <tr>
           <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
           <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>
-          <td class="td-content"></td>
+          <td class="td-content">{{ host.num_open_ports }}</td>
           </tr>
           {% endif %}
         {% elif limit == 'offline' %}
@@ -60,7 +60,7 @@
             <tr>
             <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
             <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>
-            <td class="td-content"></td>
+            <td class="td-content">{{ host.num_open_ports }}</td>
             </tr>
           {% else %}
             <tr>
