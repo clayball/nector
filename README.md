@@ -97,13 +97,47 @@ $ python manage.py migrate
 
 ### Creating Your Data
 
-Copy the sample data from `sample-data/` into this project's root folder.
+#### Getting Hosts with Nmap
+
+Create a file `subnets.txt` and fill it with your subnets.
 
 ```
-$ cp sample-data/* .
+$ vi subnets.txt
 ```
 
-Remove the '_sample-_' prefix from each file.
+Use nmap to run a scan on all the hosts in those subnets.
+Save this scan as hosts.xml
+
+```
+$ nmap -sL -iL subnets.txt -oN hosts.xml
+```
+
+#### Getting Vulnerabilities with Nessus
+
+Todo.
+
+#### Getting Events
+
+Todo.
+
+#### Getting Ports
+
+Todo.
+
+#### Filling in the Gaps
+
+**If you were unable to perform any of the above four steps, keep reading.
+Otherwise, you should skip this step.**
+
+##### Missing Hosts, Vulnerabilities, or Events
+
+Copy the sample data you need from `sample-data/` into this project's root folder.
+
+```
+$ cp sample-data/MISSING-FILE .
+```
+
+Remove the '_sample-_' prefix from the file(s).
 
 ```
 $ mv sample-events.csv events.csv
@@ -111,9 +145,11 @@ $ mv sample-hosts.xml hosts.xml
 $ mv sample-vulnlist.csv vulnlist.csv
 ```
 
-Edit these files to use your data.
+Edit the file(s) to use your data.
 
 **Do not mess up the formatting!**
+
+##### Missing Ports
 
 Rename the sample port files in `port-scans/` to remove the '_sample-_' prefix.
 
