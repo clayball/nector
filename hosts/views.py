@@ -231,16 +231,18 @@ def ports(request):
         port_dates    = ''
 
         if 'port_nums' in request.POST:
-            port_numbers = request.POST['port_nums']
+            port_numbers = request.POST['port_nums'].strip()
 
         if 'port_servs' in request.POST:
-            port_services = request.POST['port_servs']
+            port_services = request.POST['port_servs'].strip()
 
         if 'port_dates' in request.POST:
-            port_dates = request.POST['port_dates']
+            port_dates = request.POST['port_dates'].strip()
 
         host_list = {}
 
+        '''# Multiple ports/services/dates feature removed
+           # to prevent user confusion.
         # Check if multiple ports entered (ex 80, 443)
         if ',' in port_numbers:
             ports = port_numbers.split(',')
@@ -256,19 +258,22 @@ def ports(request):
                     host_list = host_list.filter(
                                              ports__icontains='"' + p + '"' + ':'
                                             )
-        elif port_numbers.strip():
+        '''
+        if port_numbers:
             # Single port entered, so single filter needed:
             host_list = Host.objects.filter(ports__icontains='"'+port_numbers+'"'+':')
 
-        if not host_list:
-            host_list = Host.objects.filter(ports__icontains=port_services)
-        else:
-            host_list = host_list.filter(ports__icontains=port_services)
+        if port_services:
+            if not host_list:
+                host_list = Host.objects.filter(ports__icontains=port_services)
+            else:
+                host_list = host_list.filter(ports__icontains=port_services)
 
-        if not host_list:
-            host_list = Host.objects.filter(ports__icontains=port_dates)
-        else:
-            host_list = host_list.filter(ports__icontains=port_dates)
+        if port_dates:
+            if not host_list:
+                host_list = Host.objects.filter(ports__icontains=port_dates)
+            else:
+                host_list = host_list.filter(ports__icontains=port_dates)
 
 
         for h in host_list:
