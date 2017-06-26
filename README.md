@@ -40,7 +40,7 @@ Then, open a browser and go to **http://127.0.0.1:8000**
 If you like what you see, continue onto the next steps.
 
 
-### Set up a Virtual Environment (Optional)
+### Setting up a Virtual Environment (Optional)
 
 Create a [virtualenv](https://virtualenv.pypa.io/en/stable/) to work in, and activate it.
 
@@ -50,7 +50,7 @@ $ source venv-nector/bin/activate
 ```
 
 
-### Download Dependencies
+### Downloading Dependencies
 
 Install [pip](https://pypi.python.org/pypi/pip) dependencies.
 
@@ -59,7 +59,7 @@ $ pip install -r requirements.txt
 ```
 
 
-### Use Your Secret Key
+### Using Your Secret Key
 
 Traverse into the nector/ subdirectory and open settings.py in a text editor.
 
@@ -76,7 +76,7 @@ and replace it with your own Django secret key.
 [Click here to obtain a Secret Key.](http://www.miniwebtool.com/django-secret-key-generator/)
 
 
-### Initialize Database
+### Initializing the Database
 
 Django uses [migrations](https://docs.djangoproject.com/en/1.11/topics/migrations/) to keep track of changes to the database's tables.
 
@@ -95,7 +95,7 @@ $ python manage.py migrate
 ```
 
 
-### Create Your Data
+### Creating Your Data
 
 Copy the sample data from `sample-data/` into this project's root folder.
 
@@ -123,7 +123,7 @@ $ mv port-scans/sample-port-80-open-170509.txt port-80-open-170509.txt
 ```
 
 
-### Populate Database
+### Populating the Database
 
 In order to use your data, you will have to import it into the database.
 
@@ -133,7 +133,7 @@ $ python import-ports.py
 ```
 
 
-### Run NECTOR
+### Running NECTOR
 
 
 Start the server.
@@ -145,7 +145,7 @@ $ python manage.py runserver
 Open a browser and go to **http://127.0.0.1:8000**
 
 
-### Deactivate the Virtual Environment
+### Deactivating the Virtual Environment
 
 If you set up a Virtual Environment, run `$ deactivate` once you're done
 working on NECTOR.
