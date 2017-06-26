@@ -17,7 +17,6 @@ class Host(models.Model):
     host_groups = models.CharField(max_length=125, default='')
     notes = models.CharField(max_length=320, default='')
     ports = models.TextField(default='')
-    status = models.CharField(max_length=120, default='')
 
 
     def __str__(self):
@@ -56,8 +55,24 @@ class Host(models.Model):
         return open_ports
 
 
+    def get_clean_closed_ports(self):
+        """Returns list of clean open ports, ie no status, protocol, or date;
+           just open port numbers."""
+        closed_ports = []
+        if self.ports: # If the host has ports:
+            port_json = json.loads(self.ports)
+            has_closed_port = False
+            for p in port_json:
+                # Port is open, add to list .
+                if port_json[p][0] == 'closed':
+                    closed_ports.append(str(p))
+                    has_closed_port = True
+        return closed_ports
+
+
     num_open_ports = property(get_number_open_ports)
     open_ports = property(get_clean_open_ports)
+    closed_ports = property(get_clean_closed_ports)
 
 
     class Meta:

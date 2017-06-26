@@ -1,0 +1,67 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+
+<h2>P0rt5</h2>
+
+<h3>Find hosts with:</h3>
+
+<form method="post" action="/hosts/ports/">{% csrf_token %}
+<table>
+    <tr>
+        <td class="td-content-scans">
+            Open Port Number: <input type="text" name="port_nums" placeholder="80"/>
+        </td>
+    </tr>
+    <tr>
+        <td class="td-content-scans">
+            Open Port Service: <input type="text" name="port_servs" placeholder="Apache"/>
+        </td>
+    </tr>
+    <tr>
+        <td class="td-content-scans">
+            Port Opened On: <input type="text" name="port_dates" placeholder="YYMMDD"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="submit" value="Search" />
+        </td>
+    </tr>
+</table>
+</form>
+
+<br><br>
+
+{% if host_list %}
+<table>
+    <tr>
+        <td class="td-content">IPv4</td>
+        <td class="td-content">Host Name</td>
+        <td class="td-content">Open Port(s)</td>
+  </tr>
+  {% for host in host_list %}
+    <tr>
+
+            <td class="td-content"><a href="/hosts/search/?input_ip={{host.ipv4_address}}">
+                {{host.ipv4_address}}
+            </a></td>
+
+            <td class="td-content"><a href="/hosts/search/?input_ip={{host.ipv4_address}}">
+                {{host.host_name}}
+            </a></td>
+
+            <td class="td-content">{{host.open_ports}}</td>
+
+    </tr>
+
+  {% endfor %}
+
+</table>
+{% endif %}
+
+
+
+</div>
+{% endblock %}

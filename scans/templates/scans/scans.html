@@ -96,35 +96,9 @@
         {% endif %}
         <label for="notes">Notes</label>
 
-        {% if 'status' in checks %}
-        <input type="checkbox" name="checks" id="status" value="status" checked/>
-        {% else %}
-        <input type="checkbox" name="checks" id="status" value="status"/>
-        {% endif %}
-        <label for="status">Status</label>
 
         <br><br>
 
-        {% if 'online' in rad or not rad %}
-        <input type="radio" name="rad" id="online" value="online" checked/>
-        {% else %}
-        <input type="radio" name="rad" id="online" value="online"/>
-        {% endif %}
-        <label for="online">Online-Only</label>
-
-        {% if 'offline' in rad %}
-        <input type="radio" name="rad" id="offline" value="offline" checked/>
-        {% else %}
-        <input type="radio" name="rad" id="offline" value="offline"/>
-        {% endif %}
-        <label for="offline">Offline-Only</label>
-
-        {% if 'all' in rad %}
-        <input type="radio" name="rad" id="all" value="all" checked/>
-        {% else %}
-        <input type="radio" name="rad" id="all" value="all"/>
-        {% endif %}
-        <label for="all">All Hosts</label>
 
         </div>
 
@@ -188,9 +162,6 @@
             {% endif %}
             {% if 'notes' in checks %}
             <td class="td-content">Notes</td>
-            {% endif %}
-            {% if 'status' in checks %}
-            <td class="td-content">Status</td>
             {% endif %}
       </tr>
       {% if checks %}
@@ -261,14 +232,6 @@
                 <input type="hidden" name="scan-notes" value="">
             {% endif %}
 
-            {% if 'status' in checks %}
-                <td class="td-content">
-                    {{host.status}}
-                    <input type="hidden" name="scan-status" value={{host.status}}>
-                </td>
-            {% else %}
-                <input type="hidden" name="scan-status" value="">
-            {% endif %}
 
         </tr>
         {% endfor %}

@@ -34,7 +34,15 @@
     <h4 style="padding-left:10px">Notes</h4>
     <p style="padding-left:20px"> {{host.notes}} </p>
     <h4 style="padding-left:10px">Status</h4>
-    <p style="padding-left:20px"> {{host.status}} </p>
+    {% if ping_status %}
+        <p style="margin-left:20px"> {{ ping_status }} </p>
+    {% else %}
+    <form action="/hosts/ping/" method="post">{% csrf_token %}
+        <input name="host" type="hidden" value="{{host.ipv4_address}}" />
+        <input type="submit" style="margin-left:20px" value="Ping" />
+    </form>
+    {% endif %}
+
     {% if vuln_list %}
     <h4 style="padding-left:10px">Vulnerabilities</h4>
     <table style="margin-left:20px">
