@@ -11,7 +11,7 @@
     <h4 style="padding-left:10px">IPv4</h4>
     <p style="padding-left:20px"> {{host.ipv4_address}} </p>
     <h4 style="padding-left:10px">Host Name</h4>
-    <p style="padding-left:20px"> {{host.host_name}} </p>
+    <p style="padding-left:20px"><a href="http://{{host.host_name}}">{{host.host_name}}</a></p>
     {% if port_data %}
     <h4 style="padding-left:10px">Ports</h4>
     <table style="margin-left:20px">
