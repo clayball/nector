@@ -126,8 +126,8 @@ Todo.
 
 #### Filling in the Gaps
 
-**If you were unable to perform any of the above four steps, keep reading.
-Otherwise, you should skip this step.**
+If you were unable to perform any of the above four steps, keep reading.
+Otherwise, you should skip this step.
 
 ##### Missing Hosts, Vulnerabilities, or Events
 
