@@ -50,7 +50,7 @@
           </tr>
           {% endif %}
         {% elif limit == 'unnamed' %}
-          {% if host.host_name %}
+          {% if not host.host_name %}
           <tr>
           <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
           </tr>
