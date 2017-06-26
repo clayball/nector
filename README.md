@@ -20,9 +20,149 @@ NECTOR's intuitive web-based frontend allows for easy data analysis, scan
 configuration, incident reporting,  and more.
 
 
-## Installing
+---
 
-View INSTALL.txt for more info.
+
+## Getting Started
+
+
+### Trying the Demo (Optional)
+
+If you want to try out the demo of NECTOR before making a full
+commitment, run:
+
+```
+$ make demo
+```
+
+Then, open a browser and go to **http://127.0.0.1:8000**
+
+If you like what you see, continue onto the next steps.
+
+
+### Set up a Virtual Environment (Optional)
+
+Create a [virtualenv](https://virtualenv.pypa.io/en/stable/) to work in, and activate it.
+
+```
+$ virtualenv venv-nector
+$ source venv-nector/bin/activate
+```
+
+
+### Download Dependencies
+
+Install [pip](https://pypi.python.org/pypi/pip) dependencies.
+
+```
+$ pip install -r requirements.txt
+```
+
+
+### Use Your Secret Key
+
+Traverse into the nector/ subdirectory and open settings.py in a text editor.
+
+```
+$ vi nector/settings.py
+```
+
+Find the line
+
+    SECRET_KEY = 'THISISTOPSECR3t,MAN!'
+
+and replace it with your own Django secret key.
+
+[Click here to obtain a Secret Key.](http://www.miniwebtool.com/django-secret-key-generator/)
+
+
+### Initialize Database
+
+Django uses [migrations](https://docs.djangoproject.com/en/1.11/topics/migrations/) to keep track of changes to the database's tables.
+
+First, create new migrations based on the Django models of our project.
+
+```
+$ python manage.py makemigrations
+```
+
+Next, apply the migrations to our database (this will create a database if
+one does not already exist). Doing this will fill our database with the tables
+we need for the project.
+
+```
+$ python manage.py migrate
+```
+
+
+### Create Your Data
+
+Copy the sample data from `sample-data/` into this project's root folder.
+
+```
+$ cp sample-data/* .
+```
+
+Remove the '_sample-_' prefix from each file.
+
+```
+$ mv sample-events.csv events.csv
+$ mv sample-hosts.xml hosts.xml
+$ mv sample-vulnlist.csv vulnlist.csv
+```
+
+Edit these files to use your data.
+
+**Do not mess up the formatting!**
+
+Do the same thing with the sample port information in `port-scans/`.
+
+```
+$ mv port-scans/sample-port-22-open-170502.csv port-22-open-170502.csv
+$ mv port-scans/sample-port-80-open-170509.txt port-80-open-170509.txt
+```
+
+
+### Populate Database
+
+In order to use your data, you will have to import it into the database.
+
+```
+$ python import-data.py
+$ python import-ports.py
+```
+
+
+### Run NECTOR
+
+
+Start the server.
+
+```
+$ python manage.py runserver
+```
+
+Open a browser and go to **http://127.0.0.1:8000**
+
+
+### Deactivate the Virtual Environment
+
+If you set up a Virtual Environment, run `$ deactivate` once you're done
+working on NECTOR.
+
+
+### The Makefile
+
+The makefile exists to automate making migrations and importing
+data.
+
+If you make frequent changes to NECTOR (which is expected), you will
+want to run `$ make` to take care of everything for you.
+
+    Note: The makefile will not activate or deactivate your virtualenv. If you plan on using one, you must do so manually.
+
+
+---
 
 
 ## Misc. Notes
@@ -40,31 +180,6 @@ Applications:
 - osint
 - events
 - reports
-
-
-## Getting Started
-
-Create a virtualenv to work in and activate it.
-
-```
-$ virtualenv-2 venv-nector
-$ source venv-nector/bin/activate
-$ pip install -r requirements.txt
-```
-
-Apply the migrations. TODO: explain this
-
-```$ python manage.py migrate```
-
-
-Start the server.
-
-```$ python manage.py runserver```
-
-
-Open a browser and goto 127.0.0.1:8000
-
-When you're done working run ```$ deactivate```.
 
 
 ## Events
