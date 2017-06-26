@@ -7,17 +7,17 @@
   <div style="float:right">
     <form method="GET" action="/hosts/limit-hosts/{{ subnet_id }}">
       <select name="select_hosts">
-        {% if limit == 'online' %}
-        <option value="online" selected="selected">Online Hosts</option>
-        <option value="offline">Offline Hosts</option>
+        {% if limit == 'named' %}
+        <option value="named" selected="selected">Named Hosts</option>
+        <option value="unnamed">Unnamed Hosts</option>
         <option value="all">All Hosts</option>
-        {% elif limit == 'offline' %}
-        <option value="online">Online Hosts</option>
-        <option value="offline" selected="selected">Offline Hosts</option>
+        {% elif limit == 'unnamed' %}
+        <option value="named">Named Hosts</option>
+        <option value="unnamed" selected="selected">Unnamed Hosts</option>
         <option value="all">All Hosts</option>
         {% else %}
-        <option value="online">Online Hosts</option>
-        <option value="offline">Offline Hosts</option>
+        <option value="named">Named Hosts</option>
+        <option value="unnamed">Unnamed Hosts</option>
         <option value="all" selected="selected">All Hosts</option>
         {% endif %}
       </select>
@@ -27,11 +27,11 @@
 
     <table>
         <tr>
-            {% if limit == 'online' %}
+            {% if limit == 'named' %}
                 <td class="td-content">IP Address</td>
                 <td class="td-content">Host Name</td>
                 <td class="td-content">No. Open Ports</td>
-            {% elif limit == 'offline' %}
+            {% elif limit == 'unnamed' %}
                 <td class="td-content">IP Address</td>
             {% elif limit == 'all' %}
                 <td class="td-content">IP Address</td>
@@ -41,22 +41,22 @@
         </tr>
     {% for host in host_list %}
 
-        {% if limit == 'online' %}
-          {% if host.status == 'Online' %}
+        {% if limit == 'named' %}
+          {% if host.host_name %}
           <tr>
           <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
           <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>
           <td class="td-content">{{ host.num_open_ports }}</td>
           </tr>
           {% endif %}
-        {% elif limit == 'offline' %}
-          {% if host.status == 'Offline' %}
+        {% elif limit == 'unnamed' %}
+          {% if not host.host_name %}
           <tr>
           <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
           </tr>
           {% endif %}
         {% elif limit == 'all' %}
-          {% if host.status == 'Online' %}
+          {% if host.host_name %}
             <tr>
             <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
             <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>

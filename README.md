@@ -49,7 +49,7 @@ Create a virtualenv to work in and activate it.
 ```
 $ virtualenv-2 venv-nector
 $ source venv-nector/bin/activate
-$ pip install < requirements.txt
+$ pip install -r requirements.txt
 ```
 
 Apply the migrations. TODO: explain this

@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.template import loader
@@ -13,6 +14,8 @@ from forms import HostForm
 
 import json
 import copy
+
+import subprocess # For ping
 
 
 def index(request):
@@ -75,11 +78,11 @@ def detail(request, subnet_id):
     # Context to pass to hosts/index.html so we can use its key,value pairs as
     # variables in the template.
     context = {'host_list': host_list, 'subnet_id' : subnet_id,
-               'subnet' : subnet, 'limit' : 'online',}
+               'subnet' : subnet, 'limit' : 'named',}
     return render(request, 'hosts/detail.html', context)
 
 
-def detail_host(request, subnet_id, host_id):
+def detail_host(request, subnet_id, host_id, ping_status=''):
     '''Display selected host information.'''
 
     # Get selected Host object.
@@ -116,7 +119,7 @@ def detail_host(request, subnet_id, host_id):
             port_date_list.append(port_json[p][2])
 
         # Pass context containing port information.
-        context = {'host': host, 'subnet_id' : subnet_id,
+        context = {'host': host, 'subnet_id' : subnet_id, 'ping_status' : ping_status,
                    'vuln_list' : vuln_list, 'port_data' : zip(port_list,
                                                               port_status_list,
                                                               port_info_list,
@@ -125,10 +128,31 @@ def detail_host(request, subnet_id, host_id):
 
     else:
         # Pass context with no port information (bc host has no ports).
-        context = {'host': host, 'subnet_id' : subnet_id,
+        context = {'host': host, 'subnet_id' : subnet_id, 'ping_status' : ping_status,
                    'vuln_list' : vuln_list, 'port_data' : None}
 
     return render(request, 'hosts/detail_host.html', context)
+
+
+def ping(request):
+
+    if 'host' not in request.POST:
+        if 'next' in request.POST:
+            return HttpResponseRedirect(request.POST['next'])
+
+
+    ip = request.POST['host']
+    status = subprocess.call(['ping', '-c1', '-w2', ip])
+
+    str_status = ''
+    if status == 0:
+        str_status = 'Online'
+    else:
+        str_status = 'Offline'
+    host = get_object_or_404(Host, ipv4_address=ip)
+    subnet = get_object_or_404(Subnet, ipv4_address=ip.rsplit('.', 1)[0])
+
+    return detail_host(request, subnet.id, host.id, str_status)
 
 
 @login_required
@@ -191,6 +215,84 @@ def edit(request):
     context.update(csrf(request))
     context['form'] = form
     return render(request, 'hosts/edit_host.html', context)
+
+
+def ports(request):
+
+    context = {}
+
+    if request.method == "POST":
+
+        form = request.POST
+        context.update(csrf(request))
+
+        port_numbers  = ''
+        port_services = ''
+        port_dates    = ''
+
+        if 'port_nums' in request.POST:
+            port_numbers = request.POST['port_nums'].strip()
+
+        if 'port_servs' in request.POST:
+            port_services = request.POST['port_servs'].strip()
+
+        if 'port_dates' in request.POST:
+            port_dates = request.POST['port_dates'].strip()
+
+        host_list = {}
+
+        '''# Multiple ports/services/dates feature removed
+           # to prevent user confusion.
+        # Check if multiple ports entered (ex 80, 443)
+        if ',' in port_numbers:
+            ports = port_numbers.split(',')
+            context['port_list'] = ports
+            # Filter each specified port, one at a time.
+            for p in ports:
+                p = p.strip()
+                if not host_list:
+                    host_list = Host.objects.filter(
+                                         ports__icontains='"' + p + '"' + ':'
+                                        )
+                else:
+                    host_list = host_list.filter(
+                                             ports__icontains='"' + p + '"' + ':'
+                                            )
+        '''
+        if port_numbers:
+            # Single port entered, so single filter needed:
+            host_list = Host.objects.filter(ports__icontains='"'+port_numbers+'"'+':')
+
+        if port_services:
+            if not host_list:
+                host_list = Host.objects.filter(ports__icontains=port_services)
+            else:
+                host_list = host_list.filter(ports__icontains=port_services)
+
+        if port_dates:
+            if not host_list:
+                host_list = Host.objects.filter(ports__icontains=port_dates)
+            else:
+                host_list = host_list.filter(ports__icontains=port_dates)
+
+
+        for h in host_list:
+            if h.ports: # If the host has ports:
+                port_json = json.loads(h.ports)
+                h_ports = []
+                for p in port_json:
+                    # Port is closed, remove Host from host_list.
+                    if port_json[p][0] == 'closed':
+                        host_list = host_list.exclude(ipv4_address=h.ipv4_address)
+
+
+        context['host_list'] = host_list
+
+        # We're not exporting, so render the page with a table.
+        return render_to_response('hosts/ports.html', context)
+
+    context.update(csrf(request))
+    return render_to_response('hosts/ports.html', context)
 
 
 def ports_to_json_format(ports, states, protos, dates):

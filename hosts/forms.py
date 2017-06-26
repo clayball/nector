@@ -13,13 +13,13 @@ class HostForm(forms.ModelForm):
         self.fields['tags'].required         = False
         self.fields['host_groups'].required  = False
         self.fields['notes'].required        = False
-        self.fields['status'].required       = True
+        #self.fields['status'].required       = True
 
 
     class Meta:
         model = Host
         fields = ('host_name', 'os', 'location',
-                  'tags', 'host_groups', 'notes', 'status')
+                  'tags', 'host_groups', 'notes')
         labels = {
             'host_name'   : _('Host Name'),
             'os'          : _('OS'),
@@ -27,11 +27,11 @@ class HostForm(forms.ModelForm):
             'tags'        : _('Tag(s)'),
             'host_groups' : _('Host Group(s)'),
             'notes'       : _('Note(s)'),
-            'status'      : _('* Status'),
+            #'status'      : _('* Status'),
         }
         # Radio buttons for status.
         CHOICES = (('Online', 'Online',), ('Offline', 'Offline',))
         widgets = {
             'host_name'     : forms.TextInput(attrs={'placeholder':'conficturaindustries.com'}),
-            'status'        : forms.RadioSelect(choices=CHOICES),
+            #'status'        : forms.RadioSelect(choices=CHOICES),
         }

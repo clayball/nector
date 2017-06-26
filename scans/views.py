@@ -122,11 +122,13 @@ def process_query(form, checks, rad):
                                         tags__icontains=tags,
                                         notes__icontains=notes)
 
+    '''
     # Did we select Online-Only or Offline-Only or All Hosts?
     if 'online' in rad:
         host_list = host_list.exclude(status__icontains='Offline')
     elif 'offline' in rad:
         host_list = host_list.filter(status__icontains='Offline')
+    '''
 
     return host_list
 
@@ -229,9 +231,11 @@ def export(request, context):
     if 'notes' in context['checks']:
         existing_header_columns.append('Notes')
         sel_notes = True
-    if 'status' in context['checks']:
+    '''# Removed status
+        if 'status' in context['checks']:
         existing_header_columns.append('Status')
         sel_status = True
+    '''
 
     ipv4_addresses = [host.ipv4_address for host in context['host_list']]
     host_names = [host.host_name for host in context['host_list']]
@@ -242,10 +246,12 @@ def export(request, context):
     locations = [host.location for host in context['host_list']]
     tags = [host.tags for host in context['host_list']]
     notes = [host.notes for host in context['host_list']]
+    ''' # Removed status
     statuses = [host.status for host in context['host_list']]
+    '''
 
     host_data = zip(ipv4_addresses, host_names, oses, lsps,
-                    host_groups, locations, tags, notes, statuses)
+                    host_groups, locations, tags, notes)
 
     # NOTE: Lines with #new utilize a buffer and a stream.
     #       They're great for dealing with large CSV files.
@@ -258,7 +264,7 @@ def export(request, context):
     output = []
     output.append(existing_header_columns)
 
-    for ip, name, os, lsp, group, loc, tag, note, status in host_data:
+    for ip, name, os, lsp, group, loc, tag, note in host_data:
         tmp = []
         if sel_ip:
             tmp.append(ip)
@@ -281,8 +287,10 @@ def export(request, context):
             tmp.append(tag)
         if sel_notes:
             tmp.append(note)
+        ''' Removed status
         if sel_status:
             tmp.append(status)
+        '''
         output.append(tmp)
     response = StreamingHttpResponse((writer.writerow(row) for row in output),
                                         content_type="text/csv") #new
