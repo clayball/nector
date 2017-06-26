@@ -282,8 +282,9 @@ def ports(request):
                 h_ports = []
                 for p in port_json:
                     # Port is closed, remove Host from host_list.
-                    if port_json[p][0] == 'closed':
-                        host_list = host_list.exclude(ipv4_address=h.ipv4_address)
+                    if p == port_numbers:
+                        if port_json[p][0] == 'closed':
+                            host_list = host_list.exclude(ipv4_address=h.ipv4_address)
 
 
         context['host_list'] = host_list
