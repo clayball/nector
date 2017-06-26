@@ -13,12 +13,14 @@ def index(request):
 
 def login(request):
     '''Renders login page.'''
+    c = {}
 
     if request.user.is_authenticated():
         return loggedin(request)
-    c = {}
+
     if 'next' in request.GET:
         c['next'] = request.GET['next']
+
     c.update(csrf(request))
     return render_to_response('login.html', c)
 

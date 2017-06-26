@@ -3,9 +3,9 @@
 {% block content %}
 <div class="content">
 {% if host %}
-    <h2>Host Information</h2>
-    <form action="/hosts/edit/">
-        <input name="host" type="hidden" value={{host.ipv4_address}} />
+    <h1>Host Information</h1>
+    <form action="/hosts/edit/" method="post">{% csrf_token %}
+        <input name="host" type="hidden" value="{{host.ipv4_address}}" />
         <input id="edit" type="submit" value="Edit Host" />
     </form>
     <h4 style="padding-left:10px">IPv4</h4>

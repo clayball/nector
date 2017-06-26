@@ -213,14 +213,8 @@
             {% endif %}
 
             {% if 'ports' in checks %}
-                <td class="td-content">
-                {% for tuple in open_ports.items %}
-                    {% if tuple.0 == host.ipv4_address %}
-                        {{tuple.1}}
-                        <input type="hidden" name="scan-open_ports" value="{{tuple.1}}">
-                    {% endif %}
-                {% endfor %}
-                </td>
+                <td class="td-content">{{host.open_ports}}</td>
+                    <input type="hidden" name="scan-open_ports" value="{{ host.open_ports }}">
             {% else %}
                 <input type="hidden" name="scan-open_ports" value="">
             {% endif %}

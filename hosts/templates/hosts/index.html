@@ -2,21 +2,31 @@
 
 {% block content %}
 <div class="content">
+
 {% if subnet_list %}
-<h2>SubNeTs</h2>
-<table>
-<tr>
-{% for subnet in subnet_list %}
-    <td class="td-content"><a href="/hosts/{{ subnet.id }}/">{{ subnet.ipv4_address }}/{{ subnet.prefix }}</a></td>
-    {% if forloop.counter|divisibleby:6 %}
-</tr>
-<tr>
-    {% endif %}
+<h1>SubNeTs</h1>
+{% for narrowed_subnet in narrowed_subnet_dict %}
+    <h2>{{ narrowed_subnet }}.x.x</h2>
+    <table>
+    <tr>
+    {% for k, v in narrowed_subnet_dict.items %}
+        {% if narrowed_subnet in k %}
+          {% for s in v %}
+            <td class="td-content"><a href="/hosts/{{ s.id }}/">{{ s.ipv4_address }}{{ s.suffix }}</a></td>
+            {% if forloop.counter|divisibleby:6 %}
+                </tr>
+                <tr>
+            {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    </tr>
+    </table>
 {% endfor %}
-</tr>
-</table>
+
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}
+
 </div>
 {% endblock %}

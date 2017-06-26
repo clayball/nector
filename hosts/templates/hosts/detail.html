@@ -3,7 +3,7 @@
 {% block content %}
 <div class="content">
 {% if host_list %}
-  <h2>Hosts</h2>
+  <h1>Hosts on {{ subnet.ipv4_address }}{{ subnet.suffix }}</h1>
   <div style="float:right">
     <form method="GET" action="/hosts/limit-hosts/{{ subnet_id }}">
       <select name="select_hosts">
@@ -25,25 +25,53 @@
     </form>
   </div>
 
-    <ul>
+    <table>
+        <tr>
+            {% if limit == 'online' %}
+                <td class="td-content">IP Address</td>
+                <td class="td-content">Host Name</td>
+                <td class="td-content">No. Open Ports</td>
+            {% elif limit == 'offline' %}
+                <td class="td-content">IP Address</td>
+            {% elif limit == 'all' %}
+                <td class="td-content">IP Address</td>
+                <td class="td-content">Host Name</td>
+                <td class="td-content">No. Open Ports</td>
+            {% endif %}
+        </tr>
     {% for host in host_list %}
+
         {% if limit == 'online' %}
           {% if host.status == 'Online' %}
-          <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}, {{ host.host_name }}</a></li>
+          <tr>
+          <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
+          <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>
+          <td class="td-content">{{ host.num_open_ports }}</td>
+          </tr>
           {% endif %}
         {% elif limit == 'offline' %}
           {% if host.status == 'Offline' %}
-          <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></li>
+          <tr>
+          <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
+          </tr>
           {% endif %}
         {% elif limit == 'all' %}
           {% if host.status == 'Online' %}
-            <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}, {{ host.host_name }}</a></li>
+            <tr>
+            <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
+            <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>
+            <td class="td-content">{{ host.num_open_ports }}</td>
+            </tr>
           {% else %}
-            <li><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></li>
+            <tr>
+            <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
+            </tr>
           {% endif %}
+
         {% endif %}
+
     {% endfor %}
-    </ul>
+    </table>
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}

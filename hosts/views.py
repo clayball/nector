@@ -24,22 +24,38 @@ def index(request):
     # Use this list to store subnets without their masks (aka the .0/24 piece)
     # as strings in a list.
     # We're doing this for ease of sorting.
-    no_mask_list = []
-    for i in subnet_list:
-        no_mask_list.append(str(i).split('/')[0])
+    ipv4_list = []
+    for subnet in subnet_list:
+        ipv4_list.append(subnet.ipv4_address)
 
     # Sort the maskless subnets.
-    sorted_subnet_list = sort_ip_list(no_mask_list)
+    sorted_subnet_list = sort_ip_list(ipv4_list)
 
     # Get sorted Subnet objects using sorted subnet strings.
     # (Aka "convert" list to QuerySet)
-    sorted_subnet_set = []
+    sorted_subnet_qset = []
     for s in sorted_subnet_list:
-        sorted_subnet_set.append(Subnet.objects.get(ipv4_address__startswith=s))
+        sorted_subnet_qset.append(Subnet.objects.get(ipv4_address=s))
+
+    # Gets subnets as 10.0 (aka 10.0.x.x) for ease of view in index template.
+    sorted_narrowed_subnet_list = set()
+    for s in sorted_subnet_list:
+        narrowed_subnet = s.rsplit('.', 1)[0]
+        sorted_narrowed_subnet_list.add(narrowed_subnet)
+
+    # narrowed_subnet_dict['10.0'] returns '[SubnetA, SubnetB, ...]'
+    narrowed_subnet_dict = {}
+    for n in sorted_narrowed_subnet_list:
+        narrowed_subnet_dict[n] = []
+        for s in sorted_subnet_qset:
+            if n in s.ipv4_address:
+                narrowed_subnet_dict[n].append(s)
 
     # Context to pass to hosts/index.html so we can use its key,value pairs as
     # variables in the template.
-    context = {'subnet_list': sorted_subnet_set}
+    context = {'subnet_list': sorted_subnet_qset,
+               'narrowed_subnet_list' : sorted_narrowed_subnet_list,
+               'narrowed_subnet_dict' : narrowed_subnet_dict}
     return render(request, 'hosts/index.html', context)
 
 
@@ -51,14 +67,15 @@ def detail(request, subnet_id):
 
     # Break up the subnet address so we can get hosts that fall under its
     # subnet.
-    address = subnet.ipv4_address.rsplit('.', 1)
+    address = subnet.ipv4_address
 
     # Get hosts that start with the same address as the subnet.
-    host_list = Host.objects.filter(ipv4_address__startswith=address[0])
+    host_list = Host.objects.filter(ipv4_address__startswith=address)
 
     # Context to pass to hosts/index.html so we can use its key,value pairs as
     # variables in the template.
-    context = {'host_list': host_list, 'subnet_id' : subnet_id, 'limit' : 'online'}
+    context = {'host_list': host_list, 'subnet_id' : subnet_id,
+               'subnet' : subnet, 'limit' : 'online',}
     return render(request, 'hosts/detail.html', context)
 
 
@@ -67,6 +84,12 @@ def detail_host(request, subnet_id, host_id):
 
     # Get selected Host object.
     host = get_object_or_404(Host, pk=host_id)
+
+    # Save current host to session.
+    # This will be used to see what host the user last visited.
+    # Its purpose is to ensure the user is editing the right host,
+    # if he/she chooses to do so.
+    request.session['last-host'] = host.ipv4_address
 
     # Get vulnerabilities of selected Host.
     vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
@@ -114,91 +137,55 @@ def detail_host(request, subnet_id, host_id):
 #@permission_required('hosts.edit_host', raise_exception=True)
 def edit(request):
     '''Edit a host's information.'''
-
     # The request method used (GET, POST, etc) determines what dict 'context'
     # gets filled with.
     context = {}
 
-    # If we have a non-empty GET request, that means the user is specifying
-    # a particular host they want to edit.
-    # ie They clicked the "Edit Host" button.
-    if request.GET:
-        # Get the respective Host object from 'host' query in URL.
-        # /hosts/edit/?host=0.0.0.0
-        host_ip = request.GET.get('host')
-        host = get_object_or_404(Host, ipv4_address=host_ip)
-
-        # Parse ports and port information from specified Host so we can
-        # preload it into the form as string.
-        str_ports = ""
-        state_ports = ""
-        proto_ports = ""
-        date_ports = ""
-        if host.ports:
-            # Get Host ports as JSON object.
-            json_ports = json.loads(host.ports)
-            # For every port, we want port num, state, protocol, and date.
-            for p in json_ports:
-                # Make sure port is not an empty string
-                if p:
-                    str_ports += p + ', ' # Port number
-                    state_ports += json_ports[p][0] + ', ' # Port state
-                    proto_ports += json_ports[p][1] + ', ' # Port protocol
-                    date_ports += json_ports[p][2] + ', ' # Port date
-
-        # Load form with Host information and parsed port information.
-        form = HostForm(instance=host, initial={
-                                                'ports':str_ports,
-                                                'port_state':state_ports,
-                                                'port_protocol':proto_ports,
-                                                'port_date':date_ports,
-                                                })
-
     # If we have a non-empty POST request, that means
-    # the user is submitting the form.
-    elif request.POST:
-        # Retrieve IP addr user entered into form.
-        # Use that IP to get respective Host object.
-        host_ip = request.POST['ipv4_address']
-        host = get_object_or_404(Host, ipv4_address=host_ip)
+    # the user is submitting / loading the form.
+    if request.POST:
 
-        # Load form with provided information so we can save the form as
-        # an object. (See forms.py and docs on ModelForms for more info)
-        form = HostForm(request.POST, instance=host)
+        # 'update_form' is a hidden tag in our template's form.
+        # If it exists in our POST, then the user is submitting the form.
+        # Otherwise, the user is loading the form.
+        if 'update_form' not in request.POST:
+            host_ip = request.session['last-host']
+            host = get_object_or_404(Host, ipv4_address=host_ip)
+            context['host'] = host
+            form = HostForm(instance=host)
+        else:
+            # Retrieve IP addr user entered into form.
+            # Use that IP to get respective Host object.
+            host_ip = request.session['last-host']
+            host = get_object_or_404(Host, ipv4_address=host_ip)
 
-        # form.is_valid() checks that updated instance object's new attributes
-        # are valid. Calling form.save() will actually save them to the db.
-        if form.is_valid():
+            # Load form with provided information so we can save the form as
+            # an object. (See forms.py and docs on ModelForms for more info)
+            form = HostForm(request.POST, instance=host)
 
-            # Get port information from POST request.
-            # Each port detail will be entered as a CSV string, so we'll have
-            # to parse that into JSON format.
-            if request.POST['ports']:
-                json_ports = ports_to_json_format(
-                                                  request.POST['ports'],
-                                                  request.POST['port_state'],
-                                                  request.POST['port_protocol'],
-                                                  request.POST['port_date']
-                                                  )
-                # Get a copy of the POST request so we can manipulate its values.
-                post = copy.deepcopy(request.POST)
-                # Store our JSON-formatted ports into our copied POST request.
-                post['ports'] = json_ports
-                # Create new form that follows our port formatting.
-                form = HostForm(post, instance=host)
+            # form.is_valid() checks that updated instance object's new attributes
+            # are valid. Calling form.save() will actually save them to the db.
+            if form.is_valid():
 
-            # Save attributes from form into those of a Host object.
-            form.save()
+                # Save attributes from form into those of a Host object.
+                form.save()
 
-            # Get ip addr of updated Host so we can direct user to its page
-            # after editing.
-            new_ip = request.POST['ipv4_address']
-            return HttpResponseRedirect('/hosts/search/?input_ip=%s' % new_ip)
+                # Get ip addr of updated Host so we can direct user to its page
+                # after editing.
+                new_ip = request.session['last-host']
+
+                return HttpResponseRedirect('/hosts/search/?input_ip=%s' % new_ip)
 
     # Request method was empty, so user wants to create new Host.
     # Create empty form.
     else:
-        form = HostForm()
+        if 'last-host' in request.session:
+            host_ip = request.session['last-host']
+            host = get_object_or_404(Host, ipv4_address=host_ip)
+            context['host'] = host
+            form = HostForm(instance=host)
+        else:
+            form = HostForm()
 
     # Add new CSRF token and form to context.
     context.update(csrf(request))
@@ -280,10 +267,10 @@ def limit_hosts(request, subnet_id):
             # Use Subnet object to get the maskless IP addr
             # for obtaining the subnet's hosts.
             subnet = get_object_or_404(Subnet, pk=subnet_id)
-            address = subnet.ipv4_address.rsplit('.', 1)
+            address = subnet.ipv4_address
 
             # Get queryset of (unsorted) hosts that belong to our subnet.
-            host_set = Host.objects.filter(ipv4_address__startswith=address[0])
+            host_set = Host.objects.filter(ipv4_address__startswith=address)
 
             # Pass queryset of hosts to helper function
             # so we can pull out each host's IP addr.
@@ -304,7 +291,8 @@ def limit_hosts(request, subnet_id):
             for h in sorted_host_list:
                 sorted_host_set.append(Host.objects.get(ipv4_address=h))
 
-            context = {'host_list': sorted_host_set, 'limit' : query, 'subnet_id' : subnet_id}
+            context = {'host_list': sorted_host_set, 'limit' : query,
+                       'subnet' : subnet, 'subnet_id' : subnet_id}
             return render(request, 'hosts/detail.html', context)
     except:
         return render(request, 'hosts/detail.html')
@@ -360,6 +348,12 @@ def search_host(request):
 
                 # Get host object based on obtained id.
                 host = get_object_or_404(Host, pk=host_id_list[0])
+
+                # Save current host to session.
+                # This will be used to see what host the user last visited.
+                # Its purpose is to ensure the user is editing the right host,
+                # if he/she chooses to do so.
+                request.session['last-host'] = host.ipv4_address
 
                 # Get vulnerabilities of the Host.
                 vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
@@ -420,7 +414,8 @@ def search_host(request):
                 host_list = Host.objects.filter(ipv4_address__startswith=address[0])
 
                 # Pass context and render page.
-                context = {'host_list': host_list, 'limit' : 'online', 'subnet_id' : subnet_id}
+                context = {'host_list': host_list, 'limit' : 'online',
+                           'subnet' : subnet, 'subnet_id' : subnet_id}
                 return render(request, 'hosts/detail.html', context)
 
             # Assume that query

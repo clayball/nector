@@ -99,9 +99,7 @@ def import_ports():
                                 else:
                                     pass
                         except django.http.response.Http404:
-                            print '==================================='
-                            print 'Could not find host %s' % ip
-                            print '==================================='
+                            print '[!] Could not find host in database: %s' % ip
                 hosts_w_port = Host.objects.filter(ports__icontains=port+"\":")
                 # If port is now closed, then we wanna close it:
                 for h in hosts_w_port:
@@ -111,10 +109,13 @@ def import_ports():
                             closed_port[port] = ["closed", str(closed_port[port][1]), date]
                             h.ports = json.dumps(closed_port)
                             h.save()
-            print '[Port %s] Saving to database...\n' % port
-    print '=============================='
-    print 'Database successfully updated!\n'
+            print '[*] [Port %s] Saving to database...\n' % port
+    print '[*] Ports: Done!\n'
 
 
-# Call funcitons.
-import_ports()
+def main():
+    # Call functions.
+    import_ports()
+
+if __name__ == "__main__":
+    main()

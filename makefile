@@ -12,7 +12,7 @@
 run :
 	python manage.py makemigrations
 	python manage.py migrate
-	python import-data.py
+	python import-data.py -v
 	python import-ports.py
 	python manage.py runserver
 

@@ -3,6 +3,8 @@ from datetime import datetime
 
 from django.db import models
 
+import json
+
 
 class Host(models.Model):
     """Model for individual hosts, consisting of an ip and a hostname"""
@@ -17,8 +19,46 @@ class Host(models.Model):
     ports = models.TextField(default='')
     status = models.CharField(max_length=120, default='')
 
+
     def __str__(self):
         return "%s, %s" % (self.ipv4_address, self.host_name)
+
+
+    def get_number_open_ports(self):
+        """Returns number of host's open ports."""
+        # Host has no ports, return 0.
+        if not self.ports:
+            return 0
+
+        # Host does have ports.
+        else:
+            # Convert the host's ports from a string to a JSON object.
+            port_json = json.loads(self.ports)
+            # Count number of ports current host has.
+            port_count = 0
+            for p in port_json:
+                port_count += 1
+            return port_count
+
+
+    def get_clean_open_ports(self):
+        """Returns list of clean open ports, ie no status, protocol, or date;
+           just open port numbers."""
+        open_ports = []
+        if self.ports: # If the host has ports:
+            port_json = json.loads(self.ports)
+            has_open_port = False
+            for p in port_json:
+                # Port is open, add to list .
+                if port_json[p][0] == 'open':
+                    open_ports.append(str(p))
+                    has_open_port = True
+        return open_ports
+
+
+    num_open_ports = property(get_number_open_ports)
+    open_ports = property(get_clean_open_ports)
+
 
     class Meta:
         permissions = (
@@ -27,9 +67,9 @@ class Host(models.Model):
 
 
 class Subnet(models.Model):
-    """Model for subnets, consisting of an ip address and a network prefix"""
-    ipv4_address = models.GenericIPAddressField(protocol='ipv4', default='0.0.0.0', unique=True)
-    prefix = models.IntegerField()
+    """Model for subnets, consisting of an ip address and a suffix"""
+    ipv4_address = models.GenericIPAddressField(protocol='ipv4', default='0.0.0', unique=True)
+    suffix = models.CharField(max_length=2, default='.x')
 
     def __str__(self):
-        return "%s/%s" % (self.ipv4_address, self.prefix)
+        return "%s%s" % (self.ipv4_address, self.suffix)
