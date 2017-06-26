@@ -261,7 +261,7 @@ def ports(request):
         '''
         if port_numbers:
             # Single port entered, so single filter needed:
-            host_list = Host.objects.filter(ports__icontains='"'+port_numbers+'"'+':')
+            host_list = Host.objects.filter(ports__icontains='"'+port_numbers+'"')
 
         if port_services:
             if not host_list:

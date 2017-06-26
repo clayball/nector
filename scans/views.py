@@ -99,12 +99,12 @@ def process_query(form, checks, rad):
         # Filter each specified port, one at a time.
         for p in ports:
             p = p.strip()
-            host_list = host_list.filter(ports__icontains='"'+p+'"'+':')
+            host_list = host_list.filter(ports__icontains='"'+p+'"')
     elif ports.strip():
         # Single port entered, so single filter needed:
         host_list = Host.objects.filter(ipv4_address__icontains=ipv4_address,
                                         host_name__icontains=host_name,
-                                        ports__icontains='"'+ports+'"'+':',
+                                        ports__icontains='"'+ports+'"',
                                         os__icontains=os,
                                         lsp__icontains=lsp,
                                         host_groups__icontains=host_groups,
