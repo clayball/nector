@@ -115,12 +115,14 @@ Edit these files to use your data.
 
 **Do not mess up the formatting!**
 
-Do the same thing with the sample port information in `port-scans/`.
+Rename the sample port files in `port-scans/` to remove the '_sample-_' prefix.
 
 ```
-$ mv port-scans/sample-port-22-open-170502.csv port-22-open-170502.csv
-$ mv port-scans/sample-port-80-open-170509.txt port-80-open-170509.txt
+$ mv port-scans/sample-port-22-open-170502.csv port-scans/port-22-open-170502.csv
+$ mv port-scans/sample-port-80-open-170509.txt port-scans/port-80-open-170509.txt
 ```
+
+Edit the sample port files in `port-scans/`.
 
 
 ### Populating the Database
