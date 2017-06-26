@@ -94,7 +94,7 @@ def populate_hosts():
 
                 else:
                     # Host doesn't exist in our db, so create a new one.
-                    h = Host(ipv4_address=ipv4, host_name=hostname, status="Online")
+                    h = Host(ipv4_address=ipv4, host_name=hostname)
 
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
@@ -122,7 +122,7 @@ def populate_hosts():
 
                 else:
                     # Host doesn't exist in our db, so create a new one.
-                    h = Host(ipv4_address=ipv4, status="Offline")
+                    h = Host(ipv4_address=ipv4)
 
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
