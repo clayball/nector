@@ -115,11 +115,17 @@ $ nmap -sL -iL subnets.txt -oN hosts.xml
 #### Getting Vulnerabilities with Nessus
 
 Go into Nessus.
+
 Under the _Analysis_ dropdown, select _Vulnerabilities_.
+
 From the new dropdown box in the top left corner, select _Vulnerability List_.
+
 In the top right corner, click on the _Options_ dropdown, and select
-_Export as CSV_. Make sure _only_ 'Plugin ID', 'Plugin Name', 'Severity',
-'IP Address', and 'DNS Name' are selected.
+_Export as CSV_. 
+
+Make sure _only_ 'Plugin ID', 'Plugin Name', 'Severity', 'IP Address', and
+ 'DNS Name' are selected.
+
 Click submit, and save this file as _vulnlist.csv_ in your NECTOR root directory.
 
 #### Getting Events
