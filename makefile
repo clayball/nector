@@ -19,7 +19,6 @@ run :
 
 demo :
 	cp -i sample-data/sample-hosts.xml hosts.xml
-	cp -i sample-data/sample-subnets.txt subnets.txt
 	cp -i sample-data/sample-vulnlist.csv vulnlist.csv
 	cp -i sample-data/sample-events.csv events.csv
 	python manage.py makemigrations
