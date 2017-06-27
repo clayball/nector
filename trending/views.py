@@ -5,6 +5,8 @@ from django.template import loader
 import feedparser
 import re
 
+from .models import RSSFeed
+
 
 '''Note:
    Chapter 10 of the O'Reilly book "Collective Intelligence" by
@@ -13,24 +15,78 @@ import re
    not to provide credit to its true author; thanks Toby!
 '''
 
-feedlist = ['http://feeds.reuters.com/reuters/topNews',
-            'http://feeds.reuters.com/reuters/domesticNews',
-            'http://feeds.reuters.com/reuters/technologyNews',]
+feedlist = []
 
 def index(request):
     '''Render default page for the Trending app.'''
+    global feedlist
+
+    feedlist = []
+
     context = {}
 
-    # Testing.
-    allw, artw, artt = get_article_words()
-    wordmatrix, wordvec = make_matrix(allw, artw)
+    update_feedlist()
 
-    context['vector'] = wordvec[0:10]
-    context['title'] = artt[1]
+    if feedlist:
+        allw, artw, artt = get_article_words()
+        wordmatrix, wordvec = make_matrix(allw, artw)
 
-    print wordmatrix
+        context['keywords'] = wordvec[0:10]
+        context['titles'] = artt[0:30]
+        
+    context['feedlist'] = feedlist
 
     return render(request, 'trending/trending.html', context)
+
+
+def update_feedlist():
+    '''Add urls to global var feedlist.'''
+    global feedlist
+    # Get all the RSS Feed objects from db.
+    rss_list = RSSFeed.objects.all()
+    # Store all RSS urls in var feedlist.
+    for feed in rss_list:
+        feedlist.append(feed.url)
+
+
+def remove_feed(request):
+    if request.POST:
+        if 'removed_feed' in request.POST:
+            removed_feed = request.POST['removed_feed']
+            try:
+                feed_inst = RSSFeed.objects.get(url=removed_feed)
+                feed_inst.delete()
+            except Exception as e:
+                print '%s' % e
+    return index(request)
+
+
+def add_feed(request):
+    if request.POST:
+        if 'added_feed' in request.POST:
+            added_feed = request.POST['added_feed']
+            store_feed_in_db(added_feed)
+    return index(request)
+
+
+def store_feed_in_db(added_feed):
+
+    # Check if RSSFeed is already in database.
+    if RSSFeed.objects.filter(url=added_feed).exists():
+        # Warn user.
+        print '[!] Feed already in database: %s' % ipv4
+
+    else:
+        # RSSFeed doesn't exist in our db, so create a new one.
+        rss = RSSFeed(url=added_feed)
+
+        # Save RSSFeed to db
+        try:
+            rss.save()
+
+        # Error, don't save and warn the user.
+        except Exception as e:
+            print '[!] %s' % e
 
 
 def strip_html(h):

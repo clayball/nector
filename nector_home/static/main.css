@@ -76,6 +76,11 @@ a:hover {
     float:left;
 }
 
+
+.rss-feed-removal{
+    width:393px;
+}
+
 .ip-textbox {
     float: right;
     padding: 2px;
@@ -85,6 +90,26 @@ a:hover {
     padding: 4px;
     background-color: black;
     color: green;
+}
+
+.huge-text {
+    font-size: 24px;
+}
+
+.large-text {
+    font-size: 20px;
+}
+
+.medium-text {
+    font-size: 16px;
+}
+
+.normal-text {
+    font-size: 12px;
+}
+
+.small-text {
+    font-size: 10px;
 }
 
 .base_search {
