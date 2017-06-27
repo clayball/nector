@@ -33,7 +33,7 @@ def index(request):
 
         context['keywords'] = wordvec[0:10]
         context['titles'] = artt[0:30]
-        
+
     context['feedlist'] = feedlist
 
     return render(request, 'trending/trending.html', context)
@@ -143,7 +143,7 @@ def get_article_words():
                 article_words[ec].setdefault(word, 0)
                 article_words[ec][word] += 1
             ec += 1
-        return all_words, article_words, article_titles
+    return all_words, article_words, article_titles
 
 
 def make_matrix(allw, articlew):
