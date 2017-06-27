@@ -230,6 +230,8 @@ def ports(request):
         port_services = ''
         port_dates    = ''
 
+        context['request'] = request
+
         if 'port_nums' in request.POST:
             port_numbers = request.POST['port_nums'].strip()
 
