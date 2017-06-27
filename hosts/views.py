@@ -542,8 +542,36 @@ def search_host(request):
                 # Get vulnerabilities of Host.
                 vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
 
-                # Pass context and render page.
-                context = {'host': host, 'vuln_list' : vuln_list}
+
+                # Ports are stored in our db as a string following json formatting,
+                # ie. { 'port' : ['state', 'protocol', 'date'] }
+                # ex. { '80' : ['open', 'Apache2', '150509']}
+                port_list = []
+                port_status_list = []
+                port_info_list = []
+                port_date_list = []
+
+                # Does the host have any ports?
+                if host.ports:
+
+                    # Convert the host's ports from a string to a JSON object.
+                    port_json = json.loads(host.ports)
+
+                    # Get the number, state, protocol, and date of each port in our
+                    # JSON object.
+                    for p in port_json:
+                        port_list.append(p)
+                        port_status_list.append(port_json[p][0])
+                        port_info_list.append(port_json[p][1])
+                        port_date_list.append(port_json[p][2])
+
+                    context = {'host': host, 'vuln_list' : vuln_list, 'port_data' : zip(port_list, port_status_list, port_info_list, port_date_list)}
+
+                else:
+
+                    # No ports, so don't add any port info to context.
+                    context = {'host': host, 'vuln_list' : vuln_list, 'port_data' : None}
+
                 return render(request, 'hosts/detail_host.html', context)
 
     except:
