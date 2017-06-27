@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'events',
     'blacklist',
     'scans',
+    'trending',
 ]
 
 MIDDLEWARE_CLASSES = [
