@@ -108,7 +108,7 @@ def populate_hosts():
                         print '[!] %s' % e
 
             elif l[0] != '#':
-                # Host has no hostname, therefore it's down.
+                # Host has no hostname, aka it has an NXDOMAIN.
                 # '#' indicates last line of Nmap scan.
                 ipv4 = l.split(' ')[4]
 
@@ -122,7 +122,7 @@ def populate_hosts():
 
                 else:
                     # Host doesn't exist in our db, so create a new one.
-                    h = Host(ipv4_address=ipv4)
+                    h = Host(ipv4_address=ipv4, host_name='NXDOMAIN')
 
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
