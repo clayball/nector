@@ -264,10 +264,15 @@ def ports(request):
             host_list = Host.objects.filter(ports__icontains='"'+port_numbers+'"')
 
         if port_services:
-            if not host_list:
-                host_list = Host.objects.filter(ports__icontains=port_services)
-            else:
-                host_list = host_list.filter(ports__icontains=port_services)
+            # Multiple words entered, so check each word leniently.
+            # (ie, break apart each word and check for each in the ports field)
+            if ' ' in port_services:
+                port_services = port_services.split(" ")
+                for s in port_services:
+                    if not host_list:
+                        host_list = Host.objects.filter(ports__icontains=s)
+                    else:
+                        host_list = host_list.filter(ports__icontains=s)
 
         if port_dates:
             if not host_list:
