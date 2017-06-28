@@ -7,6 +7,9 @@ from django.template.context_processors import csrf
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 
+import django_tables2 as tables
+from django_tables2 import RequestConfig
+
 from .models import Host
 from .models import Subnet
 from vulnerabilities.models import Vulnerability
@@ -16,6 +19,31 @@ import json
 import copy
 
 import subprocess # For ping
+
+
+class HostsTable(tables.Table):
+    ipv4_address = tables.TemplateColumn('<a href="/hosts/search/?input_ip={{record.ipv4_address}}">{{record.ipv4_address}}</a>',
+                                        verbose_name='IPv4 Address',
+                                        attrs={'th' : {'class' : 'td-content'},
+                                               'td' : {'class' : 'td-content'}})
+
+    host_name = tables.TemplateColumn('<a href="/hosts/search/?input_ip={{record.host_name}}">{{record.host_name}}</a>',
+                                      verbose_name='Host Name',
+                                      attrs={'th' : {'class' : 'td-content'},
+                                             'td' : {'class' : 'td-content'}})
+
+    num_open_ports = tables.Column(verbose_name='No. Open Ports',
+                                attrs={'th' : {'class' : 'td-content'},
+                                       'td' : {'class' : 'td-content'}})
+
+
+
+    class Meta:
+        td_attrs = {
+            'class': 'td-content'
+        }
+
+
 
 
 def index(request):
@@ -65,20 +93,82 @@ def index(request):
 def detail(request, subnet_id):
     '''Display hosts residing on selected subnet.'''
 
-    # Get Subnet object that was selected.
-    subnet = get_object_or_404(Subnet, pk=subnet_id)
+    context = {}
 
-    # Break up the subnet address so we can get hosts that fall under its
-    # subnet.
-    address = subnet.ipv4_address
+    if request.method == 'GET':
+        if 'select_hosts' in request.GET:
 
-    # Get hosts that start with the same address as the subnet.
-    host_list = Host.objects.filter(ipv4_address__startswith=address)
+            # Get value of dropdown menu ('named','unnamed','all')
+            limit_type = request.GET['select_hosts']
 
-    # Context to pass to hosts/index.html so we can use its key,value pairs as
-    # variables in the template.
-    context = {'host_list': host_list, 'subnet_id' : subnet_id,
-               'subnet' : subnet, 'limit' : 'named',}
+            # Get Subnet object of current subnet page.
+            # Use Subnet object to get the maskless IP addr
+            # for obtaining the subnet's hosts.
+            subnet = get_object_or_404(Subnet, pk=subnet_id)
+            address = subnet.ipv4_address
+
+            host_list = []
+            # Get queryset of (unsorted) hosts that belong to our subnet.
+            if limit_type == 'named':
+                host_list = Host.objects.filter(ipv4_address__startswith=address)
+                host_list = host_list.exclude(host_name='NXDOMAIN')
+            elif limit_type == 'unnamed':
+                host_list = Host.objects.filter(ipv4_address__startswith=address)
+                host_list = host_list.filter(host_name='NXDOMAIN')
+            else:
+                host_list = Host.objects.filter(ipv4_address__startswith=address)
+
+            # Pass queryset of hosts to helper function
+            # so we can pull out each host's IP addr.
+            unsorted_host_list = get_ip_list(host_list)
+
+            # Pass unsorted host list to helper function that
+            # returns a list of sorted IP addrs.
+            sorted_host_list = sort_ip_list(unsorted_host_list)
+
+            # Will contain a queryset
+            # of Host objs sorted by
+            # their IPv4 addrs.
+            sorted_host_set = []
+
+            # Iterate through sorted host
+            # list to add each host to our
+            # queryset 'sorted_host_set'.
+            for h in sorted_host_list:
+                sorted_host_set.append(Host.objects.get(ipv4_address=h))
+
+            # Set up table to display Hosts.
+            hosts_table = HostsTable(list(host_list))
+            RequestConfig(request, paginate={'per_page':256}).configure(hosts_table)
+            # Add to context.
+            context['host_list'] = sorted_host_set
+            context['limit'] = limit_type
+            context['subnet'] = subnet
+            context['subnet_id'] = subnet_id
+            context['hosts_table'] = hosts_table
+
+        else:
+
+            limit_type = request.GET.get('select_hosts')
+
+            # Get Subnet object that was selected.
+            subnet = get_object_or_404(Subnet, pk=subnet_id)
+
+            # Break up the subnet address so we can get hosts that fall under its
+            # subnet.
+            address = subnet.ipv4_address
+
+            # Get hosts that start with the same address as the subnet.
+            host_list = Host.objects.filter(ipv4_address__startswith=address)
+
+            # Set up table to display Hosts.
+            hosts_table = HostsTable(list(host_list))
+            RequestConfig(request, paginate={'per_page':256}).configure(hosts_table)
+
+            # Context to pass to hosts/index.html so we can use its key,value pairs as
+            # variables in the template.
+            context = {'host_list': host_list, 'subnet_id' : subnet_id,
+                       'subnet' : subnet, 'limit' : limit_type, 'hosts_table' : hosts_table}
     return render(request, 'hosts/detail.html', context)
 
 
@@ -243,24 +333,6 @@ def ports(request):
 
         host_list = {}
 
-        '''# Multiple ports/services/dates feature removed
-           # to prevent user confusion.
-        # Check if multiple ports entered (ex 80, 443)
-        if ',' in port_numbers:
-            ports = port_numbers.split(',')
-            context['port_list'] = ports
-            # Filter each specified port, one at a time.
-            for p in ports:
-                p = p.strip()
-                if not host_list:
-                    host_list = Host.objects.filter(
-                                         ports__icontains='"' + p + '"' + ':'
-                                        )
-                else:
-                    host_list = host_list.filter(
-                                             ports__icontains='"' + p + '"' + ':'
-                                            )
-        '''
         if port_numbers:
             # Single port entered, so single filter needed:
             host_list = Host.objects.filter(ports__icontains='"'+port_numbers+'"')
@@ -361,51 +433,6 @@ def ports_to_json_format(ports, states, protos, dates):
         dict_ports = json.dumps(tmp_dict_ports)
 
     return dict_ports
-
-
-def limit_hosts(request, subnet_id):
-    '''Sorts hosts when using the 'Online'/'Offline'/'All' dropdown menu
-       on the Subnets page.'''
-
-    try:
-        if request.method == 'GET':
-
-            # Get value of dropdown menu ('Online','Offline','All')
-            query = request.GET.get('select_hosts', None)
-
-            # Get Subnet object of current subnet page.
-            # Use Subnet object to get the maskless IP addr
-            # for obtaining the subnet's hosts.
-            subnet = get_object_or_404(Subnet, pk=subnet_id)
-            address = subnet.ipv4_address
-
-            # Get queryset of (unsorted) hosts that belong to our subnet.
-            host_set = Host.objects.filter(ipv4_address__startswith=address)
-
-            # Pass queryset of hosts to helper function
-            # so we can pull out each host's IP addr.
-            unsorted_host_list = get_ip_list(host_set)
-
-            # Pass unsorted host list to helper function that
-            # returns a list of sorted IP addrs.
-            sorted_host_list = sort_ip_list(unsorted_host_list)
-
-            # Will contain a queryset
-            # of Host objs sorted by
-            # their IPv4 addrs.
-            sorted_host_set = []
-
-            # Iterate through sorted host
-            # list to add each host to our
-            # queryset 'sorted_host_set'.
-            for h in sorted_host_list:
-                sorted_host_set.append(Host.objects.get(ipv4_address=h))
-
-            context = {'host_list': sorted_host_set, 'limit' : query,
-                       'subnet' : subnet, 'subnet_id' : subnet_id}
-            return render(request, 'hosts/detail.html', context)
-    except:
-        return render(request, 'hosts/detail.html')
 
 
 def get_ip_list(queryset):

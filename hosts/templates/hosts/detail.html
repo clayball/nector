@@ -1,11 +1,14 @@
 {% extends 'nector_home/base.html' %}
+{% load render_table from django_tables2 %}
 
 {% block content %}
 <div class="content">
+
+
 {% if host_list %}
   <h1>Hosts on {{ subnet.ipv4_address }}{{ subnet.suffix }}</h1>
   <div style="float:right">
-    <form method="GET" action="/hosts/limit-hosts/{{ subnet_id }}">
+    <form method="GET" action="/hosts/{{ subnet_id }}/">
       <select name="select_hosts">
         {% if limit == 'named' %}
         <option value="named" selected="selected">Named Hosts</option>
@@ -25,40 +28,8 @@
     </form>
   </div>
 
-    <table>
-        <tr>
-            <td class="td-content">IP Address</td>
-            <td class="td-content">Host Name</td>
-            <td class="td-content">No. Open Ports</td>
-        </tr>
-    {% for host in host_list %}
+  {% render_table hosts_table %}
 
-        {% if limit == 'named' %}
-          {% if host.host_name != 'NXDOMAIN' %}
-          <tr>
-          <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
-          <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>
-          <td class="td-content">{{ host.num_open_ports }}</td>
-          </tr>
-          {% endif %}
-        {% elif limit == 'unnamed' %}
-          {% if host.host_name == 'NXDOMAIN' %}
-          <tr>
-          <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
-          <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>
-          <td class="td-content">{{ host.num_open_ports }}</td>
-          </tr>
-          {% endif %}
-        {% elif limit == 'all' %}
-            <tr>
-            <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.ipv4_address }}</a></td>
-            <td class="td-content"><a href="/hosts/{{ subnet_id }}/host/{{ host.id }}">{{ host.host_name }}</a></td>
-            <td class="td-content">{{ host.num_open_ports }}</td>
-            </tr>
-        {% endif %}
-
-    {% endfor %}
-    </table>
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}
