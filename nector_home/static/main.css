@@ -178,17 +178,17 @@ table {
     text-align: right;
 }
 
-.subnet-list {
+.col-left {
     float: left;
     width: 33.33333333%;
 }
 
-.top-ten-list {
+.col-mid {
     float: left;
     width: 33.33333333%;
 }
 
-.newest-alerts {
+.col-right {
     float: left;
     width: 33.33333333%;
 }

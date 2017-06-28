@@ -2,6 +2,9 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from django.db import models
+from django.contrib.auth.models import User
+
+from django.shortcuts import get_object_or_404
 
 import json
 
@@ -70,9 +73,19 @@ class Host(models.Model):
         return closed_ports
 
 
+    def get_subnet_id(self):
+        """Returns the id of the Subnet that the Host belongs to."""
+        ip = self.ipv4_address
+        ip_prefix = ip.rsplit('.', 1)[0]
+        subnet = get_object_or_404(Subnet, ipv4_address__startswith=ip_prefix)
+        subnet_id = subnet.id
+        return subnet_id
+
+
     num_open_ports = property(get_number_open_ports)
     open_ports = property(get_clean_open_ports)
     closed_ports = property(get_clean_closed_ports)
+    subnet_id = property(get_subnet_id)
 
 
     class Meta:
@@ -88,3 +101,12 @@ class Subnet(models.Model):
 
     def __str__(self):
         return "%s%s" % (self.ipv4_address, self.suffix)
+
+
+class HostVisits(models.Model):
+    user = models.ForeignKey(User, default=0)
+    ipv4_address = models.GenericIPAddressField(protocol='ipv4')
+    visits = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "%s, %s, %s" % (self.user, self.ipv4_address, self.visits)

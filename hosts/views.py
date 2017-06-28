@@ -12,6 +12,7 @@ from django_tables2 import RequestConfig
 
 from .models import Host
 from .models import Subnet
+from .models import HostVisits
 from vulnerabilities.models import Vulnerability
 from forms import HostForm
 
@@ -22,12 +23,13 @@ import subprocess # For ping
 
 
 class HostsTable(tables.Table):
-    ipv4_address = tables.TemplateColumn('<a href="/hosts/search/?input_ip={{record.ipv4_address}}">{{record.ipv4_address}}</a>',
+
+    ipv4_address = tables.TemplateColumn('<a href="/hosts/{{record.subnet_id}}/host/{{record.id}}">{{record.ipv4_address}}</a>',
                                         verbose_name='IPv4 Address',
                                         attrs={'th' : {'class' : 'td-content'},
                                                'td' : {'class' : 'td-content'}})
 
-    host_name = tables.TemplateColumn('<a href="/hosts/search/?input_ip={{record.host_name}}">{{record.host_name}}</a>',
+    host_name = tables.TemplateColumn('<a href="/hosts/{{record.subnet_id}}/host/{{record.id}}">{{record.host_name}}</a>',
                                       verbose_name='Host Name',
                                       attrs={'th' : {'class' : 'td-content'},
                                              'td' : {'class' : 'td-content'}})
@@ -35,9 +37,7 @@ class HostsTable(tables.Table):
     num_open_ports = tables.Column(verbose_name='No. Open Ports',
                                 attrs={'th' : {'class' : 'td-content'},
                                        'td' : {'class' : 'td-content'}})
-
-
-
+    # Meta class used for built-in attribute modification.
     class Meta:
         td_attrs = {
             'class': 'td-content'
@@ -48,6 +48,8 @@ class HostsTable(tables.Table):
 
 def index(request):
     '''Renders hosts/index.html, displaying list of subnets.'''
+
+    context = {}
 
     # Get all the subnet objects.
     subnet_list = Subnet.objects.all()
@@ -82,11 +84,25 @@ def index(request):
             if n in s.ipv4_address:
                 narrowed_subnet_dict[n].append(s)
 
+    # Get frequently visited hosts.
+    if request.user.is_authenticated():
+        frequent_host_visits_list = (HostVisits.objects
+                                        .filter(user=request.user)
+                                        .order_by('-visits')[:10])
+        frequent_host_list = []
+        for h in frequent_host_visits_list:
+            host_obj = Host.objects.get(ipv4_address=h.ipv4_address)
+            frequent_host_list.append(host_obj)
+        context['frequent_host_list'] = frequent_host_list
+
+
+
     # Context to pass to hosts/index.html so we can use its key,value pairs as
     # variables in the template.
-    context = {'subnet_list': sorted_subnet_qset,
-               'narrowed_subnet_list' : sorted_narrowed_subnet_list,
-               'narrowed_subnet_dict' : narrowed_subnet_dict}
+    context['subnet_list'] = sorted_subnet_qset
+    context['narrowed_subnet_list'] = sorted_narrowed_subnet_list
+    context['narrowed_subnet_dict'] = narrowed_subnet_dict
+
     return render(request, 'hosts/index.html', context)
 
 
@@ -177,6 +193,29 @@ def detail_host(request, subnet_id, host_id, ping_status=''):
 
     # Get selected Host object.
     host = get_object_or_404(Host, pk=host_id)
+
+    # Add page count +1 for user.
+    if request.user.is_authenticated():
+        ipv4_address = host.ipv4_address
+        user = request.user
+        # Check if HostVisit is already in database.
+        if HostVisits.objects.filter(ipv4_address=ipv4_address, user=user).exists():
+            # If it is, then add 1 to its number of visits.
+            host_visit = get_object_or_404(HostVisits, ipv4_address=ipv4_address, user=user)
+            host_visit.visits += 1
+            try:
+                host_visit.save()
+            except Exception as e:
+                print '[!] %s' % e
+        else:
+            # HostVisit doesn't exist in our db, so create a new one.
+            host_visit = HostVisits(ipv4_address=ipv4_address, user=user, visits=1)
+            # Save HostVisit to db
+            try:
+                host_visit.save()
+            # Error, don't save and warn the user.
+            except Exception as e:
+                print '[!] %s' % e
 
     # Save current host to session.
     # This will be used to see what host the user last visited.
@@ -485,46 +524,14 @@ def search_host(request):
 
                 # Get host object based on obtained id.
                 host = get_object_or_404(Host, pk=host_id_list[0])
+                host_id = host.id
 
-                # Save current host to session.
-                # This will be used to see what host the user last visited.
-                # Its purpose is to ensure the user is editing the right host,
-                # if he/she chooses to do so.
-                request.session['last-host'] = host.ipv4_address
+                # Get subnet object based on host.
+                host_prefix = host.ipv4_address.rsplit('.', 1)[0]
+                subnet = get_object_or_404(Subnet, ipv4_address__startswith=host_prefix)
+                subnet_id = subnet.id
 
-                # Get vulnerabilities of the Host.
-                vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
-
-                # Ports are stored in our db as a string following json formatting,
-                # ie. { 'port' : ['state', 'protocol', 'date'] }
-                # ex. { '80' : ['open', 'Apache2', '150509']}
-                port_list = []
-                port_status_list = []
-                port_info_list = []
-                port_date_list = []
-
-                # Does the host have any ports?
-                if host.ports:
-
-                    # Convert the host's ports from a string to a JSON object.
-                    port_json = json.loads(host.ports)
-
-                    # Get the number, state, protocol, and date of each port in our
-                    # JSON object.
-                    for p in port_json:
-                        port_list.append(p)
-                        port_status_list.append(port_json[p][0])
-                        port_info_list.append(port_json[p][1])
-                        port_date_list.append(port_json[p][2])
-
-                    context = {'host': host, 'vuln_list' : vuln_list, 'port_data' : zip(port_list, port_status_list, port_info_list, port_date_list)}
-
-                else:
-
-                    # No ports, so don't add any port info to context.
-                    context = {'host': host, 'vuln_list' : vuln_list, 'port_data' : None}
-
-                return render(request, 'hosts/detail_host.html', context)
+                return detail_host(request, subnet_id, host_id)
 
             # Call helper function
             # that returns boolean
@@ -565,41 +572,14 @@ def search_host(request):
 
                 # Get Host object based on obtained id.
                 host = get_object_or_404(Host, pk=host_id)
+                host_id = host.id
 
-                # Get vulnerabilities of Host.
-                vuln_list = Vulnerability.objects.filter(ipv4_address=host.ipv4_address)
+                # Get subnet object based on host.
+                host_prefix = host.ipv4_address.rsplit('.', 1)[0]
+                subnet = get_object_or_404(Subnet, ipv4_address__startswith=host_prefix)
+                subnet_id = subnet.id
 
-
-                # Ports are stored in our db as a string following json formatting,
-                # ie. { 'port' : ['state', 'protocol', 'date'] }
-                # ex. { '80' : ['open', 'Apache2', '150509']}
-                port_list = []
-                port_status_list = []
-                port_info_list = []
-                port_date_list = []
-
-                # Does the host have any ports?
-                if host.ports:
-
-                    # Convert the host's ports from a string to a JSON object.
-                    port_json = json.loads(host.ports)
-
-                    # Get the number, state, protocol, and date of each port in our
-                    # JSON object.
-                    for p in port_json:
-                        port_list.append(p)
-                        port_status_list.append(port_json[p][0])
-                        port_info_list.append(port_json[p][1])
-                        port_date_list.append(port_json[p][2])
-
-                    context = {'host': host, 'vuln_list' : vuln_list, 'port_data' : zip(port_list, port_status_list, port_info_list, port_date_list)}
-
-                else:
-
-                    # No ports, so don't add any port info to context.
-                    context = {'host': host, 'vuln_list' : vuln_list, 'port_data' : None}
-
-                return render(request, 'hosts/detail_host.html', context)
+                return detail_host(request, subnet_id, host_id)
 
     except:
         ## Inputted query not found in our db, so load page with no host.
