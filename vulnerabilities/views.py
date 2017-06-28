@@ -44,7 +44,7 @@ def index(request):
     vuln_list = Vulnerability.objects.all()
 
     # Set up table to display Vulnerabilities.
-    vuln_table = VulnTable(vuln_list, order_by_field='severity')
+    vuln_table = VulnTable(vuln_list)
     RequestConfig(request, paginate={'per_page':100}).configure(vuln_table)
 
     # Pass context to rendered page.
