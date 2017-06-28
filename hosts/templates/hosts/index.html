@@ -3,8 +3,9 @@
 {% block content %}
 <div class="content">
 
-{% if subnet_list %}
+<div class="subnet-list">
 <h1>SubNeTs</h1>
+{% if subnet_list %}
 {% for narrowed_subnet in narrowed_subnet_dict %}
     <h2>{{ narrowed_subnet }}.x.x</h2>
     <table>
@@ -13,7 +14,7 @@
         {% if narrowed_subnet in k %}
           {% for s in v %}
             <td class="td-content"><a href="/hosts/{{ s.id }}/">{{ s.ipv4_address }}{{ s.suffix }}</a></td>
-            {% if forloop.counter|divisibleby:6 %}
+            {% if forloop.counter|divisibleby:3 %}
                 </tr>
                 <tr>
             {% endif %}
@@ -23,10 +24,50 @@
     </tr>
     </table>
 {% endfor %}
-
 {% else %}
-    <p>No hosts are available.</p>
+    <p>No subnets are available.</p>
 {% endif %}
+</div>
+
+<div class="top-ten-list">
+    <h1>T0p TeN ViSIt3d H05Ts</h1>
+    {% if host_list %}
+        <ol>
+        {% for host in host_list %}
+        <li>host</li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <p>No hosts to show!</p>
+    {% endif %}
+</div>
+
+<div class="lsp-hosts">
+    <h1>H0sTs oN LSP</h1>
+    {% if hosts_lsp_list %}
+    <ul>
+        {% for host in hosts_lsp_list %}
+        <li>host</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No hosts to show!</p>
+    {% endif %}
+</div>
+
+<div class="newest-alerts">
+    <h1>NewEsT A13erTs</h1>
+    {% if alert_list %}
+        <ul>
+            {% for alert in alert_list %}
+            <li>alert</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No alerts to show!</p>
+    {% endif %}
+</div>
+
 
 </div>
 {% endblock %}

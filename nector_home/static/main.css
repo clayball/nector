@@ -70,6 +70,7 @@ a:hover {
     margin-bottom: 40px;
     border: 1px solid green;
     color: #FDFDFD;
+    overflow: hidden;
 }
 
 .title-logo {
@@ -175,6 +176,21 @@ table {
 .td-content-scans-btn-export {
     padding:10px;
     text-align: right;
+}
+
+.subnet-list {
+    float: left;
+    width: 33.33333333%;
+}
+
+.top-ten-list {
+    float: left;
+    width: 33.33333333%;
+}
+
+.newest-alerts {
+    float: left;
+    width: 33.33333333%;
 }
 
 .p-left {
