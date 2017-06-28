@@ -20,12 +20,12 @@ class VulnTable(tables.Table):
                                 attrs={'th' : {'class' : 'td-content'},
                                        'td' : {'class' : 'td-content'}})
 
-    ipv4_address = tables.TemplateColumn('<a href="/hosts/search/?input_ip={{record.ipv4_address}}">{{record.ipv4_address}}</a>',
+    ipv4_address = tables.TemplateColumn('<a href="/hosts/{{record.subnet_id}}/host/{{record.host_id}}">{{record.ipv4_address}}</a>',
                                         verbose_name='IPv4 Address',
                                         attrs={'th' : {'class' : 'td-content'},
                                                'td' : {'class' : 'td-content'}})
 
-    host_name = tables.TemplateColumn('<a href="/hosts/search/?input_ip={{record.host_name}}">{{record.host_name}}</a>',
+    host_name = tables.TemplateColumn('<a href="/hosts/{{record.subnet_id}}/host/{{record.host_id}}">{{record.host_name}}</a>',
                                       verbose_name='Host Name',
                                       attrs={'th' : {'class' : 'td-content'},
                                              'td' : {'class' : 'td-content'}})
@@ -44,7 +44,7 @@ def index(request):
     vuln_list = Vulnerability.objects.all()
 
     # Set up table to display Vulnerabilities.
-    vuln_table = VulnTable(vuln_list)
+    vuln_table = VulnTable(list(vuln_list))
     RequestConfig(request, paginate={'per_page':100}).configure(vuln_table)
 
     # Pass context to rendered page.
