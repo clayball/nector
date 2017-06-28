@@ -37,8 +37,10 @@
             <li><a href="/hosts/{{host.subnet_id}}/host/{{host.id}}">{{host.ipv4_address}}, {{host.host_name}}</li></a>
         {% endfor %}
         </ol>
-    {% else %}
+    {% elif user.is_authenticated %}
         <p>No hosts to show!</p>
+    {% else %}
+        <a href="/accounts/login/"><p>Please login to use this feature.</p></a>
     {% endif %}
 
     <h1>NewEsT A13erTs</h1>
@@ -48,8 +50,10 @@
             <li>alert</li>
             {% endfor %}
         </ul>
+    {% elif user.is_authenticated %}
+        <p>No hosts to show!</p>
     {% else %}
-        <p>No alerts to show!</p>
+        <a href="/accounts/login/"><p>Please login to use this feature.</p></a>
     {% endif %}
 </div>
 
@@ -61,8 +65,10 @@
         <li>host</li>
         {% endfor %}
     </ul>
+    {% elif user.is_authenticated %}
+        <p>No hosts to show!</p>
     {% else %}
-    <p>No hosts to show!</p>
+        <a href="/accounts/login/"><p>Please login to use this feature.</p></a>
     {% endif %}
 </div>
 
