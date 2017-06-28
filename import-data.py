@@ -159,7 +159,8 @@ def populate_subnets():
             # meaning it won't save any Subnets to the database.
             if Subnet.objects.filter(ipv4_address=host_subnet[0], suffix=subnet_suffix).exists():
                 # Warn user.
-                print '[!] Subnet already in database: %s' % full_subnet
+                if verbose:
+                    print '[!] Subnet already in database: %s' % full_subnets
 
             else:
                 # Subnet doesn't exist in our db, so create a new one.
