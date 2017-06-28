@@ -25,7 +25,7 @@ def index(request):
 
     context = {}
 
-    update_feedlist()
+    update_feedlist(request)
 
     if feedlist:
         allw, artw, artt = get_article_words()
@@ -39,46 +39,53 @@ def index(request):
     return render(request, 'trending/trending.html', context)
 
 
-def update_feedlist():
+def update_feedlist(request):
     '''Add urls to global var feedlist.'''
     global feedlist
-    # Get all the RSS Feed objects from db.
-    rss_list = RSSFeed.objects.all()
-    # Store all RSS urls in var feedlist.
-    for feed in rss_list:
-        feedlist.append(feed.url)
+    if request.user.is_authenticated():
+        user = request.user
+        # Get all the RSS Feed objects from db.
+        rss_list = RSSFeed.objects.filter(user=user.id)
+        if rss_list:
+            # Store all RSS urls in var feedlist.
+            for feed in rss_list:
+                feedlist.append(feed.url)
 
 
 def remove_feed(request):
     if request.POST:
-        if 'removed_feed' in request.POST:
-            removed_feed = request.POST['removed_feed']
-            try:
-                feed_inst = RSSFeed.objects.get(url=removed_feed)
-                feed_inst.delete()
-            except Exception as e:
-                print '%s' % e
+        if request.user.is_authenticated():
+            if 'removed_feed' in request.POST:
+                removed_feed = request.POST['removed_feed']
+                user = request.user
+                try:
+                    feed_inst = RSSFeed.objects.get(url=removed_feed, user=user)
+                    feed_inst.delete()
+                except Exception as e:
+                    print '%s' % e
     return index(request)
 
 
 def add_feed(request):
     if request.POST:
-        if 'added_feed' in request.POST:
-            added_feed = request.POST['added_feed']
-            store_feed_in_db(added_feed)
+        if request.user.is_authenticated():
+            if 'added_feed' in request.POST:
+                added_feed = request.POST['added_feed']
+                user = request.user
+                store_feed_in_db(added_feed, user)
     return index(request)
 
 
-def store_feed_in_db(added_feed):
+def store_feed_in_db(added_feed, user):
 
     # Check if RSSFeed is already in database.
-    if RSSFeed.objects.filter(url=added_feed).exists():
+    if RSSFeed.objects.filter(url=added_feed, user=user).exists():
         # Warn user.
-        print '[!] Feed already in database: %s' % ipv4
+        print '[!] Feed already in database: %s with %s' % (added_feed, user.username)
 
     else:
         # RSSFeed doesn't exist in our db, so create a new one.
-        rss = RSSFeed(url=added_feed)
+        rss = RSSFeed(url=added_feed, user=user)
 
         # Save RSSFeed to db
         try:

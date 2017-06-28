@@ -9,6 +9,7 @@
 <div style="float:right; margin-right:10%">
     <h2>RSS Feeds</h2>
 
+    {% if user.is_authenticated %}
     <form method="post" action="/trending/addfeed/">{% csrf_token %}
         Add Feed: &nbsp;&nbsp;
         <input name="added_feed" type="text" size=45 placeholder="https://rss.packetstormsecurity.com/news/tags/hacking/" />
@@ -25,6 +26,9 @@
         </select>
         <input type="submit" value="Remove" />
     </form>
+    {% else %}
+    <a href="/accounts/login/"><p>Please login to customize the RSS Feeds.</p></a>
+    {% endif %}
 </div>
 
 {% if feedlist %}
