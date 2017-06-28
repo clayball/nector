@@ -197,7 +197,8 @@ def populate_vulnerabilities():
                     plugin_id=row[0], plugin_name=row[1], severity=row[2],
                     ipv4_address=row[3], host_name=row[4]).exists():
                 # Warn user.
-                print '[!] Vulnerability already in database: %s' % row[0]+row[4]
+                if verbose:
+                    print '[!] Vulnerability already in database: %s' % row[0]+row[4]
 
             else:
                 v = Vulnerability(plugin_and_host=row[0]+row[4], plugin_id=row[0],
@@ -235,7 +236,8 @@ def populate_events():
                     title=row[2], status=row[3], date_last_edited=row[4],
                     submitters=row[5], assignees=row[6].split(":")[0]).exists():
                 # Warn user.
-                print '[!] Event already in database: %s' % row[0]
+                if verbose:
+                    print '[!] Event already in database: %s' % row[0]
 
             else:
                 # Get event
