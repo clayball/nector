@@ -68,8 +68,8 @@ parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
 verbose = options.verbose
 
 # Alert messages
-MSG_HOST_ONLINE = "Host went Online"
-MSG_HOST_OFFLINE = "Host went Offline"
+MSG_HOST_ADD = "Host added to database"
+MSG_HOST_REMOVE = "Host removed from database"
 MSG_NEW_VULN = "New vulnerability discovered"
 
 # Alert date.
@@ -106,7 +106,7 @@ def populate_hosts():
                     h = Host(ipv4_address=ipv4, host_name=hostname)
 
                     # Create an alert for new host.
-                    a = Alert(ipv4_address=ipv4, message=MSG_HOST_ONLINE, date=DATE)
+                    a = Alert(ipv4_address=ipv4, message=MSG_HOST_ADD, date=DATE)
 
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
@@ -138,7 +138,7 @@ def populate_hosts():
                     h = Host(ipv4_address=ipv4, host_name='NXDOMAIN')
 
                     # Create an alert for new host.
-                    a = Alert(ipv4_address=ipv4, message=MSG_HOST_ONLINE, date=DATE)
+                    a = Alert(ipv4_address=ipv4, message=MSG_HOST_ADD, date=DATE)
 
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
