@@ -1,0 +1,17 @@
+{% extends 'nector_home/base.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<div class="content">
+  <h2>A13rTs</h2>
+  {% if alert_list %}
+
+    {% render_table vuln_table %}
+
+  {% else %}
+
+      <p>There are no alerts to show.</p>
+
+  {% endif %}
+</div>
+{% endblock %}

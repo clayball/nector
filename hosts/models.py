@@ -103,7 +103,18 @@ class Subnet(models.Model):
         return "%s%s" % (self.ipv4_address, self.suffix)
 
 
+class Alerts(models.Model):
+    """Model for keeping track of changes to the data."""
+    ipv4_address = models.ForeignKey(Host)
+    message = models.CharField(max_length=255, default='N/A')
+    date = models.CharField(max_length=10, default='01/01/1970')
+
+    def __str__(self):
+        return "%s, %s, %s" % (self.ipv4_address, self.message, self.date)
+
+
 class HostVisits(models.Model):
+    """Model for keeping track of number of visits each host gets per user."""
     user = models.ForeignKey(User, default=0)
     ipv4_address = models.GenericIPAddressField(protocol='ipv4')
     visits = models.IntegerField(default=0)

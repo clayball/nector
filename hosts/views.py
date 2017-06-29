@@ -346,6 +346,11 @@ def edit(request):
     return render(request, 'hosts/edit_host.html', context)
 
 
+def alerts(request):
+    context = {}
+    return render(request, 'hosts/alerts.html', context)
+
+
 def ports(request):
 
     context = {}

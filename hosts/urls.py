@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^ping/$', views.ping, name='ping'),
     url(r'^edit/$', views.edit, name='edit'),
     url(r'^ports/$', views.ports, name='ports'),
+    url(r'^alerts/$', views.alerts, name='alerts'),
 ]
