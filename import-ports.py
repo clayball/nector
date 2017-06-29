@@ -30,6 +30,7 @@ import django
 from optparse import OptionParser # Used for getting args
 import csv # Used for parsing vulnlist.csv, events.csv, & censys-keys.csv
 import json
+import time
 from django.db import transaction # Used in optimization of runtime.
 from django.db import IntegrityError # Used in checking for duplicates.
 from django.shortcuts import render, get_object_or_404
@@ -50,6 +51,9 @@ parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
 (options, args) = parser.parse_args()
 verbose = options.verbose
 
+# Get today's date in YYMMDD format.
+DATE = (time.strftime("%Y%m%d"))
+
 # Adds ports to Hosts in db.sqlite3
 def import_ports():
     HEADER = 'host'
@@ -58,13 +62,7 @@ def import_ports():
         # completed. (aka whenever we finish reading a file.)
         with transaction.atomic():
             port = ''
-            date = ''
-            # Get date from filename (var scan)
-            if '.' in str(scan):
-                # Has extension.
-                date = str(scan)[-10:][:-4]
-            else:
-                date = str(scan)[-6:]
+            date = DATE
             print '-> Importing %s' % scan
             with open(scans_dir_name + '/' + scan) as csvfile:
                 scan_file = csv.reader(csvfile)

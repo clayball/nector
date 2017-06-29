@@ -33,6 +33,7 @@ import os
 import django
 from optparse import OptionParser # Used for getting args
 import csv # Used for parsing vulnlist.csv, events.csv, & censys-keys.csv
+import time # Used for getting date for alerts.
 from django.db import transaction # Used in optimization of runtime.
 from django.db import IntegrityError
 
@@ -42,6 +43,7 @@ django.setup()
 # Import Django models.
 from hosts.models import Subnet
 from hosts.models import Host
+from hosts.models import Alert
 from vulnerabilities.models import Vulnerability
 from events.models import Event
 
@@ -65,6 +67,13 @@ parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
 (options, args) = parser.parse_args()
 verbose = options.verbose
 
+# Alert messages
+MSG_HOST_ONLINE = "Host went Online"
+MSG_HOST_OFFLINE = "Host went Offline"
+MSG_NEW_VULN = "New vulnerability discovered"
+
+# Alert date.
+DATE = time.strftime("%m/%d/%Y")
 
 # Adds Hosts to db.sqlite3
 def populate_hosts():
@@ -96,10 +105,14 @@ def populate_hosts():
                     # Host doesn't exist in our db, so create a new one.
                     h = Host(ipv4_address=ipv4, host_name=hostname)
 
+                    # Create an alert for new host.
+                    a = Alert(ipv4_address=ipv4, message=MSG_HOST_ONLINE, date=DATE)
+
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
                     try:
                         h.save()
+                        a.save()
                     except Exception as e:
                         # This shouldn't happen, unless the user screwed up
                         # the nmap scan.
@@ -124,10 +137,14 @@ def populate_hosts():
                     # Host doesn't exist in our db, so create a new one.
                     h = Host(ipv4_address=ipv4, host_name='NXDOMAIN')
 
+                    # Create an alert for new host.
+                    a = Alert(ipv4_address=ipv4, message=MSG_HOST_ONLINE, date=DATE)
+
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
                     try:
                         h.save()
+                        a.save()
                     except Exception as e:
                         # This shouldn't happen, unless the user screwed up
                         # the nmap scan.
@@ -204,10 +221,15 @@ def populate_vulnerabilities():
                 v = Vulnerability(plugin_and_host=row[0]+row[4], plugin_id=row[0],
                         plugin_name=row[1], severity=row[2], ipv4_address=row[3],
                         host_name=row[4])
+
+                # Create an alert for new vulnerability.
+                a = Alert(ipv4_address=row[3], message=MSG_NEW_VULN, date=DATE)
+
                 # Save Vulnerability to db (won't actually happen until
                 #  'with transaction.atomic()' is completed):
                 try:
                     v.save()
+                    a.save()
                 except Exception as e:
                     # This shouldn't happen, unless the user screwed up
                     # the vulnerability file.

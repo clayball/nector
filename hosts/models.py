@@ -103,11 +103,20 @@ class Subnet(models.Model):
         return "%s%s" % (self.ipv4_address, self.suffix)
 
 
-class Alerts(models.Model):
+class Alert(models.Model):
     """Model for keeping track of changes to the data."""
-    ipv4_address = models.ForeignKey(Host)
+    ipv4_address = models.GenericIPAddressField(protocol='ipv4')
     message = models.CharField(max_length=255, default='N/A')
     date = models.CharField(max_length=10, default='01/01/1970')
+
+
+    def get_host(self):
+        """Returns Host object corresponding to IPv4."""
+        ip = self.ipv4_address
+        host = get_object_or_404(Host, ipv4_address=ip)
+        return host
+
+    host = property(get_host)
 
     def __str__(self):
         return "%s, %s, %s" % (self.ipv4_address, self.message, self.date)

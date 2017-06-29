@@ -12,6 +12,7 @@ from django_tables2 import RequestConfig
 
 from .models import Host
 from .models import Subnet
+from .models import Alert
 from .models import HostVisits
 from vulnerabilities.models import Vulnerability
 from forms import HostForm
@@ -37,6 +38,33 @@ class HostsTable(tables.Table):
     num_open_ports = tables.Column(verbose_name='No. Open Ports',
                                 attrs={'th' : {'class' : 'td-content'},
                                        'td' : {'class' : 'td-content'}})
+    # Meta class used for built-in attribute modification.
+    class Meta:
+        td_attrs = {
+            'class': 'td-content'
+        }
+
+
+class AlertTable(tables.Table):
+
+    ipv4_address = tables.TemplateColumn('<a href="/hosts/{{record.host.subnet_id}}/host/{{record.host.id}}">{{record.ipv4_address}}</a>',
+                                        verbose_name='IPv4 Address',
+                                        attrs={'th' : {'class' : 'td-content'},
+                                               'td' : {'class' : 'td-content'}})
+
+    host_name = tables.TemplateColumn('<a href="/hosts/{{record.host.subnet_id}}/host/{{record.host.id}}">{{record.host.host_name}}</a>',
+                                      verbose_name='Host Name',
+                                      attrs={'th' : {'class' : 'td-content'},
+                                             'td' : {'class' : 'td-content'}})
+
+    message = tables.Column(verbose_name='Alert Message',
+                                attrs={'th' : {'class' : 'td-content'},
+                                       'td' : {'class' : 'td-content'}})
+
+    date = tables.Column(verbose_name='Date',
+                                attrs={'th' : {'class' : 'td-content'},
+                                       'td' : {'class' : 'td-content'}})
+
     # Meta class used for built-in attribute modification.
     class Meta:
         td_attrs = {
@@ -84,6 +112,7 @@ def index(request):
             if n in s.ipv4_address:
                 narrowed_subnet_dict[n].append(s)
 
+
     # Get frequently visited hosts.
     if request.user.is_authenticated():
         frequent_host_visits_list = (HostVisits.objects
@@ -95,6 +124,10 @@ def index(request):
             frequent_host_list.append(host_obj)
         context['frequent_host_list'] = frequent_host_list
 
+
+    # Get newest alerts.
+    newest_alerts_list = Alert.objects.all().order_by('-id')[:25]
+    context['newest_alerts_list'] = newest_alerts_list
 
 
     # Context to pass to hosts/index.html so we can use its key,value pairs as
@@ -348,6 +381,15 @@ def edit(request):
 
 def alerts(request):
     context = {}
+    alert_list = Alert.objects.all().order_by('-id')
+
+    # Set up table to display Alerts.
+    alert_table = AlertTable(list(alert_list))
+    RequestConfig(request, paginate={'per_page':100}).configure(alert_table)
+
+    context['alert_table'] = alert_table
+    context['alert_list'] = alert_list
+
     return render(request, 'hosts/alerts.html', context)
 
 
