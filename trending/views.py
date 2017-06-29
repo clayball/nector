@@ -32,7 +32,7 @@ def index(request):
         wordmatrix, wordvec = make_matrix(allw, artw)
 
         context['keywords'] = wordvec[0:10]
-        context['titles'] = artt[0:30]
+        context['titles'] = artt
 
     context['feedlist'] = feedlist
 
