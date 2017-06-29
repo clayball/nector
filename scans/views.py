@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404
-from django.shortcuts import render_to_response
 
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
@@ -59,13 +58,13 @@ def index(request):
                 return export(request, context)
 
             # We're not exporting, so render the page with a table.
-            return render_to_response('scans/scans.html', context)
+            return render(request, 'scans/scans.html', context)
 
     context = {}
     context.update(csrf(request))
     context['form'] = ScansForm()
     context['checks'] = ['ipv4_address', 'host_name', 'ports']
-    return render_to_response('scans/scans.html', context)
+    return render(request, 'scans/scans.html', context)
 
 
 def process_query(form, checks, rad):
