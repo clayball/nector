@@ -70,10 +70,16 @@ a:hover {
     margin-bottom: 40px;
     border: 1px solid green;
     color: #FDFDFD;
+    overflow: hidden;
 }
 
 .title-logo {
     float:left;
+}
+
+
+.rss-feed-removal{
+    width:393px;
 }
 
 .ip-textbox {
@@ -85,6 +91,26 @@ a:hover {
     padding: 4px;
     background-color: black;
     color: green;
+}
+
+.huge-text {
+    font-size: 24px;
+}
+
+.large-text {
+    font-size: 20px;
+}
+
+.medium-text {
+    font-size: 16px;
+}
+
+.normal-text {
+    font-size: 12px;
+}
+
+.small-text {
+    font-size: 10px;
 }
 
 .base_search {
@@ -150,6 +176,21 @@ table {
 .td-content-scans-btn-export {
     padding:10px;
     text-align: right;
+}
+
+.col-left {
+    float: left;
+    width: 35.33333333%;
+}
+
+.col-mid {
+    float: left;
+    width: 40.33333333%;
+}
+
+.col-right {
+    float: left;
+    width: 24.33333333%;
 }
 
 .p-left {

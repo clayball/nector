@@ -3,13 +3,15 @@
 
 {% block content %}
 <div class="content">
-  {% if vuln_list %}
-    <h2>Vulnerabilities</h2>
+  <h1>A13rTs</h1>
+  {% if alert_list %}
 
-    {% render_table vuln_table %}
+    {% render_table alert_table %}
 
   {% else %}
-      <p>There are no vulnerability scan results.</p>
+
+      <p>There are no alerts to show.</p>
+
   {% endif %}
 </div>
 {% endblock %}

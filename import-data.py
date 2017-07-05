@@ -33,6 +33,7 @@ import os
 import django
 from optparse import OptionParser # Used for getting args
 import csv # Used for parsing vulnlist.csv, events.csv, & censys-keys.csv
+import time # Used for getting date for alerts.
 from django.db import transaction # Used in optimization of runtime.
 from django.db import IntegrityError
 
@@ -42,6 +43,7 @@ django.setup()
 # Import Django models.
 from hosts.models import Subnet
 from hosts.models import Host
+from hosts.models import Alert
 from vulnerabilities.models import Vulnerability
 from events.models import Event
 
@@ -65,6 +67,13 @@ parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
 (options, args) = parser.parse_args()
 verbose = options.verbose
 
+# Alert messages
+MSG_HOST_ADD = "Host added to database"
+MSG_HOST_REMOVE = "Host removed from database"
+MSG_NEW_VULN = "New vulnerability discovered"
+
+# Alert date.
+DATE = time.strftime("%m/%d/%Y")
 
 # Adds Hosts to db.sqlite3
 def populate_hosts():
@@ -96,10 +105,14 @@ def populate_hosts():
                     # Host doesn't exist in our db, so create a new one.
                     h = Host(ipv4_address=ipv4, host_name=hostname)
 
+                    # Create an alert for new host.
+                    a = Alert(ipv4_address=ipv4, message=MSG_HOST_ADD, date=DATE)
+
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
                     try:
                         h.save()
+                        a.save()
                     except Exception as e:
                         # This shouldn't happen, unless the user screwed up
                         # the nmap scan.
@@ -108,7 +121,7 @@ def populate_hosts():
                         print '[!] %s' % e
 
             elif l[0] != '#':
-                # Host has no hostname, therefore it's down.
+                # Host has no hostname, aka it has an NXDOMAIN.
                 # '#' indicates last line of Nmap scan.
                 ipv4 = l.split(' ')[4]
 
@@ -122,12 +135,16 @@ def populate_hosts():
 
                 else:
                     # Host doesn't exist in our db, so create a new one.
-                    h = Host(ipv4_address=ipv4)
+                    h = Host(ipv4_address=ipv4, host_name='NXDOMAIN')
+
+                    # Create an alert for new host.
+                    a = Alert(ipv4_address=ipv4, message=MSG_HOST_ADD, date=DATE)
 
                     # Save Host to db (won't actually happen until
                     #  'with transaction.atomic()' is completed):
                     try:
                         h.save()
+                        a.save()
                     except Exception as e:
                         # This shouldn't happen, unless the user screwed up
                         # the nmap scan.
@@ -159,7 +176,8 @@ def populate_subnets():
             # meaning it won't save any Subnets to the database.
             if Subnet.objects.filter(ipv4_address=host_subnet[0], suffix=subnet_suffix).exists():
                 # Warn user.
-                print '[!] Subnet already in database: %s' % full_subnet
+                if verbose:
+                    print '[!] Subnet already in database: %s' % full_subnets
 
             else:
                 # Subnet doesn't exist in our db, so create a new one.
@@ -196,16 +214,22 @@ def populate_vulnerabilities():
                     plugin_id=row[0], plugin_name=row[1], severity=row[2],
                     ipv4_address=row[3], host_name=row[4]).exists():
                 # Warn user.
-                print '[!] Vulnerability already in database: %s' % row[0]+row[4]
+                if verbose:
+                    print '[!] Vulnerability already in database: %s' % row[0]+row[4]
 
             else:
                 v = Vulnerability(plugin_and_host=row[0]+row[4], plugin_id=row[0],
                         plugin_name=row[1], severity=row[2], ipv4_address=row[3],
                         host_name=row[4])
+
+                # Create an alert for new vulnerability.
+                a = Alert(ipv4_address=row[3], message=MSG_NEW_VULN, date=DATE)
+
                 # Save Vulnerability to db (won't actually happen until
                 #  'with transaction.atomic()' is completed):
                 try:
                     v.save()
+                    a.save()
                 except Exception as e:
                     # This shouldn't happen, unless the user screwed up
                     # the vulnerability file.
@@ -234,7 +258,8 @@ def populate_events():
                     title=row[2], status=row[3], date_last_edited=row[4],
                     submitters=row[5], assignees=row[6].split(":")[0]).exists():
                 # Warn user.
-                print '[!] Event already in database: %s' % row[0]
+                if verbose:
+                    print '[!] Event already in database: %s' % row[0]
 
             else:
                 # Get event

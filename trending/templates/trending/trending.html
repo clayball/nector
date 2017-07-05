@@ -1,0 +1,98 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+
+<h1>Trending</h1>
+<hr>
+
+<div style="float:right; margin-right:10%">
+    <h2>RSS Feeds</h2>
+
+    {% if user.is_authenticated %}
+    <form method="post" action="/trending/addfeed/">{% csrf_token %}
+        Add Feed: &nbsp;&nbsp;
+        <input name="added_feed" type="text" size=45 placeholder="https://rss.packetstormsecurity.com/news/tags/hacking/" />
+        <input type="submit" value="Add" />
+    </form>
+    <br>
+    <form method="post" action="/trending/removefeed/">{% csrf_token %}
+        Remove Feed:
+        <select name="removed_feed" class="rss-feed-removal">
+            <option hidden disabled selected>Please Choose</option>
+            {% for feed in feedlist %}
+                <option value="{{feed}}">{{feed}}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Remove" />
+    </form>
+    {% else %}
+    <a href="/accounts/login/"><p>Please login to customize the RSS Feeds.</p></a>
+    {% endif %}
+</div>
+
+{% if feedlist %}
+
+<h2>Trending Keywords</h2>
+<p>
+    {% for keyword in keywords %}
+
+        {% if forloop.counter == 1 %}
+            <span class="huge-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 2 %}
+            <span class="large-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 3 %}
+            <span class="medium-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 4 %}
+            <span class="medium-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 5 %}
+            <span class="normal-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 6 %}
+            <span class="normal-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 7 %}
+            <span class="normal-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 8 %}
+            <span class="small-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 9 %}
+            <span class="small-text">{{keyword}}</span>
+        {% endif %}
+
+        {% if forloop.counter == 10 %}
+            <span class="small-text">{{keyword}}</span>
+        {% endif %}
+
+    {% endfor %}
+    </p>
+
+    <br>
+    <h2>Trending Articles</h2>
+
+    <ul>
+    {% for title in titles %}
+        <li>{{title}}</li>
+    {% endfor %}
+    </ul>
+
+{% else %}
+    <p>No feeds available. Why not add some?</p>
+    <br><br><br><br><br><br>
+{% endif %}
+
+</div>
+{% endblock %}

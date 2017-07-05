@@ -1,10 +1,40 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
+import django_tables2 as tables
+from django_tables2 import RequestConfig
 
 from .models import Vulnerability
 from hosts.models import Host
 from hosts.models import Subnet
+
+class VulnTable(tables.Table):
+    plugin_id = tables.Column(verbose_name='Plugin ID',
+                              attrs={'th' : {'class' : 'td-content'},
+                                     'td' : {'class' : 'td-content'}})
+
+    plugin_name = tables.Column(verbose_name='Plugin Name',
+                                attrs={'th' : {'class' : 'td-content'},
+                                       'td' : {'class' : 'td-content'}})
+    severity = tables.Column(verbose_name='Severity',
+                                attrs={'th' : {'class' : 'td-content'},
+                                       'td' : {'class' : 'td-content'}})
+
+    ipv4_address = tables.TemplateColumn('<a href="/hosts/{{record.subnet_id}}/host/{{record.host_id}}">{{record.ipv4_address}}</a>',
+                                        verbose_name='IPv4 Address',
+                                        attrs={'th' : {'class' : 'td-content'},
+                                               'td' : {'class' : 'td-content'}})
+
+    host_name = tables.TemplateColumn('<a href="/hosts/{{record.subnet_id}}/host/{{record.host_id}}">{{record.host_name}}</a>',
+                                      verbose_name='Host Name',
+                                      attrs={'th' : {'class' : 'td-content'},
+                                             'td' : {'class' : 'td-content'}})
+
+    class Meta:
+        td_attrs = {
+            'class': 'td-content'
+        }
+
 
 
 def index(request):
@@ -13,27 +43,12 @@ def index(request):
     # Retrieve all vulnerabilities in db.
     vuln_list = Vulnerability.objects.all()
 
-    # Lists will be passed as context.
-    host_list = []
-    subnet_list = []
-
-    try:
-        # Iterate through all vulnerabilities,
-        # figure out what host each one corresponds
-        # to, and get that host's subnet address
-        # for hyperlinking in the template.
-        for vuln in vuln_list:
-            vuln_ip = vuln.ipv4_address
-            corresponding_host = Host.objects.get(ipv4_address=vuln_ip)
-            host_list.append(corresponding_host)
-            subnet_address = vuln_ip.rsplit('.', 1)
-            subnet_list.append(Subnet.objects.get(ipv4_address__startswith=subnet_address[0]))
-    except:
-        pass
+    # Set up table to display Vulnerabilities.
+    vuln_table = VulnTable(list(vuln_list))
+    RequestConfig(request, paginate={'per_page':100}).configure(vuln_table)
 
     # Pass context to rendered page.
-    context = {'vuln_list' : vuln_list, 'host_list' : host_list,
-               'subnet_list' : subnet_list,
-               'host_data' : zip(vuln_list, host_list, subnet_list)}
-    
+    context = {'vuln_list' : vuln_list,
+               'vuln_table' : vuln_table}
+
     return render(request, 'vulnerabilities/vulnz.html', context)

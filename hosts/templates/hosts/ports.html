@@ -11,17 +11,20 @@
 <table>
     <tr>
         <td class="td-content-scans">
-            Open Port Number: <input type="text" name="port_nums" placeholder="80"/>
+            Open Port Number:
+            <input type="text" name="port_nums" placeholder="80" value="{{ request.POST.port_nums }}"/>
         </td>
     </tr>
     <tr>
         <td class="td-content-scans">
-            Open Port Service: <input type="text" name="port_servs" placeholder="Apache"/>
+            Open Port Service:
+            <input type="text" name="port_servs" placeholder="Apache" value="{{ request.POST.port_servs }}"/>
         </td>
     </tr>
     <tr>
         <td class="td-content-scans">
-            Port Opened On: <input type="text" name="port_dates" placeholder="YYMMDD"/>
+            Port Opened On:
+            <input type="text" name="port_dates" placeholder="YYMMDD" value="{{ request.POST.port_dates }}"/>
         </td>
     </tr>
     <tr>

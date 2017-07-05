@@ -30,5 +30,6 @@ urlpatterns = [
     url(r'^reports/', views.reports, name='reports'),
     url(r'^scans/', include('scans.urls')),
     url(r'^vulnz/', include('vulnerabilities.urls')),
+    url(r'^trending/', include('trending.urls')),
 
 ]

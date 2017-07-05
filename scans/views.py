@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404
-from django.shortcuts import render_to_response
 
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
@@ -59,13 +58,13 @@ def index(request):
                 return export(request, context)
 
             # We're not exporting, so render the page with a table.
-            return render_to_response('scans/scans.html', context)
+            return render(request, 'scans/scans.html', context)
 
     context = {}
     context.update(csrf(request))
     context['form'] = ScansForm()
     context['checks'] = ['ipv4_address', 'host_name', 'ports']
-    return render_to_response('scans/scans.html', context)
+    return render(request, 'scans/scans.html', context)
 
 
 def process_query(form, checks, rad):
@@ -99,12 +98,12 @@ def process_query(form, checks, rad):
         # Filter each specified port, one at a time.
         for p in ports:
             p = p.strip()
-            host_list = host_list.filter(ports__icontains='"'+p+'"'+':')
+            host_list = host_list.filter(ports__icontains='"'+p+'"')
     elif ports.strip():
         # Single port entered, so single filter needed:
         host_list = Host.objects.filter(ipv4_address__icontains=ipv4_address,
                                         host_name__icontains=host_name,
-                                        ports__icontains='"'+ports+'"'+':',
+                                        ports__icontains='"'+ports+'"',
                                         os__icontains=os,
                                         lsp__icontains=lsp,
                                         host_groups__icontains=host_groups,

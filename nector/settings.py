@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'events',
     'blacklist',
     'scans',
+    'trending',
+    'django_tables2'
 ]
 
 MIDDLEWARE_CLASSES = [
