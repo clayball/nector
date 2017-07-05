@@ -6,6 +6,7 @@ from django.template import loader
 from django.template.context_processors import csrf
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
+from django.utils.html import escape
 
 import django_tables2 as tables
 from django_tables2 import RequestConfig
@@ -554,16 +555,20 @@ def search_host(request):
     try:
         if request.method == 'GET':
 
-            # Get data entered in Search Box.
-            query = request.GET.get('input_ip', None).strip()
             context = {}
 
-            # Call helper function
-            # that returns boolean
-            # value based on whether
-            # or not 'query' is an ip.
-            if is_ip(query):
+            # Get data entered in Search Box.
+            dirty_query = request.GET.get('input_ip', None).strip()
 
+            # Sanitize query.
+            query = escape(dirty_query)
+
+            # --
+            # Render Host or Subnet page if we can deduce what was entered.
+            # --
+
+            # Check if existing IPv4 Address.
+            if Host.objects.filter(ipv4_address=query).exists():
                 # Get corresponding id(s) for queried IP.
                 # Should only return 1 id.
                 host_id_list = Host.objects.filter(ipv4_address=query)\
@@ -580,45 +585,16 @@ def search_host(request):
 
                 return detail_host(request, subnet_id, host_id)
 
-            # Call helper function
-            # that returns boolean
-            # value based on whether
-            # or not 'query' is a
-            # subnet.
-            elif is_subnet(query):
 
-                # Get maskless addr from query.
-                ip_no_mask = query.split('/')[0]
+            # Check if existing Host Name.
+            if Host.objects.filter(host_name=query).exists():
+                # Get corresponding id(s) for queried IP.
+                # Should only return 1 id.
+                host_id_list = Host.objects.filter(host_name=query)\
+                                              .values_list('id', flat=True)
 
-                # Get corresponding id(s) for queried Subnet.
-                # Should only return 1 subnet ID.
-                subnet_id_list = Subnet.objects.filter(ipv4_address=ip_no_mask).values_list('id', flat=True)
-                subnet_id = subnet_id_list[0]
-
-                # Get Subnet object based on obtained id.
-                subnet = get_object_or_404(Subnet, pk=subnet_id)
-
-                # Get maskless subnet addr.
-                address = subnet.ipv4_address.rsplit('.', 1)
-
-                # Get list of hosts that reside in specified subnet.
-                host_list = Host.objects.filter(ipv4_address__startswith=address[0])
-
-                # Pass context and render page.
-                context = {'host_list': host_list, 'limit' : 'online',
-                           'subnet' : subnet, 'subnet_id' : subnet_id}
-                return render(request, 'hosts/detail.html', context)
-
-            # Assume that query
-            # is a hostname:
-            else:
-                # Get corresponding id(s) for queried Hostname.
-                # Should only return 1 host ID.
-                host_id_list = Host.objects.filter(host_name__iexact=query).values_list('id', flat=True)
-                host_id = host_id_list[0]
-
-                # Get Host object based on obtained id.
-                host = get_object_or_404(Host, pk=host_id)
+                # Get host object based on obtained id.
+                host = get_object_or_404(Host, pk=host_id_list[0])
                 host_id = host.id
 
                 # Get subnet object based on host.
@@ -628,8 +604,50 @@ def search_host(request):
 
                 return detail_host(request, subnet_id, host_id)
 
+
+            # Check if existing Subnet inputed as 0.0.0
+            if Subnet.objects.filter(ipv4_address=query).exists():
+                subnet = get_object_or_404(Subnet, ipv4_address=query)
+                subnet_id = subnet.id
+                return detail(request, subnet_id)
+
+
+            # Check if existing Subnet inputted as 0.0.0.x
+            try:
+                possible_subnet = query.rsplit('.', 1)[0]
+                if Subnet.objects.filter(ipv4_address=possible_subnet).exists():
+                    subnet = get_object_or_404(Subnet, ipv4_address=possible_subnet)
+                    subnet_id = subnet.id
+                    return detail(request, subnet_id)
+            except:
+                pass
+
+
+            # --
+            # Display table of Hosts related to query.
+            # --
+
+            host_list = Host.objects.filter(host_name__icontains=query)
+
+            print host_list
+
+            if host_list:
+                # Set up table to display Hosts.
+                hosts_table = HostsTable(list(host_list))
+                RequestConfig(request, paginate={'per_page':256}).configure(hosts_table)
+                # Add to context.
+                context['host_list'] = host_list
+                context['hosts_table'] = hosts_table
+
+                ## Inputted query not found in our db, so load page with no host.
+                return render(request, 'hosts/search_results.html', context)
+            else:
+                ## Inputted query not found in our db, so load page with no host.
+                return render(request, 'hosts/detail_host.html')
+
     except:
         ## Inputted query not found in our db, so load page with no host.
+        print 'ERR (hosts/views.py -> search_hosts())'
         return render(request, 'hosts/detail_host.html')
 
 
