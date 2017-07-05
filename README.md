@@ -26,6 +26,17 @@ configuration, incident reporting,  and more.
 ## Getting Started
 
 
+### Setting up a Virtual Environment (Optional)
+
+Create a [virtualenv](https://virtualenv.pypa.io/en/stable/) to work in, and
+activate it.
+
+```
+$ virtualenv venv-nector
+$ source venv-nector/bin/activate
+```
+
+
 ### Trying the Demo (Optional)
 
 If you want to try out the demo of NECTOR before making a full
@@ -38,16 +49,6 @@ $ make demo
 Then, open a browser and go to **http://127.0.0.1:8000**
 
 If you like what you see, continue onto the next steps.
-
-
-### Setting up a Virtual Environment (Optional)
-
-Create a [virtualenv](https://virtualenv.pypa.io/en/stable/) to work in, and activate it.
-
-```
-$ virtualenv venv-nector
-$ source venv-nector/bin/activate
-```
 
 
 ### Downloading Dependencies
@@ -78,7 +79,8 @@ and replace it with your own Django secret key.
 
 ### Initializing the Database
 
-Django uses [migrations](https://docs.djangoproject.com/en/1.11/topics/migrations/) to keep track of changes to the database's tables.
+Django uses [migrations](https://docs.djangoproject.com/en/1.11/topics/migrations/)
+to keep track of changes to the database's tables.
 
 First, create new migrations based on the Django models of our project.
 
@@ -121,7 +123,7 @@ Under the _Analysis_ dropdown, select _Vulnerabilities_.
 From the new dropdown box in the top left corner, select _Vulnerability List_.
 
 In the top right corner, click on the _Options_ dropdown, and select
-_Export as CSV_. 
+_Export as CSV_.
 
 Make sure _only_ 'Plugin ID', 'Plugin Name', 'Severity', 'IP Address', and
  'DNS Name' are selected.
@@ -211,7 +213,8 @@ data.
 If you make frequent changes to NECTOR (which is expected), you will
 want to run `$ make` to take care of everything for you.
 
-    Note: The makefile will not activate or deactivate your virtualenv. If you plan on using one, you must do so manually.
+    Note: The makefile will not activate or deactivate your virtualenv.
+    If you plan on using one, you must do so manually.
 
 
 ---
