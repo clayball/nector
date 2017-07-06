@@ -57,7 +57,11 @@ $ make demo
 
 Then, open a browser and go to **http://127.0.0.1:8000**
 
-If you like what you see, continue onto the next steps.
+If you like what you see, delete the sample database and move on to the next step.
+
+```
+$ rm db.sqlite3
+```
 
 
 ### Choosing a Database
@@ -251,7 +255,6 @@ $ python import-ports.py
 
 ### Running NECTOR
 
-
 Start the server.
 
 ```
@@ -276,7 +279,7 @@ If you make frequent changes to NECTOR (which is expected), you will
 want to run `$ make` to take care of everything for you.
 
     Note: The makefile will not activate or deactivate your virtualenv.
-    If you plan on using one, you must do so manually.
+          If you plan on using one, you must do so manually.
 
 
 ---
