@@ -233,26 +233,26 @@ Copy the sample data you need from `sample-data/` into this project's root folde
 $ cp sample-data/MISSING-FILE .
 ```
 
-Remove the '_sample-_' prefix from the file(s).
+Note that you will have to remove the _sample-_ prefix from each file.
 
 Missing Hosts:
 ```
-$ mv sample-data/sample-hosts.xml hosts.xml
+$ cp sample-data/sample-hosts.xml hosts.xml
 ```
 
 Missing Ports:
 ```
-$ mv sample-data/sample-openports.xml openports.xml
+$ cp sample-data/sample-openports.xml openports.xml
 ```
 
 Missing Vulnerabilities:
 ```
-$ mv sample-data/sample-vulnlist.csv vulnlist.csv
+$ cp sample-data/sample-vulnlist.csv vulnlist.csv
 ```
 
 Missing Events:
 ```
-$ mv sample-data/sample-events.csv events.csv
+$ cp sample-data/sample-events.csv events.csv
 ```
 
 Edit the file(s) to use your data.
