@@ -205,16 +205,27 @@ Todo.
 
 #### Getting Ports
 
-Todo.
+If you haven't already, create a file `subnets.txt` and fill it with your subnets.
+
+```
+$ vi subnets.txt
+```
+
+Use [nmap](https://nmap.org/) to run a popular-ports scan on all the hosts in your subnets.
+
+Save this scan as openports.xml
+
+```
+$ nmap -Pn -sV --version-light -vv -T5 -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 -iL subnets.txt --open -oX openports.xml 2>&1 > /dev/null
+```
+
+This scan may take some time to complete.
 
 
 #### Filling in the Gaps
 
 If you were unable to perform any of the above four steps, keep reading.
 Otherwise, you should skip this step.
-
-
-##### Missing Hosts, Vulnerabilities, or Events
 
 Copy the sample data you need from `sample-data/` into this project's root folder.
 
@@ -224,27 +235,27 @@ $ cp sample-data/MISSING-FILE .
 
 Remove the '_sample-_' prefix from the file(s).
 
+Missing Hosts:
 ```
-$ mv sample-events.csv events.csv
-$ mv sample-hosts.xml hosts.xml
-$ mv sample-vulnlist.csv vulnlist.csv
+$ mv sample-data/sample-hosts.xml hosts.xml
+```
+
+Missing Ports:
+```
+$ mv sample-data/sample-openports.xml openports.xml
+```
+
+Missing Vulnerabilities:
+```
+$ mv sample-data/sample-vulnlist.csv vulnlist.csv
+```
+
+Missing Events:
+```
+$ mv sample-data/sample-events.csv events.csv
 ```
 
 Edit the file(s) to use your data.
-
-Do not mess up the formatting!
-
-
-##### Missing Ports
-
-Rename the sample port files in `port-scans/` to remove the '_sample-_' prefix.
-
-```
-$ mv port-scans/sample-port-22-open-170502.csv port-scans/port-22-open-170502.csv
-$ mv port-scans/sample-port-80-open-170509.txt port-scans/port-80-open-170509.txt
-```
-
-Edit the sample port files in `port-scans/`.
 
 Do not mess up the formatting!
 

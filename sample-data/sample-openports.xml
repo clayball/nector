@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<nmaprun scanner="nmap" args="nmap -Pn -sV -&#45;version-light -vv -T5 -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 -iL subnets.txt -&#45;open -oX openports.xml" start="1499365410" startstr="Tue May  9 07:06:00 2017" version="7.50" xmloutputversion="1.04">
+<scaninfo type="connect" protocol="tcp" numservices="33" services="17,19,21-23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337"/>
+<verbose level="2"/>
+<debugging level="0"/>
+<taskbegin task="Parallel DNS resolution of 1 host." time="1499365410"/>
+<taskend task="Parallel DNS resolution of 1 host." time="1499365411"/>
+<taskbegin task="Connect Scan" time="1499365411"/>
+<taskend task="Connect Scan" time="1499365412" extrainfo="33 total ports"/>
+<taskbegin task="Service scan" time="1499365412"/>
+<taskend task="Service scan" time="1499365424" extrainfo="2 services on 1 host"/>
+<taskbegin task="NSE" time="1499365424"/>
+<taskend task="NSE" time="1499365424"/>
+<taskbegin task="NSE" time="1499365424"/>
+<taskend task="NSE" time="1499365424"/>
+<host starttime="1499365411" endtime="1499365424"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="104.70.51.36" addrtype="ipv4"/>
+<hostnames>
+<hostname name="conficturaindustries.com" type="user"/>
+<hostname name="a104-70-51-36.deploy.static.akamaitechnologies.com" type="PTR"/>
+</hostnames>
+<ports><extraports state="filtered" count="31">
+<extrareasons reason="no-responses" count="31"/>
+</extraports>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" tunnel="ssl" method="probed" conf="10"/></port>
+</ports>
+<times srtt="30730" rttvar="21041" to="114894"/>
+</host>
+<host starttime="1499365614" endtime="1499365627"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="104.112.22.22" addrtype="ipv4"/>
+<hostnames>
+<hostname name="e-corp-usa.com" type="user"/>
+<hostname name="a104-70-51-36.deploy.static.akamaitechnologies.com" type="PTR"/>
+</hostnames>
+<ports><extraports state="filtered" count="31">
+<extrareasons reason="no-responses" count="31"/>
+</extraports>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" tunnel="ssl" method="probed" conf="10"/></port>
+</ports>
+<times srtt="35426" rttvar="21032" to="119554"/>
+</host>
+<runstats><finished time="1499365424" timestr="Tue May  9 07:06:14 2017" elapsed="14.38" summary="Nmap done at Tue May  9 7:06:14 2017; 2 IP address (2 host up) scanned in 14.38 seconds" exit="success"/><hosts up="2" down="0" total="2"/>
+</runstats>
+</nmaprun>

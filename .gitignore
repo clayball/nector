@@ -11,6 +11,7 @@ vulnlist.csv
 reports.csv
 events.csv
 censys-keys.csv
+openports.xml
 port-scans/*
 !port-scans/sample-port-22-open-170502.csv
 !port-scans/sample-port-80-open-170509.txt

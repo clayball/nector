@@ -1,6 +1,0 @@
-host,port,state,info
-"104.108.168.140","80","open","Apache httpd 2.2.22 (Ubuntu)"
-"23.196.121.95","80","open","GoAhead-Webs httpd"
-"216.178.100.28","80","open","Apache httpd 2.4.23 (Ubuntu)"
-"104.112.22.22","80","open","Apache httpd 2.2.22 (Ubuntu)"
-"128.91.34.250","80","open","Microsoft IIS httpd 7.5"
