@@ -266,7 +266,6 @@ In order to use your data, you will have to import it into the database.
 
 ```
 $ python import-data.py
-$ python import-ports.py
 ```
 
 
