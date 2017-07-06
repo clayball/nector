@@ -53,11 +53,73 @@ If you like what you see, continue onto the next steps.
 
 ### Downloading Dependencies
 
-Install [pip](https://pypi.python.org/pypi/pip) dependencies.
+Install [pip](https://pypi.python.org/pypi/pip) dependencies. If you ran the demo, this has already been done for you.
 
 ```
 $ pip install -r requirements.txt
 ```
+
+
+### Choosing a Database
+
+NECTOR is configured to work with two types of databases out of the box: **SQLite3** and **PostgreSQL**.
+
+SQLite3 is light-weight, server-less, and requires practically no configuration. However, a SQLite3 database stores its information in a single binary file, and imposes limits on its users when querying a large amount of data.
+
+PostgreSQL is much more server-friendly, featuring high concurrency and the ability to deal with large datasets. Though, it does need to be set up and configured, which may pose as a nuisance toward someone wanting to use NECTOR out of the box.
+
+Ideally, if you intend on hosting NECTOR on a public-facing server, PostgreSQL should be your choice.
+Otherwise, if you're working locally or only dealing with a small amount of traffic, SQLite3 will work great.
+
+#### Setting up a SQLite3 Database (Option A)
+
+1. No manual setup required for a SQLite3 database.
+
+#### Setting up a PostgreSQL Database (Option B)
+
+1. Install necessary components.
+
+    ```
+    $ sudo dnf install postgresql postgresql-contrib postgresql-devel postgresql-server
+    ```
+
+2. Create a database and a database user.
+
+    ```
+    $ sudo su - postgres
+    $ psql
+    $ CREATE DATABASE nector;
+    $ CREATE USER myuser WITH PASSWORD 'password123';
+    $ ALTER ROLE myuser SET client_encoding TO 'utf8';
+    $ ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';
+    $ ALTER ROLE myuser SET timezone TO 'UTC';
+    $ GRANT ALL PRIVILEGES ON DATABASE nector TO myuser;
+    $ \q
+    $ exit
+    ```
+
+3. Modify project settings to use your database.
+
+    ```
+    $ vi nector/settings.py
+    ```
+    Find the 'DATABASE' section and replace it with:
+
+    ```
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'nector',
+            'USER': 'myuser',
+            'PASSWORD': 'password123',
+            'HOST': 'localhost',
+            'PORT': '',
+            'ATOMIC_REQUESTS': True,
+        }
+    }
+    ```
+
+    Make sure you change the USER and PASSWORD sections to fit your needs!
 
 
 ### Using Your Secret Key
@@ -82,15 +144,15 @@ and replace it with your own Django secret key.
 Django uses [migrations](https://docs.djangoproject.com/en/1.11/topics/migrations/)
 to keep track of changes to the database's tables.
 
-First, create new migrations based on the Django models of our project.
+First, create new migrations based on the Django models of your project.
 
 ```
 $ python manage.py makemigrations
 ```
 
-Next, apply the migrations to our database (this will create a database if
-one does not already exist). Doing this will fill our database with the tables
-we need for the project.
+Next, apply the migrations to your database (this will create a database if
+one does not already exist). Doing this will fill your database with the tables
+you need for the project.
 
 ```
 $ python manage.py migrate

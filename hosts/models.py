@@ -96,7 +96,7 @@ class Host(models.Model):
 
 class Subnet(models.Model):
     """Model for subnets, consisting of an ip address and a suffix"""
-    ipv4_address = models.GenericIPAddressField(protocol='ipv4', default='0.0.0', unique=True)
+    ipv4_address = models.CharField(max_length=11, default='0.0.0', unique=True)
     suffix = models.CharField(max_length=2, default='.x')
 
     def __str__(self):
@@ -105,7 +105,7 @@ class Subnet(models.Model):
 
 class Alert(models.Model):
     """Model for keeping track of changes to the data."""
-    ipv4_address = models.GenericIPAddressField(protocol='ipv4')
+    ipv4_address = models.GenericIPAddressField(protocol='ipv4', default='0.0.0.0')
     message = models.CharField(max_length=255, default='N/A')
     date = models.CharField(max_length=10, default='01/01/1970')
 
