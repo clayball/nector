@@ -3,22 +3,41 @@
 {% block content %}
 
 <center>
-<h2>Register</h2>
+<h1>Register</h1>
+<hr>
 <form action="/accounts/register/" method="post">{% csrf_token %}
     <br>
-    {{form.username.label_tag}} {{form.username}}<br><br>
-    {{form.password1.label_tag}} {{form.password1}}<br><br>
-    {{form.password2.label_tag}} {{form.password2}}<br><br>
+
+    <table>
+      <tr>
+        <td class="td-content">
+            {{form.username.label_tag}}
+        </td>
+        <td class="td-content">
+            {{form.username}}
+        </td>
+      </tr>
+      <tr>
+        <td class="td-content">
+            {{form.password1.label_tag}}
+        </td>
+        <td class="td-content">
+            {{form.password1}}
+        </td>
+      </tr>
+      <tr>
+        <td class="td-content">
+            {{form.password2.label_tag}}
+        </td>
+        <td class="td-content">
+            {{form.password2}}
+        </td>
+      </tr>
+    </table>
     <br><br>
-    <b>Note</b>: For security reasons, please ensure your password adheres to the following guidelines:
-    <ol>
-        <li>Bears no resemblance to username.</li>
-        <li>Is at least 8 characters long.</li>
-        <li>Is not a common word.</li>
-        <li>Is not entirely numeric.</li>
-    </ol>
     <input type="submit" value="Register" />
 </form>
+<br>
 </center>
 
 {% endblock %}
