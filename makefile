@@ -21,7 +21,6 @@ demo :
 	cp -i sample-data/sample-hosts.xml hosts.xml
 	cp -i sample-data/sample-vulnlist.csv vulnlist.csv
 	cp -i sample-data/sample-events.csv events.csv
-	sudo pip install -r requirements.txt
 	python manage.py makemigrations
 	python manage.py migrate
 	python import-data.py
