@@ -37,6 +37,15 @@ $ source venv-nector/bin/activate
 ```
 
 
+### Downloading Dependencies
+
+Install [pip](https://pypi.python.org/pypi/pip) dependencies.
+
+```
+$ pip install -r requirements.txt
+```
+
+
 ### Trying the Demo (Optional)
 
 If you want to try out the demo of NECTOR before making a full
@@ -49,15 +58,6 @@ $ make demo
 Then, open a browser and go to **http://127.0.0.1:8000**
 
 If you like what you see, continue onto the next steps.
-
-
-### Downloading Dependencies
-
-Install [pip](https://pypi.python.org/pypi/pip) dependencies. If you ran the demo, this has already been done for you.
-
-```
-$ pip install -r requirements.txt
-```
 
 
 ### Choosing a Database
