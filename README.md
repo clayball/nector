@@ -96,7 +96,7 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     $ CREATE USER myuser WITH PASSWORD 'password123';
     $ ALTER ROLE myuser SET client_encoding TO 'utf8';
     $ ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';
-    $ ALTER ROLE myuser SET timezone TO 'UTC';
+    $ ALTER ROLE myuser SET timezone TO 'EST';
     $ GRANT ALL PRIVILEGES ON DATABASE nector TO myuser;
     $ \q
     $ exit
@@ -165,6 +165,7 @@ $ python manage.py migrate
 
 ### Creating Your Data
 
+
 #### Getting Hosts with Nmap
 
 Create a file `subnets.txt` and fill it with your subnets.
@@ -196,18 +197,22 @@ Make sure _only_ 'Plugin ID', 'Plugin Name', 'Severity', 'IP Address', and
 
 Click submit, and save this file as _vulnlist.csv_ in your NECTOR root directory.
 
+
 #### Getting Events
 
 Todo.
+
 
 #### Getting Ports
 
 Todo.
 
+
 #### Filling in the Gaps
 
 If you were unable to perform any of the above four steps, keep reading.
 Otherwise, you should skip this step.
+
 
 ##### Missing Hosts, Vulnerabilities, or Events
 
@@ -228,6 +233,7 @@ $ mv sample-vulnlist.csv vulnlist.csv
 Edit the file(s) to use your data.
 
 Do not mess up the formatting!
+
 
 ##### Missing Ports
 
