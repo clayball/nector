@@ -381,10 +381,22 @@ def populate_openports():
                         # Host doesn't have any ports, so we can assign it to
                         # our string directly.
                         host.ports = dict_ports
+                        a = Alert(ipv4_address=host.ipv4_address, message=MSG_OPEN_PORT % port_number, date=DATE)
+                        a.save()
                     else:
                         # Host does have ports, so we'll have to add port info
                         # to existing dict.
                         new_port_info = json.loads(host.ports)
+
+                        # If port was not open but is now, we should
+                        # add new Alert to our database.
+                        try:
+                            if new_port_info[port_number][0] != 'open':
+                                a = Alert(ipv4_address=host.ipv4_address, message=MSG_OPEN_PORT % port_number, date=DATE)
+                                a.save()
+                        except:
+                            pass
+
                         new_port_info[port_number] = [status, service_info, DATE]
                         host.ports = json.dumps(new_port_info)
                         if verbose:
@@ -393,8 +405,6 @@ def populate_openports():
                     #  'with transaction.atomic()' is completed):
                     try:
                         host.save()
-                        a = Alert(ipv4_address=host.ipv4_address, message=MSG_OPEN_PORT % port_number, date=DATE)
-                        a.save()
                     except:
                         # Duplicate entry, so do nothing.
                         if verbose:
