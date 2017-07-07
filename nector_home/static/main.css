@@ -194,6 +194,11 @@ table {
     color : lightcoral;
 }
 
+.col-md {
+    float: left;
+    width: 33.3333333%;
+}
+
 .col-left {
     float: left;
     width: 35.33333333%;
