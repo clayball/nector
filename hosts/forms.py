@@ -75,7 +75,7 @@ class SearchForm(forms.Form):
     )
     notes = forms.CharField(label='Note(s)', max_length=320, required=False,
                         widget=forms.TextInput(
-                            attrs={'placeholder': 'Online'}
+                            attrs={'placeholder': 'Web Server'}
                         )
     )
     ports = forms.CharField(label='Open Port(s)', max_length=50, required=False,
