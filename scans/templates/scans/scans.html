@@ -5,7 +5,38 @@
 
     <h1>Sc4ns</h1>
     <hr>
-    <h2>Under Construction.</h2>
+
+    <p>This page is <u>currently</u> under construction. Few of its features will actually work. You have been warned.</p>
+
+    <div class="col-md">
+        <h2>Your Saved Scan Types</h2>
+        <ul>
+            <li><a href="">Confictura Ping Scan [Live Scan]</a> <a href="">[Delete?]</a></li>
+            <li><a href="">104.108.168.0-255 Port Scan [Live Scan]</a> <a href="">[Delete?]</a></li>
+            <li><a href="">31337 haX0r sc4n [Live Scan]</a> <a href="">[Delete?]</a></li>
+        </ul>
+    </div>
+
+
+
+    <div class="col-md">
+        <form class="custom_scans" action="/scans/" method="post">{% csrf_token %}
+            <h2>Custom Scans</h2>
+            <table>
+                <tr>
+                    <td class="td-content-scans">{{ form.scan_name.errors }} {{ form.scan_name.label_tag }} {{ form.scan_name}}</td>
+                    <td class="td-content-scans">{{ form.host_address.errors }} {{ form.host_address.label_tag }} {{ form.host_address}}</td>
+                    <td class="td-content-scans">{{ form.ports.errors }} {{ form.ports.label_tag }} {{ form.ports}}</td>
+                </tr>
+
+                <tr>
+                    <td class="td-content-scans-btn-generate"><input name="live_scan" type="submit" value="Perform Live Scan" /></td>
+                    <td></td>
+                    <td class="td-content-scans-btn-export"><input name="save_scan" type="submit" value="Save Scan Type" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
 
 </div>
 {% endblock %}
