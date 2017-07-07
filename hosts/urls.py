@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^edit/$', views.edit, name='edit'),
     url(r'^ports/$', views.ports, name='ports'),
     url(r'^alerts/$', views.alerts, name='alerts'),
+    url(r'^custom-search/$', views.search, name='search'),
+    url(r'^export/$', views.export, name='export'),
 ]
