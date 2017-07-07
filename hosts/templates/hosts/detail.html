@@ -7,6 +7,7 @@
 
 {% if host_list %}
   <h1>Hosts on {{ subnet.ipv4_address }}{{ subnet.suffix }}</h1>
+  <hr><br>
   <div style="float:right">
     <form method="GET" action="/hosts/{{ subnet_id }}/">
       <select name="select_hosts">

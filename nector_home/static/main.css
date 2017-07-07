@@ -184,6 +184,12 @@ table {
     text-align: center;
 }
 
+.td-content-login {
+    border: 1px solid white;
+    padding: 12px;
+    text-align: center;
+}
+
 .error-text {
     color : lightcoral;
 }
