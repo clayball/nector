@@ -356,7 +356,7 @@ def populate_openports():
                     pass
 
                 # Concatenate all port info into single string.
-                service_info = product + version + x_info
+                service_info = product + ' ' + version + ' ' + x_info
 
                 # If a port is in our nmap list, then it has to be open.
                 status = 'open'

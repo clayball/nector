@@ -426,7 +426,15 @@ def ports(request):
 
         host_list = {}
 
-        if port_numbers:
+        # Check if multiple ports entered (ex 80, 443)
+        if ',' in port_numbers:
+            ports = port_numbers.split(',')
+            # Filter each specified port, one at a time.
+            host_list = Host.objects.all()
+            for p in ports:
+                p = p.strip()
+                host_list = host_list.filter(ports__icontains='"'+p+'"')
+        elif port_numbers.strip():
             # Single port entered, so single filter needed:
             host_list = Host.objects.filter(ports__icontains='"'+port_numbers+'"')
 
@@ -692,7 +700,7 @@ def is_ip(query):
 
 def search(request):
     '''
-    Default loading page.
+    Default search page.
     If a POST request was made to get here, then our form was submitted,
     so display a table of the query made.
     Otherwise, just display the form.
@@ -752,8 +760,11 @@ def process_query(form, checks, rad):
     location = form.cleaned_data['location']
     tags = form.cleaned_data['tags']
     notes = form.cleaned_data['notes']
+    service = form.cleaned_data['services']
 
     host_list = []
+
+
 
     # Check if multiple ports entered (ex 80, 443)
     if ',' in ports:
@@ -791,6 +802,18 @@ def process_query(form, checks, rad):
                                         location__icontains=location,
                                         tags__icontains=tags,
                                         notes__icontains=notes)
+    if service:
+        # Multiple words entered, so check each word leniently.
+        # (ie, break apart each word and check for each in the ports field)
+        if ' ' in service:
+            service_list = service.split(" ")
+            for s in service_list:
+                if not host_list:
+                    host_list = Host.objects.filter(ports__icontains=s)
+                else:
+                    host_list = host_list.filter(ports__icontains=s)
+        else:
+            host_list = host_list.filter(ports__icontains=service)
 
     '''
     # Did we select Online-Only or Offline-Only or All Hosts?
