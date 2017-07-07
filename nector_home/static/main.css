@@ -178,6 +178,16 @@ table {
     text-align: right;
 }
 
+.td-content-register {
+    border: 1px solid white;
+    padding: 8px;
+    text-align: center;
+}
+
+.error-text {
+    color : lightcoral;
+}
+
 .col-left {
     float: left;
     width: 35.33333333%;
