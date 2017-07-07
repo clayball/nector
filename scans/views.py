@@ -8,6 +8,21 @@ from django.template import loader
 from forms import ScansForm
 
 
+'''
+    Useful nmap scans we can use as defaults:
+        1. Scan for UDP DDOS reflectors:
+            nmap -sU -A -PN -n -pU:19,53,123,161 -script=ntp-monlist,dns-recursion,snmp-sysdescr 192.168.1.0/24
+        2. Get HTTP headers of web services:
+            nmap --script=http-headers 192.168.1.0/24
+        3. Heartbleed Testing:
+            nmap -sV -p 443 --script=ssl-heartbleed 192.168.1.0/24
+        4. IP Information:
+            nmap --script=asn-query,whois,ip-geolocation-maxmind 192.168.1.0/24
+        5. Scan 100 most common ports (Fast):
+            nmap -F 192.168.1.1
+'''
+
+
 def index(request):
     '''
     Default search page.
@@ -37,9 +52,8 @@ def index(request):
             context.update(csrf(request))
             context['form'] = form
 
-            # If we're exporting, export!
-            if exporting:
-                return export(request, context)
+            if live_scanning:
+                return live_scan(request, context)
 
             # We're not exporting, so render the page with a table.
             return render(request, 'scans/scans.html', context)
@@ -48,4 +62,9 @@ def index(request):
     context.update(csrf(request))
     context['form'] = ScansForm()
     context['checks'] = ['ipv4_address', 'host_name', 'ports']
+    return render(request, 'scans/scans.html', context)
+
+
+def live_scan(request, context):
+    """TODO: Add results of the live scan to context. Display on page."""
     return render(request, 'scans/scans.html', context)
