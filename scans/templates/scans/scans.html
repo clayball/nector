@@ -39,12 +39,7 @@
                     <td class="td-content-scans">{{ form.ports.errors }} {{ form.ports.label_tag }} {{ form.ports}}</td>
                 </tr>
                 <tr>
-                    <td>
-                    {{ form.scan_type.errors }}
-                    {{ form.scan_type.label_tag }}
-                    {{ form.scan_type }}
-                    </td>
-
+                    <td></td>
                     <td>
                     {{ form.scan_options.errors }}
                     {{ form.scan_options.label_tag }}
@@ -61,10 +56,14 @@
 
         </form>
 
+        {% if nmap_output %}
         <div>
             <h2>Live Scan Results</h2>
-            <p>Nothing to show (yet)!</p>
+            {% for out in nmap_output %}
+            <p>{{ out }}</p>
+            {% endfor %}
         </div>
+        {% endif %}
 
     </div>
 
