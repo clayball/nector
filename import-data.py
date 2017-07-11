@@ -422,15 +422,16 @@ def populate_openports():
             for h in hosts_w_port:
                 # If host isn't in our host list, that means it used to have
                 # current port open, but now it doesn't.
-                if port_number not in host_list[h.ipv4_address]:
-                    # Mark port as closed and update db Host object.
-                    closed_port = json.loads(h.ports)
-                    if closed_port[port_number][0] == "open":
-                        closed_port[port_number] = ["closed", str(closed_port[port_number][1]), DATE]
-                        a = Alert(ipv4_address=h.ipv4_address, message=MSG_CLOSED_PORT % port_number, date=DATE)
-                        a.save()
-                        h.ports = json.dumps(closed_port)
-                        h.save()
+                if h.ipv4_address in host_list:
+                    if port_number not in host_list[h.ipv4_address]:
+                        # Mark port as closed and update db Host object.
+                        closed_port = json.loads(h.ports)
+                        if closed_port[port_number][0] == "open":
+                            closed_port[port_number] = ["closed", str(closed_port[port_number][1]), DATE]
+                            a = Alert(ipv4_address=h.ipv4_address, message=MSG_CLOSED_PORT % port_number, date=DATE)
+                            a.save()
+                            h.ports = json.dumps(closed_port)
+                            h.save()
             print '[*] [Port %s] Saving to database...' % port_number
     print '[*] Open Ports: Done!'
 

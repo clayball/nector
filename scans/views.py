@@ -106,6 +106,7 @@ def get_nmap_command(request, context):
 
 
 def live_scan(request, context):
+
     nmap_command = get_nmap_command(request, context)
 
     # We're using check_output w/ universal_newlines & splitlines
@@ -124,6 +125,54 @@ def live_scan(request, context):
     return render(request, 'scans/scans.html', context)
 
 
+<<<<<<< Updated upstream
+=======
+def delete_scan(request):
+
+    context = {}
+
+    if request.POST:
+        print request.POST
+        if request.user.is_authenticated():
+            if 'selected_scan_name' in request.POST:
+                scan_to_delete = request.POST['selected_scan_name']
+                user = request.user
+                try:
+                    scan_inst = ScanType.objects.get(scan_name=scan_to_delete)
+                    scan_inst.delete()
+                except Exception as e:
+                    print '%s' % e
+
+    if request.user.is_authenticated():
+        saved_scans = ScanType.objects.filter(user=request.user)
+        context['saved_scans'] = saved_scans
+
+    context.update(csrf(request))
+    context['form'] = ScansForm()
+
+    return render(request, 'scans/scans.html', context)
+
+
+def edit_scan(request):
+
+    context = {}
+
+    scan_name = request.POST.get("selected_scan_name")
+
+    scan_obj = get_object_or_404(ScanType, scan_name=scan_name, user=request.user)
+
+    form = ScansForm(instance=scan_obj)
+
+    if request.user.is_authenticated():
+        saved_scans = ScanType.objects.filter(user=request.user)
+        context['saved_scans'] = saved_scans
+
+    context.update(csrf(request))
+    context['form'] = form
+    return render(request, 'scans/scans.html', context)
+
+
+>>>>>>> Stashed changes
 def index(request):
     '''
     Default search page.
@@ -142,6 +191,7 @@ def index(request):
         # User is either Generating a table to the page (exporting=False)
         #             or Exporting to a CSV file (exporting=True).
 
+<<<<<<< Updated upstream
         # Get form information.
 
         form = ScansForm(request.POST)
@@ -152,6 +202,34 @@ def index(request):
             host_address = form.cleaned_data['host_address']
             ports = form.cleaned_data['ports']
             scan_options = form.cleaned_data['scan_options']
+=======
+        print request.POST
+
+        if request.POST.get("btn_edit_scan"):
+            return edit_scan(request)
+
+        elif request.POST.get("btn_live_scan"):
+            scan_name = request.POST.get("selected_scan_name")
+
+            scan_obj = get_object_or_404(ScanType, scan_name=scan_name, user=request.user)
+            form = ScansForm(instance=scan_obj, data=request.POST or None)
+
+            scan_name = scan_obj.scan_name
+            host_address = scan_obj.host_address
+            ports = scan_obj.ports
+            scan_options = scan_obj.scan_options
+
+            # Append important info to context.
+
+            context.update(csrf(request))
+            context['scan_name'] = scan_name
+            context['host_address'] = host_address
+            context['ports'] = ports
+            context['scan_options'] = scan_options
+            context['form'] = form
+
+            #print context
+>>>>>>> Stashed changes
 
             # Append important info to context.
             context = {}
@@ -162,12 +240,63 @@ def index(request):
             context['ports'] = ports
             context['scan_options'] = scan_options
             context['form'] = form
+<<<<<<< Updated upstream
+=======
+            return live_scan(request, context)
+>>>>>>> Stashed changes
 
             if live_scanning:
                 return live_scan(request, context)
 
+<<<<<<< Updated upstream
             # We're not exporting, so render the page with a table.
             return render(request, 'scans/scans.html', context)
+=======
+        else:
+
+            # Get form information.
+
+            form = ScansForm(request.POST)
+
+            print form
+
+            if form.is_valid():
+
+                scan_name = form.cleaned_data['scan_name']
+                host_address = form.cleaned_data['host_address']
+                ports = form.cleaned_data['ports']
+                scan_options = form.cleaned_data['scan_options']
+
+                # Append important info to context.
+
+                context.update(csrf(request))
+                context['scan_name'] = scan_name
+                context['host_address'] = host_address
+                context['ports'] = ports
+                context['scan_options'] = scan_options
+                context['form'] = form
+
+                '''
+                existing_scan_instance = None
+                if ScanType.objects.filter(scan_name=scan_name).exists():
+                    existing_scan_instance = get_object_or_404(ScanType, scan_name=scan_name)
+                '''
+
+                if live_scanning:
+                    # Perform live nmap scan.
+                    return live_scan(request, context)
+                else:
+                    # Save scantype to db.
+                    if request.user.is_authenticated():
+                        user = request.user
+                        new_scan = ScanType(scan_name=scan_name, user=user,
+                                            host_address=host_address, ports=ports,
+                                            scan_options=scan_options)
+                        new_scan.save()
+
+                # We're not exporting, so render the page with a table.
+                return render(request, 'scans/scans.html', context)
+>>>>>>> Stashed changes
 
     context = {}
     context.update(csrf(request))
