@@ -62,10 +62,15 @@ def get_nmap_command(request, context):
 
             for p in tmp_ports:
                 p = p.strip()
-                if int(p) > 0 and int(p) < 65535:
-                    str_port_list += str(p) + ','
-                else:
+                try:
+                    if int(p) > 0 and int(p) < 65535:
+                        str_port_list += str(p) + ','
+                    else:
+                        print 'Invalid port %s' % p
+                        return None
+                except:
                     print 'Invalid port %s' % p
+                    return None
 
             nmap_command.append(str_port_list)
 
@@ -77,10 +82,14 @@ def get_nmap_command(request, context):
             is_valid_range = True
             for p in tmp_ports:
                 p = p.strip()
-                if int(p) > 0 and int(p) < 65535:
-                    print 'Good'
-                else:
-                    is_valid_range = False
+                try:
+                    if int(p) > 0 and int(p) < 65535:
+                        print 'Good'
+                    else:
+                        is_valid_range = False
+                except:
+                    print 'Invalid port %s' % p
+                    return None
 
             if is_valid_range:
                 nmap_command.append(ports)
@@ -94,18 +103,27 @@ def get_nmap_command(request, context):
 
             for p in tmp_ports:
                 p = p.strip()
-                if int(p) > 0 and int(p) < 65535:
-                    str_port_list += str(p) + ','
-                else:
+                try:
+                    if int(p) > 0 and int(p) < 65535:
+                        str_port_list += str(p) + ','
+                    else:
+                        print 'Invalid port %s' % p
+                        return None
+                except:
                     print 'Invalid port %s' % p
+                    return None
 
             nmap_command.append(str_port_list)
 
         else:
             p = ports.strip()
-            if int(p) > 0 and int(p) < 65535:
-                nmap_command.append('-p')
-                nmap_command.append(p)
+            try:
+                if int(p) > 0 and int(p) < 65535:
+                    nmap_command.append('-p')
+                    nmap_command.append(p)
+            except:
+                print 'Invalid port %s' % p
+                return None
 
     return nmap_command
 
@@ -117,9 +135,10 @@ def live_scan(request, context):
 
     # We're using check_output w/ universal_newlines & splitlines
     # in order to retain the shell's formatting.
-    process = subprocess.check_output(nmap_command, universal_newlines=True).splitlines()
 
-    context['nmap_output'] = process
+    if nmap_command:
+        process = subprocess.check_output(nmap_command, universal_newlines=True).splitlines()
+        context['nmap_output'] = process
 
     '''
     process = subprocess.Popen(nmap_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -158,14 +177,15 @@ def edit_scan(request):
 
     dirty_scan_options = scan_obj.scan_options
 
-    if 'version_detection' in dirty_scan_options:
-        scan_options.append('version_detection')
-    if 'os_and_services' in dirty_scan_options:
-        scan_options.append('os_and_services')
-    if 'fast' in dirty_scan_options:
-        scan_options.append('fast')
-    if 'no_ping' in dirty_scan_options:
-        scan_options.append('no_ping')
+    if dirty_scan_options:
+        if 'version_detection' in dirty_scan_options:
+            scan_options.append('version_detection')
+        if 'os_and_services' in dirty_scan_options:
+            scan_options.append('os_and_services')
+        if 'fast' in dirty_scan_options:
+            scan_options.append('fast')
+        if 'no_ping' in dirty_scan_options:
+            scan_options.append('no_ping')
 
     scan_obj.scan_options = scan_options
 
@@ -220,14 +240,15 @@ def index(request):
 
             dirty_scan_options = scan_obj.scan_options
 
-            if 'version_detection' in dirty_scan_options:
-                scan_options.append('version_detection')
-            if 'os_and_services' in dirty_scan_options:
-                scan_options.append('os_and_services')
-            if 'fast' in dirty_scan_options:
-                scan_options.append('fast')
-            if 'no_ping' in dirty_scan_options:
-                scan_options.append('no_ping')
+            if dirty_scan_options:
+                if 'version_detection' in dirty_scan_options:
+                    scan_options.append('version_detection')
+                if 'os_and_services' in dirty_scan_options:
+                    scan_options.append('os_and_services')
+                if 'fast' in dirty_scan_options:
+                    scan_options.append('fast')
+                if 'no_ping' in dirty_scan_options:
+                    scan_options.append('no_ping')
 
 
             # Append important info to context.
@@ -329,14 +350,15 @@ def index(request):
                                     host_address=host_address, ports=ports,
                                     scan_options=scan_options)
 
-                if 'version_detection' in dirty_scan_options:
-                    scan_options.append('version_detection')
-                if 'os_and_services' in dirty_scan_options:
-                    scan_options.append('os_and_services')
-                if 'fast' in dirty_scan_options:
-                    scan_options.append('fast')
-                if 'no_ping' in dirty_scan_options:
-                    scan_options.append('no_ping')
+                if dirty_scan_options:
+                    if 'version_detection' in dirty_scan_options:
+                        scan_options.append('version_detection')
+                    if 'os_and_services' in dirty_scan_options:
+                        scan_options.append('os_and_services')
+                    if 'fast' in dirty_scan_options:
+                        scan_options.append('fast')
+                    if 'no_ping' in dirty_scan_options:
+                        scan_options.append('no_ping')
 
                 # Append important info to context.
 
