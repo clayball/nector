@@ -6,24 +6,37 @@
     <h1>Sc4ns</h1>
     <hr>
 
-    <p>This page is  <b>under construction</b>. NONE of its features will actually work. You have been warned.</p>
+    <p>This page is  <b>under construction</b>. Some of its features may not actually work. You have been warned.</p>
 
     <div class="col-md">
         <h2>Your Saved Scan Types</h2>
-        <ul>
-            <li>
-                <a href="">Confictura Ping Scan [Edit]</a>
-                <ul><li> <a href="">[Live Scan]</a> <a href="">[Delete]</a> </li></ul>
-            </li>
-            <br>
-            <li><a href="">104.108.168.0-255 Port Scan [Edit]</a>
-                <ul><li> <a href="">[Live Scan]</a> <a href="">[Delete]</a> </li></ul>
-            </li>
-            <br>
-            <li><a href="">31337 haX0r sc4n [Edit]</a>
-                <ul><li> <a href="">[Live Scan]</a> <a href="">[Delete]</a> </li></ul>
-            </li>
-        </ul>
+
+        {% if user.is_authenticated %}
+            {% if saved_scans %}
+                <ul>
+                {% for scan in saved_scans %}
+                    <li>
+                        <form method="post" action="/scans/">{% csrf_token %}
+                            <input name="selected_scan_name" value="{{ scan.scan_name }}" type="hidden" />
+                            <input name="btn_edit_scan" id="btn_edit_scan" class="btn-scans" type="submit" value="{{ scan.scan_name }} [Edit]" />
+                            <ul>
+                                <li>
+                                    <input name="btn_live_scan" id="btn_live_scan" class="btn-scans" type="submit" value="[Live Scan]" />
+                                    <input name="btn_delete_scan" id="btn_delete_scan" class="btn-scans" type="submit" value="[Delete]" />
+                                </li>
+                            </ul>
+                        </form>
+                    </li>
+                    <br>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p> You don't have any saved scans.</p>
+            {% endif %}
+        {% else %}
+        <a href="/accounts/login/"><p>Please login to use this feature.</p></a>
+        {% endif %}
+
     </div>
 
 
@@ -50,7 +63,12 @@
                 <tr>
                     <td class="td-content-scans-btn-generate"><input name="live_scan" type="submit" value="Perform Live Scan" /></td>
                     <td></td>
+
+                    {% if user.is_authenticated %}
                     <td class="td-content-scans-btn-export"><input name="save_scan" type="submit" value="Save Scan Type" /></td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
                 </tr>
             </table>
 
