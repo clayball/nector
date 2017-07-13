@@ -208,6 +208,15 @@ def index(request):
     Otherwise, just display the form.
     '''
 
+    '''
+    Author's Note:
+
+    Hi, this is the cludgiest function I have written. Ever.
+    It works, but I really want to clean up the code eventually.
+    So, at the time being, you shouldn't feel stupid while reading this code;
+    just angry and confused. My apologies in advance.
+    '''
+
     context = {}
 
     if request.user.is_authenticated():
