@@ -6,8 +6,6 @@
     <h1>Sc4ns</h1>
     <hr>
 
-    <p>This page is  <b>under construction</b>. Some of its features may not actually work. You have been warned.</p>
-
     <div class="col-md">
         <h2>Your Saved Scan Types</h2>
 
@@ -62,7 +60,12 @@
                 </tr>
                 <tr>
                     <td class="td-content-scans-btn-generate"><input name="live_scan" type="submit" value="Perform Live Scan" /></td>
+
+                    {% if msg %}
+                    <td>{{ msg }}</td>
+                    {% else %}
                     <td></td>
+                    {% endif %}
 
                     {% if user.is_authenticated %}
                     <td class="td-content-scans-btn-export"><input name="save_scan" type="submit" value="Save Scan Type" /></td>

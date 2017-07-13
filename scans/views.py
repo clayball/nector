@@ -128,6 +128,7 @@ def live_scan(request, context):
     context['nmap_output'] = out
 
     '''
+
     return render(request, 'scans/scans.html', context)
 
 
@@ -269,6 +270,8 @@ def index(request):
 
             form = ScansForm(request.POST)
 
+            print request.POST
+
             if form.is_valid():
 
                 scan_name = form.cleaned_data['scan_name']
@@ -312,6 +315,72 @@ def index(request):
 
                 # We're not exporting, so render the page with a table.
                 return render(request, 'scans/scans.html', context)
+            else:
+
+                scan_name = request.POST.get("scan_name")
+                host_address = request.POST.get("host_address")
+                ports = request.POST.get("ports")
+
+                scan_options = []
+
+                dirty_scan_options = request.POST.get("scan_options")
+
+                scan_obj = ScanType(scan_name=scan_name, user=request.user,
+                                    host_address=host_address, ports=ports,
+                                    scan_options=scan_options)
+
+                if 'version_detection' in dirty_scan_options:
+                    scan_options.append('version_detection')
+                if 'os_and_services' in dirty_scan_options:
+                    scan_options.append('os_and_services')
+                if 'fast' in dirty_scan_options:
+                    scan_options.append('fast')
+                if 'no_ping' in dirty_scan_options:
+                    scan_options.append('no_ping')
+
+                # Append important info to context.
+
+                context.update(csrf(request))
+                context['scan_name'] = scan_name
+                context['host_address'] = host_address
+                context['ports'] = ports
+                context['scan_options'] = scan_options
+
+                if request.user.is_authenticated():
+                    saved_scans = ScanType.objects.filter(user=request.user)
+                    context['saved_scans'] = saved_scans
+
+                scan_obj.scan_options = scan_options
+
+                context.update(csrf(request))
+                form = ScansForm(instance=scan_obj)
+                context['form'] = form
+                live_scanning = 'live_scan' in request.POST
+                if live_scanning:
+                    # Perform live nmap scan.
+                    return live_scan(request, context)
+                else:
+                    # Save scantype to db.
+                    if request.user.is_authenticated():
+                        user = request.user
+
+                        str_scan_options = ''
+                        for option in scan_options[:-1]:
+                            str_scan_options += option + ','
+                        str_scan_options += scan_options[-1]
+                        print str_scan_options
+
+                        existing_scan_instance = None
+                        if ScanType.objects.filter(scan_name=scan_name).exists():
+                            existing_scan_instance = get_object_or_404(ScanType, scan_name=scan_name)
+
+                        if not existing_scan_instance:
+                            new_scan = ScanType(scan_name=scan_name, user=user,
+                                                host_address=host_address, ports=ports,
+                                                scan_options=scan_options)
+                            new_scan.save()
+                        else:
+                            context['msg'] = 'Scan Name already exists. Delete the old one first.'
 
     context.update(csrf(request))
     context['form'] = ScansForm()
