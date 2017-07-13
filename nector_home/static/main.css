@@ -62,6 +62,24 @@ a:hover {
     display: block;
 }
 
+.btn-scans {
+    background-color: transparent;
+    text-decoration: underline;
+    border: none;
+    color: green;
+    cursor: pointer;
+}
+
+.btn-scans:hover {
+  outline: none;
+  color: yellow;
+}
+
+.btn-scans:focus {
+  outline: none;
+  color: yellow;
+}
+
 .content {
     text-align: justify;
     padding: 12px 12px 40px 12px;
