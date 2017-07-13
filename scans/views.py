@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
@@ -6,6 +6,8 @@ from django.template.context_processors import csrf
 from django.template import loader
 
 from forms import ScansForm
+
+from models import ScanType
 
 import subprocess # For nmap
 
@@ -46,67 +48,67 @@ def get_nmap_command(request, context):
 
     nmap_command.append(host_address)
 
-    tmp_ports = []
-    if ',' in ports:
-        nmap_command.append('-p')
-
-        tmp_ports = ports.split(',')
-
-        str_port_list = ''
-
-        for p in tmp_ports:
-            p = p.strip()
-            if int(p) > 0 and int(p) < 65535:
-                str_port_list += str(p) + ','
-            else:
-                print 'Invalid port %s' % p
-
-        nmap_command.append(str_port_list)
-
-    elif '-' in ports:
-        nmap_command.append('-p')
-
-        tmp_ports = ports.split('-')
-
-        is_valid_range = True
-        for p in tmp_ports:
-            p = p.strip()
-            if int(p) > 0 and int(p) < 65535:
-                print 'Good'
-            else:
-                is_valid_range = False
-
-        if is_valid_range:
-            nmap_command.append(ports)
-
-    elif ' ' in ports:
-        nmap_command.append('-p')
-
-        tmp_ports = ports.split(' ')
-
-        str_port_list = ''
-
-        for p in tmp_ports:
-            p = p.strip()
-            if int(p) > 0 and int(p) < 65535:
-                str_port_list += str(p) + ','
-            else:
-                print 'Invalid port %s' % p
-
-        nmap_command.append(str_port_list)
-
-    else:
-        p = ports.strip()
-        if int(p) > 0 and int(p) < 65535:
+    if ports:
+        tmp_ports = []
+        if ',' in ports:
             nmap_command.append('-p')
-            nmap_command.append(p)
+
+            tmp_ports = ports.split(',')
+
+            str_port_list = ''
+
+            for p in tmp_ports:
+                p = p.strip()
+                if int(p) > 0 and int(p) < 65535:
+                    str_port_list += str(p) + ','
+                else:
+                    print 'Invalid port %s' % p
+
+            nmap_command.append(str_port_list)
+
+        elif '-' in ports:
+            nmap_command.append('-p')
+
+            tmp_ports = ports.split('-')
+
+            is_valid_range = True
+            for p in tmp_ports:
+                p = p.strip()
+                if int(p) > 0 and int(p) < 65535:
+                    print 'Good'
+                else:
+                    is_valid_range = False
+
+            if is_valid_range:
+                nmap_command.append(ports)
+
+        elif ' ' in ports:
+            nmap_command.append('-p')
+
+            tmp_ports = ports.split(' ')
+
+            str_port_list = ''
+
+            for p in tmp_ports:
+                p = p.strip()
+                if int(p) > 0 and int(p) < 65535:
+                    str_port_list += str(p) + ','
+                else:
+                    print 'Invalid port %s' % p
+
+            nmap_command.append(str_port_list)
+
+        else:
+            p = ports.strip()
+            if int(p) > 0 and int(p) < 65535:
+                nmap_command.append('-p')
+                nmap_command.append(p)
 
     return nmap_command
 
 
 
 def live_scan(request, context):
-
     nmap_command = get_nmap_command(request, context)
 
     # We're using check_output w/ universal_newlines & splitlines
@@ -125,11 +127,7 @@ def live_scan(request, context):
     return render(request, 'scans/scans.html', context)
 
 
-
 def delete_scan(request):
-
-    context = {}
-
     if request.POST:
         print request.POST
         if request.user.is_authenticated():
@@ -141,15 +139,7 @@ def delete_scan(request):
                     scan_inst.delete()
                 except Exception as e:
                     print '%s' % e
-
-    if request.user.is_authenticated():
-        saved_scans = ScanType.objects.filter(user=request.user)
-        context['saved_scans'] = saved_scans
-
-    context.update(csrf(request))
-    context['form'] = ScansForm()
-
-    return render(request, 'scans/scans.html', context)
+    return render(request, 'scans/scans.html')
 
 
 def edit_scan(request):
@@ -179,26 +169,21 @@ def index(request):
     Otherwise, just display the form.
     '''
 
+    context = {}
+
+    if request.user.is_authenticated():
+        saved_scans = ScanType.objects.filter(user=request.user)
+        context['saved_scans'] = saved_scans
+
     live_scanning = False
+
 
     if request.POST.get("live_scan"):
         # User pressed Export button.
         live_scanning = True
 
     if request.method == "POST":
-        # User is either Generating a table to the page (exporting=False)
-        #             or Exporting to a CSV file (exporting=True).
 
-        # Get form information.
-
-        form = ScansForm(request.POST)
-
-        if form.is_valid():
-
-            scan_name = form.cleaned_data['scan_name']
-            host_address = form.cleaned_data['host_address']
-            ports = form.cleaned_data['ports']
-            scan_options = form.cleaned_data['scan_options']
         print request.POST
 
         if request.POST.get("btn_edit_scan"):
@@ -208,31 +193,40 @@ def index(request):
             scan_name = request.POST.get("selected_scan_name")
 
             scan_obj = get_object_or_404(ScanType, scan_name=scan_name, user=request.user)
-            form = ScansForm(instance=scan_obj, data=request.POST or None)
+            form = ScansForm(instance=scan_obj)
 
-            scan_name = scan_obj.scan_name
-            host_address = scan_obj.host_address
-            ports = scan_obj.ports
-            scan_options = scan_obj.scan_options
+            if form.is_valid():
 
-            # Append important info to context.
+                scan_name = form.cleaned_data['scan_name']
+                host_address = form.cleaned_data['host_address']
+                ports = form.cleaned_data['ports']
+                scan_options = form.cleaned_data['scan_options']
+
+                # Append important info to context.
+
+                context.update(csrf(request))
+                context['scan_name'] = scan_name
+                context['host_address'] = host_address
+                context['ports'] = ports
+                context['scan_options'] = scan_options
+                context['form'] = form
+
+            if request.user.is_authenticated():
+                saved_scans = ScanType.objects.filter(user=request.user)
+                context['saved_scans'] = saved_scans
 
             context.update(csrf(request))
-            context['scan_name'] = scan_name
-            context['host_address'] = host_address
-            context['ports'] = ports
-            context['scan_options'] = scan_options
             context['form'] = form
+            return live_scan(request, )
 
-            return live_scan(request, context)
+        elif request.POST.get("btn_delete_scan"):
+            return delete_scan(request)
 
         else:
 
             # Get form information.
 
             form = ScansForm(request.POST)
-
-            print form
 
             if form.is_valid():
 
@@ -271,7 +265,6 @@ def index(request):
                 # We're not exporting, so render the page with a table.
                 return render(request, 'scans/scans.html', context)
 
-    context = {}
     context.update(csrf(request))
     context['form'] = ScansForm()
     return render(request, 'scans/scans.html', context)
