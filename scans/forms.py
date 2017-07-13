@@ -7,8 +7,8 @@ class ScansForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ScansForm, self).__init__(*args, **kwargs)
-        self.fields['scan_name'].required    = False
-        self.fields['host_address'].required = False
+        self.fields['scan_name'].required    = True
+        self.fields['host_address'].required = True
         self.fields['ports'].required        = False
         self.fields['scan_options'].required = False
 
@@ -30,36 +30,14 @@ class ScansForm(forms.ModelForm):
                                ]
 
         widgets = {
-            'scan_options'     : forms.CheckboxSelectMultiple(choices=SCAN_OPTIONS_CHOICES),
+            'scan_options' : forms.CheckboxSelectMultiple(choices=SCAN_OPTIONS_CHOICES),
+            'scan_name'    : forms.TextInput(
+                                    attrs={'placeholder': 'My Custom Scan 01'}
+                             ),
+            'host_address' : forms.TextInput(
+                                    attrs={'placeholder': '104.108.168.140'}
+                             ),
+            'ports'        : forms.TextInput(
+                                    attrs={'placeholder': '22, 80, 443, 3306'}
+                             ),
         }
-    '''
-
-    scan_name = forms.CharField(label='Scan Name', max_length=255, required=True,
-                        widget=forms.TextInput(
-                            attrs={'placeholder': 'My Custom Scan 01'}
-                        )
-    )
-    host_address = forms.CharField(label='Host/Subnet Address', max_length=30, required=True,
-                        widget=forms.TextInput(
-                            attrs={'placeholder': '104.108.168.140'}
-                        )
-    )
-    ports = forms.CharField(label='Port(s)', max_length=255, required=False,
-                        widget=forms.TextInput(
-                            attrs={'placeholder': '22, 80, 443, 3306'}
-                        )
-    )
-
-
-    SCAN_OPTIONS_CHOICES = [
-                            ('version_detection', 'Version Scan (-sV)'),
-                            ('os_and_services', 'OS & Services (-A)'),
-                            ('fast', 'Common Ports (-F)'),
-                            ('no_ping', 'No Ping (-Pn)'),
-                           ]
-
-    scan_options = forms.MultipleChoiceField(choices=SCAN_OPTIONS_CHOICES,
-                                             widget=forms.CheckboxSelectMultiple(),
-                                             required=False,
-    )
-    '''
