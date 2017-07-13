@@ -125,8 +125,7 @@ def live_scan(request, context):
     return render(request, 'scans/scans.html', context)
 
 
-<<<<<<< Updated upstream
-=======
+
 def delete_scan(request):
 
     context = {}
@@ -172,7 +171,6 @@ def edit_scan(request):
     return render(request, 'scans/scans.html', context)
 
 
->>>>>>> Stashed changes
 def index(request):
     '''
     Default search page.
@@ -191,7 +189,6 @@ def index(request):
         # User is either Generating a table to the page (exporting=False)
         #             or Exporting to a CSV file (exporting=True).
 
-<<<<<<< Updated upstream
         # Get form information.
 
         form = ScansForm(request.POST)
@@ -202,7 +199,6 @@ def index(request):
             host_address = form.cleaned_data['host_address']
             ports = form.cleaned_data['ports']
             scan_options = form.cleaned_data['scan_options']
-=======
         print request.POST
 
         if request.POST.get("btn_edit_scan"):
@@ -228,30 +224,8 @@ def index(request):
             context['scan_options'] = scan_options
             context['form'] = form
 
-            #print context
->>>>>>> Stashed changes
-
-            # Append important info to context.
-            context = {}
-
-            context.update(csrf(request))
-            context['scan_name'] = scan_name
-            context['host_address'] = host_address
-            context['ports'] = ports
-            context['scan_options'] = scan_options
-            context['form'] = form
-<<<<<<< Updated upstream
-=======
             return live_scan(request, context)
->>>>>>> Stashed changes
 
-            if live_scanning:
-                return live_scan(request, context)
-
-<<<<<<< Updated upstream
-            # We're not exporting, so render the page with a table.
-            return render(request, 'scans/scans.html', context)
-=======
         else:
 
             # Get form information.
@@ -296,7 +270,6 @@ def index(request):
 
                 # We're not exporting, so render the page with a table.
                 return render(request, 'scans/scans.html', context)
->>>>>>> Stashed changes
 
     context = {}
     context.update(csrf(request))
