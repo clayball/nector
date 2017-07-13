@@ -11,6 +11,8 @@ from models import ScanType
 
 import subprocess # For nmap
 
+import json
+
 '''
     Useful nmap scans we can use as defaults:
         1. Scan for UDP DDOS reflectors:
@@ -28,6 +30,7 @@ import subprocess # For nmap
 
 def get_nmap_command(request, context):
     """TODO: Add results of the live scan to context. Display on page."""
+
 
     scan_name = context['scan_name']
     host_address = context['host_address']
@@ -109,6 +112,7 @@ def get_nmap_command(request, context):
 
 
 def live_scan(request, context):
+
     nmap_command = get_nmap_command(request, context)
 
     # We're using check_output w/ universal_newlines & splitlines
@@ -127,9 +131,8 @@ def live_scan(request, context):
     return render(request, 'scans/scans.html', context)
 
 
-def delete_scan(request):
+def delete_scan(request, context):
     if request.POST:
-        print request.POST
         if request.user.is_authenticated():
             if 'selected_scan_name' in request.POST:
                 scan_to_delete = request.POST['selected_scan_name']
@@ -139,7 +142,7 @@ def delete_scan(request):
                     scan_inst.delete()
                 except Exception as e:
                     print '%s' % e
-    return render(request, 'scans/scans.html')
+    return render(request, 'scans/scans.html', context)
 
 
 def edit_scan(request):
@@ -149,6 +152,21 @@ def edit_scan(request):
     scan_name = request.POST.get("selected_scan_name")
 
     scan_obj = get_object_or_404(ScanType, scan_name=scan_name, user=request.user)
+
+    scan_options = []
+
+    dirty_scan_options = scan_obj.scan_options
+
+    if 'version_detection' in dirty_scan_options:
+        scan_options.append('version_detection')
+    if 'os_and_services' in dirty_scan_options:
+        scan_options.append('os_and_services')
+    if 'fast' in dirty_scan_options:
+        scan_options.append('fast')
+    if 'no_ping' in dirty_scan_options:
+        scan_options.append('no_ping')
+
+    scan_obj.scan_options = scan_options
 
     form = ScansForm(instance=scan_obj)
 
@@ -184,47 +202,70 @@ def index(request):
 
     if request.method == "POST":
 
-        print request.POST
-
         if request.POST.get("btn_edit_scan"):
+            print 'edit'
             return edit_scan(request)
 
         elif request.POST.get("btn_live_scan"):
+            print 'live'
             scan_name = request.POST.get("selected_scan_name")
 
             scan_obj = get_object_or_404(ScanType, scan_name=scan_name, user=request.user)
+
+            scan_name = scan_obj.scan_name
+            host_address = scan_obj.host_address
+            ports = scan_obj.ports
+            scan_options = []
+
+            dirty_scan_options = scan_obj.scan_options
+
+            if 'version_detection' in dirty_scan_options:
+                scan_options.append('version_detection')
+            if 'os_and_services' in dirty_scan_options:
+                scan_options.append('os_and_services')
+            if 'fast' in dirty_scan_options:
+                scan_options.append('fast')
+            if 'no_ping' in dirty_scan_options:
+                scan_options.append('no_ping')
+
+
+            # Append important info to context.
+
+            context.update(csrf(request))
+            context['scan_name'] = scan_name
+            context['host_address'] = host_address
+            context['ports'] = ports
+            context['scan_options'] = scan_options
+
+            if request.user.is_authenticated():
+                saved_scans = ScanType.objects.filter(user=request.user)
+                context['saved_scans'] = saved_scans
+
+            scan_obj.scan_options = scan_options
+
+            context.update(csrf(request))
             form = ScansForm(instance=scan_obj)
+            context['form'] = form
+            return live_scan(request, context)
 
-            if form.is_valid():
-
-                scan_name = form.cleaned_data['scan_name']
-                host_address = form.cleaned_data['host_address']
-                ports = form.cleaned_data['ports']
-                scan_options = form.cleaned_data['scan_options']
-
-                # Append important info to context.
-
-                context.update(csrf(request))
-                context['scan_name'] = scan_name
-                context['host_address'] = host_address
-                context['ports'] = ports
-                context['scan_options'] = scan_options
-                context['form'] = form
+        elif request.POST.get("btn_delete_scan"):
+            print 'delete'
+            context = {}
 
             if request.user.is_authenticated():
                 saved_scans = ScanType.objects.filter(user=request.user)
                 context['saved_scans'] = saved_scans
 
             context.update(csrf(request))
+            form = ScansForm()
             context['form'] = form
-            return live_scan(request, )
 
-        elif request.POST.get("btn_delete_scan"):
-            return delete_scan(request)
+            return delete_scan(request, context)
 
         else:
 
             # Get form information.
+            print 'else'
 
             form = ScansForm(request.POST)
 
@@ -233,7 +274,7 @@ def index(request):
                 scan_name = form.cleaned_data['scan_name']
                 host_address = form.cleaned_data['host_address']
                 ports = form.cleaned_data['ports']
-                scan_options = form.cleaned_data['scan_options']
+                scan_options = form.cleaned_data['scan_options'].split(',')
 
                 # Append important info to context.
 
@@ -257,6 +298,13 @@ def index(request):
                     # Save scantype to db.
                     if request.user.is_authenticated():
                         user = request.user
+
+                        str_scan_options = ''
+                        for option in scan_options[:-1]:
+                            str_scan_options += option + ','
+                        str_scan_options += scan_options[-1]
+                        print str_scan_options
+
                         new_scan = ScanType(scan_name=scan_name, user=user,
                                             host_address=host_address, ports=ports,
                                             scan_options=scan_options)
