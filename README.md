@@ -95,19 +95,25 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     $ sudo dnf install mysql mysql-server MySQL-python
     ```
 
-2. Start MySQL on boot (Optional)
+2. Start MySQL on boot. (Optional)
 
     ```
     $ chkconfig --levels 235 mysqld on
     ```
 
-3. Start MySQL
+3. Start MySQL process.
 
     ```
     $ service mysqld start
     ```
 
-4. Create a database and a database user.
+4. Get MySQL dependency through pip.
+
+    ```
+    pip install mysql-python
+    ```
+
+5. Create a database and a database user.
 
     ```
     $ mysql -u root -p
@@ -118,7 +124,7 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     $ exit
     ```
 
-5. Modify project settings to use your database.
+6. Modify project settings to use your database.
 
     ```
     $ vi nector/settings.py
