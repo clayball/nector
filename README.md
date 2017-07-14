@@ -66,20 +66,83 @@ $ rm db.sqlite3
 
 ### Choosing a Database
 
-NECTOR is configured to work with two types of databases out of the box: **SQLite3** and **PostgreSQL**.
+NECTOR is configured to work with three types of RDBMSs easily: **SQLite3**, **MySQL**, and **PostgreSQL**.
 
 SQLite3 is light-weight, server-less, and requires practically no configuration. However, a SQLite3 database stores its information in a single binary file, and imposes limits on its users when querying a large amount of data.
 
-PostgreSQL is much more server-friendly, featuring high concurrency and the ability to deal with large datasets. Though, it does need to be set up and configured, which may pose as a nuisance toward someone wanting to use NECTOR out of the box.
+MySQL is a popular, large-scale database server that's easy to setup, and features lots of third-party support,
+expansive functionality for its users, and reads / writes data very quickly. Although, some functionalities get handled
+a bit less-reliably with MySQL than other RDBMSs, and MySQL does not adhere to SQL compliancy rules.
 
-Ideally, if you intend on hosting NECTOR on a public-facing server, PostgreSQL should be your choice.
+PostgreSQL is much more server-friendly, featuring high concurrency and the ability to deal with large datasets. Though, it does need to be set up and configured, which may pose as a nuisance toward someone wanting to use NECTOR out of the box. It features
+tons of bells and whistles, gearing it toward advanced RDBMS users.
+
+Ideally, if you intend on hosting NECTOR on a public-facing server, MySQL or PostgreSQL should be your choice.
 Otherwise, if you're working locally or only dealing with a small amount of traffic, SQLite3 will work great.
+
+[If you're still unsure which RDMBS you should use, checkout this DigitalOcean article.](https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems)
 
 #### Setting up a SQLite3 Database (Option A)
 
 1. No manual setup required for a SQLite3 database.
 
-#### Setting up a PostgreSQL Database (Option B)
+
+#### Setting up a MySQL Database (Option B)
+
+1. Install necessary components.
+
+    ```
+    $ sudo dnf install mysql mysql-server MySQL-python
+    ```
+
+2. Start MySQL on boot (Optional)
+
+    ```
+    $ chkconfig --levels 235 mysqld on
+    ```
+
+3. Start MySQL
+
+    ```
+    $ /etc/init.d/mysqld start
+    ```
+
+4. Create a database and a database user.
+
+    ```
+    $ mysql -u root -p
+    $ CREATE DATABASE nector CHARACTER SET UTF8;
+    $ CREATE USER myuser@localhost IDENTIFIED BY 'password123';
+    $ GRANT ALL PRIVILEGES ON nector.* TO myuser@localhost;
+    $ FLUSH PRIVILEGES;
+    $ exit
+    ```
+
+5. Modify project settings to use your database.
+
+    ```
+    $ vi nector/settings.py
+    ```
+    Find the 'DATABASE' section and replace it with:
+
+    ```
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'nector',
+            'USER': 'myuser',
+            'PASSWORD': 'password123',
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'ATOMIC_REQUESTS': True,
+        }
+    }
+    ```
+
+    Make sure you change the NAME, USER, PASSWORD, and PORT sections to fit your needs!
+
+
+#### Setting up a PostgreSQL Database (Option C)
 
 1. Install necessary components.
 
