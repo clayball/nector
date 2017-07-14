@@ -104,7 +104,7 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
 3. Start MySQL
 
     ```
-    $ /etc/init.d/mysqld start
+    $ service mysqld start
     ```
 
 4. Create a database and a database user.
