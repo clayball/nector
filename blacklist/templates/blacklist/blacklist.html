@@ -2,10 +2,12 @@
 
 {% block content %}
 <div class="content">
-  <h2>Blacklist</h2>
-  <h5><a href='http://www.talosintelligence.com/'>From Talos Intelligence</a></h5>
+  <h1>Blacklist</h1>
+  <h4><a href='http://www.talosintelligence.com/'>From Talos Intelligence</a></h4>
+  <hr>
 
   <div style="float:right">
+      <br>
     <form method="GET" action="/blacklist/limit-hosts/">
       <select name="select_hosts">
         {% if selected == 'all_hosts' %}

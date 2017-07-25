@@ -3,11 +3,11 @@
 {% block content %}
 <div class="content">
 
-<h1>Trending</h1>
+<h1>RSS Feeds</h1>
 <hr>
 
 <div style="float:right; margin-right:10%">
-    <h2>RSS Feeds</h2>
+    <h2>Your Feeds</h2>
 
     {% if user.is_authenticated %}
     <form method="post" action="/trending/addfeed/">{% csrf_token %}

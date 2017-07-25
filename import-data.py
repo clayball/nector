@@ -11,31 +11,46 @@ Nector database.
 Prerequisites
 =============
 
-hosts.xml, vulnlist.csv, and events.csv must exist in the current
+hosts.xml, vulnlist.csv, events.csv, and openports.xml must exist in the current
 directory, contain desired information, and be formatted properly.
 
 Sample data files stored in sample-data/
 - sample_hosts.xml
 - sample-vulnlist.csv
 - sample-events.csv
+- sample-openports.xml
 
 
 Postconditions
 ==============
 
-The database will be populated with Hosts, Vulnerabilities, and Events
-specified in hosts.xml, vulnlist.csv, and events.csv.
+The database will be populated with Hosts, Vulnerabilities, Events, and Ports
+specified in hosts.xml, vulnlist.csv, events.csv, and openports.xml.
 '''
 
 # Import necessary libraries.
+
 import sys
+# Used for accessing environment info.
 import os
+# Used for accessing Django features.
 import django
-from optparse import OptionParser # Used for getting args
-import csv # Used for parsing vulnlist.csv, events.csv, & censys-keys.csv
-import time # Used for getting date for alerts.
-from django.db import transaction # Used in optimization of runtime.
+# Used for getting args
+from optparse import OptionParser
+# Used for parsing vulnlist.csv, events.csv, & censys-keys.csv
+import csv
+# Used for parsing ports from nmap xml file.
+from lxml import etree
+# Used for parsing port dicts.
+import json
+# Used for getting current date.
+import time
+# Used in optimization of runtime.
+from django.db import transaction
+# Used in checking for Unique issues.
 from django.db import IntegrityError
+# Used for getting Host object.
+from django.shortcuts import get_object_or_404
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nector.settings")
 django.setup()
@@ -52,6 +67,7 @@ from events.models import Event
 host_file_name = 'hosts.xml'
 vulnerability_file_name = 'vulnlist.csv'
 events_file_name = 'events.csv'
+openports_file_name = 'openports.xml'
 
 # Open files
 host_file = open(host_file_name, 'r')
@@ -59,6 +75,7 @@ vulnerability_file = open(vulnerability_file_name, 'r')
 vulnerability_csv = csv.reader(vulnerability_file)
 events_file = open(events_file_name, 'r')
 events_csv = csv.reader(events_file)
+openports_file = open(openports_file_name, 'r')
 
 # Get & Set Options / Args
 parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
@@ -71,11 +88,13 @@ verbose = options.verbose
 MSG_HOST_ADD = "Host added to database"
 MSG_HOST_REMOVE = "Host removed from database"
 MSG_NEW_VULN = "New vulnerability discovered"
+MSG_OPEN_PORT = "Port %s opened"
+MSG_CLOSED_PORT = "Port %s closed"
 
 # Alert date.
 DATE = time.strftime("%m/%d/%Y")
 
-# Adds Hosts to db.sqlite3
+# Adds Hosts to database
 def populate_hosts():
 
     print '[*] Importing Hosts...'
@@ -155,7 +174,7 @@ def populate_hosts():
     print '[*] Hosts: Done!'
 
 
-# Get subnets from Hosts and add them to db.sqlite3
+# Get subnets from Hosts and add them to database
 def populate_subnets():
 
     print '\n[*] Getting Subnets from Hosts...'
@@ -197,7 +216,7 @@ def populate_subnets():
     print '[*] Subnets: Done!'
 
 
-# Adds Vulnerabilities to db.sqlite3
+# Adds Vulnerabilities to database
 def populate_vulnerabilities():
 
     print '\n[*] Importing Vulnerabilities...'
@@ -239,7 +258,7 @@ def populate_vulnerabilities():
     print '[*] Vulnerabilities: Done!'
 
 
-# Adds Events to db.sqlite3
+# Adds Events to database
 def populate_events():
 
     print '\n[*] Importing Events...'
@@ -283,17 +302,153 @@ def populate_events():
     print '[*] Events: Done!'
 
 
+# Adds Open Ports to database
+def populate_openports():
+
+    print '\n[*] Importing Open Ports...'
+
+    tree = etree.parse(openports_file)
+
+    # Allow changes to be made to db after nested blocks have been
+    # completed.
+    with transaction.atomic():
+
+        host_list = {}
+        port_list = []
+
+        # Iterate through each <host> tag.
+        for host_element in tree.iter("host"):
+
+            # Get IPv4 addr of current host.
+            host_ip = host_element.find('address').get('addr')
+
+            host_list[host_ip] = []
+
+            # Iterate through each <port> tag superceded by a <host> tag.
+            for port_element in host_element.iter("port"):
+
+                # Get Port number.
+                port_number = port_element.get('portid')
+
+                # Temp vars for getting info we want.
+                product = version = x_info = ''
+
+                try:
+                    # Get port service. If no service, leave blank.
+                    product = port_element.find('service').get('product')
+                    if not product:
+                        product = ''
+                except:
+                    pass
+                try:
+                    # Get service version. If no version, leave blank.
+                    version = port_element.find('service').get('version')
+                    if not version:
+                        version = ''
+                except:
+                    pass
+                try:
+                    # Get service's extra info. If no info, leave blank.
+                    x_info = '(' + port_element.find('service').get('extrainfo') + ')'
+                    if not x_info:
+                        x_info = ''
+                except:
+                    pass
+
+                # Concatenate all port info into single string.
+                service_info = product + ' ' + version + ' ' + x_info
+
+                # If a port is in our nmap list, then it has to be open.
+                status = 'open'
+
+                # Add current port to port_list.
+                # We'll use the list later to check for closed ports.
+                if port_number not in port_list:
+                    port_list.append(port_number)
+
+                try:
+                    # Get Host object with corresponding IPv4 address.
+                    # Add it to host_list for later use.
+                    host = get_object_or_404(Host, ipv4_address=host_ip)
+                    host_list[host.ipv4_address].append(port_number)
+
+                    # Create string formatted as dict for storing port
+                    # info as a TextField.
+                    dict_ports = "{\"%s\" : [\"%s\", \"%s\", \"%s\"]}" % \
+                                    (port_number, status, service_info, DATE)
+
+                    if not host.ports:
+                        # Host doesn't have any ports, so we can assign it to
+                        # our string directly.
+                        host.ports = dict_ports
+                        a = Alert(ipv4_address=host.ipv4_address, message=MSG_OPEN_PORT % port_number, date=DATE)
+                        a.save()
+                    else:
+                        # Host does have ports, so we'll have to add port info
+                        # to existing dict.
+                        new_port_info = json.loads(host.ports)
+
+                        # If port was not open but is now, we should
+                        # add new Alert to our database.
+                        try:
+                            if new_port_info[port_number][0] != 'open':
+                                a = Alert(ipv4_address=host.ipv4_address, message=MSG_OPEN_PORT % port_number, date=DATE)
+                                a.save()
+                        except:
+                            pass
+
+                        new_port_info[port_number] = [status, service_info, DATE]
+                        host.ports = json.dumps(new_port_info)
+                        if verbose:
+                            print host.ports
+                    # Save Host to db (won't actually happen until
+                    #  'with transaction.atomic()' is completed):
+                    try:
+                        host.save()
+                    except:
+                        # Duplicate entry, so do nothing.
+                        if verbose:
+                            print '[Ports] Unique Error: Duplicate host ' + host_ip
+                        else:
+                            pass
+                except django.http.response.Http404:
+                    print '[!] Could not find host in database: %s' % host_ip
+
+        # If port is now closed, then we wanna close it.
+        # Iterate through each port number.
+        for port_number in port_list:
+            # Get all Host objects that have current port.
+            hosts_w_port = Host.objects.filter(ports__icontains="\""+port_number+"\":")
+            for h in hosts_w_port:
+                # If host isn't in our host list, that means it used to have
+                # current port open, but now it doesn't.
+                if h.ipv4_address in host_list:
+                    if port_number not in host_list[h.ipv4_address]:
+                        # Mark port as closed and update db Host object.
+                        closed_port = json.loads(h.ports)
+                        if closed_port[port_number][0] == "open":
+                            closed_port[port_number] = ["closed", str(closed_port[port_number][1]), DATE]
+                            a = Alert(ipv4_address=h.ipv4_address, message=MSG_CLOSED_PORT % port_number, date=DATE)
+                            a.save()
+                            h.ports = json.dumps(closed_port)
+                            h.save()
+            print '[*] [Port %s] Saving to database...' % port_number
+    print '[*] Open Ports: Done!'
+
+
 def main():
     # Call functions.
     populate_hosts()
     populate_subnets()
     populate_vulnerabilities()
     populate_events()
+    populate_openports()
 
     # Close files.
     host_file.close()
     vulnerability_file.close()
     events_file.close()
+    openports_file.close()
 
 
 if __name__ == "__main__":

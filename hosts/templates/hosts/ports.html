@@ -3,18 +3,26 @@
 {% block content %}
 <div class="content">
 
-<h2>P0rt5</h2>
+<h1>P0rt5</h1>
+<hr>
 
 <h3>Find hosts with:</h3>
+
+{% if host_list %}
+<div style="float:right; padding-right:7%">
+{% else %}
+<div style="float:left">
+{% endif %}
 
 <form method="post" action="/hosts/ports/">{% csrf_token %}
 <table>
     <tr>
         <td class="td-content-scans">
-            Open Port Number:
-            <input type="text" name="port_nums" placeholder="80" value="{{ request.POST.port_nums }}"/>
+            Open Port Number(s):
+            <input type="text" name="port_nums" placeholder="80, 443" value="{{ request.POST.port_nums }}"/>
         </td>
     </tr>
+    <!--
     <tr>
         <td class="td-content-scans">
             Open Port Service:
@@ -27,6 +35,7 @@
             <input type="text" name="port_dates" placeholder="YYMMDD" value="{{ request.POST.port_dates }}"/>
         </td>
     </tr>
+    -->
     <tr>
         <td>
             <input type="submit" value="Search" />
@@ -35,9 +44,11 @@
 </table>
 </form>
 
-<br><br>
+</div>
+
 
 {% if host_list %}
+<div class="col-mid">
 <table>
     <tr>
         <td class="td-content">IPv4</td>
@@ -62,6 +73,7 @@
   {% endfor %}
 
 </table>
+</div>
 {% endif %}
 
 

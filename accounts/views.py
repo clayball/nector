@@ -89,7 +89,7 @@ def register_user(request):
             return HttpResponseRedirect('/accounts/register_success')
     args = {}
     args.update(csrf(request))
-    args['form'] = MyRegistrationForm()
+    args['form'] = MyRegistrationForm(request.POST)
     print args
     return render_to_response('register.html', args)
 

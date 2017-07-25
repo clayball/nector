@@ -5,6 +5,7 @@
 
 <div class="col-left">
 <h1>SubNeTs</h1>
+<hr>
 {% if subnet_list %}
 {% for narrowed_subnet in narrowed_subnet_dict %}
     <h2>{{ narrowed_subnet }}.x.x</h2>
@@ -31,6 +32,7 @@
 
 <div class="col-mid">
     <h1>Fr3qUeNt1y ViSIt3d H05Ts</h1>
+    <hr>
     {% if frequent_host_list %}
         <ol>
         {% for host in frequent_host_list %}
@@ -44,6 +46,7 @@
     {% endif %}
 
     <h1>NewEsT A13rTs</h1>
+    <hr>
     {% if newest_alerts_list %}
         <ul>
             {% for alert in newest_alerts_list %}
@@ -56,7 +59,8 @@
 </div>
 
 <div class="col-right">
-    <h1>H0sTs oN LSP</h1>
+    <h1>H0sTs By LSP</h1>
+    <hr>
     {% if hosts_lsp_list %}
     <ul>
         {% for host in hosts_lsp_list %}

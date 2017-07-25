@@ -62,6 +62,24 @@ a:hover {
     display: block;
 }
 
+.btn-scans {
+    background-color: transparent;
+    text-decoration: underline;
+    border: none;
+    color: green;
+    cursor: pointer;
+}
+
+.btn-scans:hover {
+  outline: none;
+  color: yellow;
+}
+
+.btn-scans:focus {
+  outline: none;
+  color: yellow;
+}
+
 .content {
     text-align: justify;
     padding: 12px 12px 40px 12px;
@@ -176,6 +194,27 @@ table {
 .td-content-scans-btn-export {
     padding:10px;
     text-align: right;
+}
+
+.td-content-register {
+    border: 1px solid white;
+    padding: 8px;
+    text-align: center;
+}
+
+.td-content-login {
+    border: 1px solid white;
+    padding: 12px;
+    text-align: center;
+}
+
+.error-text {
+    color : lightcoral;
+}
+
+.col-md {
+    float: left;
+    width: 33.3333333%;
 }
 
 .col-left {

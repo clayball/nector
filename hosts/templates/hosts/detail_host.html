@@ -4,6 +4,7 @@
 <div class="content">
 {% if host %}
     <h1>Host Information</h1>
+    <hr><br>
     <form action="/hosts/edit/" method="post">{% csrf_token %}
         <input name="host" type="hidden" value="{{host.ipv4_address}}" />
         <input id="edit" type="submit" value="Edit Host" />

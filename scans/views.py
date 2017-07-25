@@ -2,297 +2,417 @@ from django.shortcuts import render, get_object_or_404
 
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
-
-from django.template import loader
 from django.template.context_processors import csrf
+from django.template import loader
 
-# Our custom form. See ./forms.py for more info.
 from forms import ScansForm
 
-from hosts.models import Host
-from hosts.models import Subnet
-from django.db import models
+from models import ScanType
+
+import subprocess # For nmap
 
 import json
 
-# Exporting CSV
-import csv
-from django.http import StreamingHttpResponse
+'''
+    Useful nmap scans we can use as defaults:
+        1. Scan for UDP DDOS reflectors:
+            nmap -sU -A -PN -n -pU:19,53,123,161 -script=ntp-monlist,dns-recursion,snmp-sysdescr 192.168.1.0/24
+        2. Get HTTP headers of web services:
+            nmap --script=http-headers 192.168.1.0/24
+        3. Heartbleed Testing:
+            nmap -sV -p 443 --script=ssl-heartbleed 192.168.1.0/24
+        4. IP Information:
+            nmap --script=asn-query,whois,ip-geolocation-maxmind 192.168.1.0/24
+        5. Scan 100 most common ports (Fast):
+            nmap -F 192.168.1.1
+'''
+
+
+def get_nmap_command(request, context):
+    """TODO: Add results of the live scan to context. Display on page."""
+
+
+    scan_name = context['scan_name']
+    host_address = context['host_address']
+    ports = context['ports']
+    scan_options = context['scan_options']
+
+    nmap_command = ['nmap']
+
+    for opt in scan_options:
+        if opt == 'version_detection':
+            nmap_command.append('-sV')
+        elif opt == 'os_and_services':
+            nmap_command.append('-A')
+        elif opt == 'fast':
+            nmap_command.append('-F')
+        elif opt == 'no_ping':
+            nmap_command.append('-Pn')
+
+    nmap_command.append(host_address)
+
+    if ports:
+        tmp_ports = []
+        if ',' in ports:
+            nmap_command.append('-p')
+
+            tmp_ports = ports.split(',')
+
+            str_port_list = ''
+
+            for p in tmp_ports:
+                p = p.strip()
+                try:
+                    if int(p) > 0 and int(p) < 65535:
+                        str_port_list += str(p) + ','
+                    else:
+                        print 'Invalid port %s' % p
+                        return None
+                except:
+                    print 'Invalid port %s' % p
+                    return None
+
+            nmap_command.append(str_port_list)
+
+        elif '-' in ports:
+            nmap_command.append('-p')
+
+            tmp_ports = ports.split('-')
+
+            is_valid_range = True
+            for p in tmp_ports:
+                p = p.strip()
+                try:
+                    if int(p) > 0 and int(p) < 65535:
+                        print 'Good'
+                    else:
+                        is_valid_range = False
+                except:
+                    print 'Invalid port %s' % p
+                    return None
+
+            if is_valid_range:
+                nmap_command.append(ports)
+
+        elif ' ' in ports:
+            nmap_command.append('-p')
+
+            tmp_ports = ports.split(' ')
+
+            str_port_list = ''
+
+            for p in tmp_ports:
+                p = p.strip()
+                try:
+                    if int(p) > 0 and int(p) < 65535:
+                        str_port_list += str(p) + ','
+                    else:
+                        print 'Invalid port %s' % p
+                        return None
+                except:
+                    print 'Invalid port %s' % p
+                    return None
+
+            nmap_command.append(str_port_list)
+
+        else:
+            p = ports.strip()
+            try:
+                if int(p) > 0 and int(p) < 65535:
+                    nmap_command.append('-p')
+                    nmap_command.append(p)
+            except:
+                print 'Invalid port %s' % p
+                return None
+
+    return nmap_command
+
+
+
+def live_scan(request, context):
+
+    nmap_command = get_nmap_command(request, context)
+
+    # We're using check_output w/ universal_newlines & splitlines
+    # in order to retain the shell's formatting.
+
+    if nmap_command:
+        process = subprocess.check_output(nmap_command, universal_newlines=True).splitlines()
+        context['nmap_output'] = process
+
+    '''
+    process = subprocess.Popen(nmap_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out, err = process.communicate()
+
+    context['nmap_output'] = out
+
+    '''
+
+    return render(request, 'scans/scans.html', context)
+
+
+def delete_scan(request, context):
+    if request.POST:
+        if request.user.is_authenticated():
+            if 'selected_scan_name' in request.POST:
+                scan_to_delete = request.POST['selected_scan_name']
+                user = request.user
+                try:
+                    scan_inst = ScanType.objects.get(scan_name=scan_to_delete)
+                    scan_inst.delete()
+                except Exception as e:
+                    print '%s' % e
+    return render(request, 'scans/scans.html', context)
+
+
+def edit_scan(request):
+
+    context = {}
+
+    scan_name = request.POST.get("selected_scan_name")
+
+    scan_obj = get_object_or_404(ScanType, scan_name=scan_name, user=request.user)
+
+    scan_options = []
+
+    dirty_scan_options = scan_obj.scan_options
+
+    if dirty_scan_options:
+        if 'version_detection' in dirty_scan_options:
+            scan_options.append('version_detection')
+        if 'os_and_services' in dirty_scan_options:
+            scan_options.append('os_and_services')
+        if 'fast' in dirty_scan_options:
+            scan_options.append('fast')
+        if 'no_ping' in dirty_scan_options:
+            scan_options.append('no_ping')
+
+    scan_obj.scan_options = scan_options
+
+    form = ScansForm(instance=scan_obj)
+
+    if request.user.is_authenticated():
+        saved_scans = ScanType.objects.filter(user=request.user)
+        context['saved_scans'] = saved_scans
+
+    context.update(csrf(request))
+    context['form'] = form
+    return render(request, 'scans/scans.html', context)
+
 
 def index(request):
     '''
-    Default loading page.
+    Default search page.
     If a POST request was made to get here, then our form was submitted,
     so display a table of the query made.
     Otherwise, just display the form.
     '''
 
-    exporting = False
+    '''
+    Author's Note:
 
-    if request.POST.get("export"):
-        # User pressed Export button.
-        exporting = True
-
-    if request.method == "POST":
-        # User is either Generating a table to the page (exporting=False)
-        #             or Exporting to a CSV file (exporting=True).
-
-        # Get form information.
-        form = ScansForm(request.POST)
-
-        if form.is_valid():
-
-            # Append important info to context.
-            context = {}
-            context['checks'] = request.POST.getlist('checks')
-            context['rad'] = request.POST.getlist('rad')
-            processed_query = process_query(form, context['checks'], context['rad'])
-            context['open_ports'], context['host_list'] = get_open_ports_and_new_list(processed_query)
-            context['subnet_list'] = get_subnet_list(context['host_list'])
-            context['host_data'] = zip(context['host_list'], context['subnet_list'])
-            context.update(csrf(request))
-            context['form'] = form
-
-            # If we're exporting, export!
-            if exporting:
-                return export(request, context)
-
-            # We're not exporting, so render the page with a table.
-            return render(request, 'scans/scans.html', context)
+    Hi, this is the cludgiest function I have written. Ever.
+    It works, but I really want to clean up the code eventually.
+    So, at the time being, you shouldn't feel stupid while reading this code;
+    just angry and confused. My apologies in advance.
+    '''
 
     context = {}
+
+    if request.user.is_authenticated():
+        saved_scans = ScanType.objects.filter(user=request.user)
+        context['saved_scans'] = saved_scans
+
+    live_scanning = False
+
+
+    if request.POST.get("live_scan"):
+        # User pressed Export button.
+        live_scanning = True
+
+    if request.method == "POST":
+
+        if request.POST.get("btn_edit_scan"):
+            print 'edit'
+            return edit_scan(request)
+
+        elif request.POST.get("btn_live_scan"):
+            print 'live'
+            scan_name = request.POST.get("selected_scan_name")
+
+            scan_obj = get_object_or_404(ScanType, scan_name=scan_name, user=request.user)
+
+            scan_name = scan_obj.scan_name
+            host_address = scan_obj.host_address
+            ports = scan_obj.ports
+            scan_options = []
+
+            dirty_scan_options = scan_obj.scan_options
+
+            if dirty_scan_options:
+                if 'version_detection' in dirty_scan_options:
+                    scan_options.append('version_detection')
+                if 'os_and_services' in dirty_scan_options:
+                    scan_options.append('os_and_services')
+                if 'fast' in dirty_scan_options:
+                    scan_options.append('fast')
+                if 'no_ping' in dirty_scan_options:
+                    scan_options.append('no_ping')
+
+
+            # Append important info to context.
+
+            context.update(csrf(request))
+            context['scan_name'] = scan_name
+            context['host_address'] = host_address
+            context['ports'] = ports
+            context['scan_options'] = scan_options
+
+            if request.user.is_authenticated():
+                saved_scans = ScanType.objects.filter(user=request.user)
+                context['saved_scans'] = saved_scans
+
+            scan_obj.scan_options = scan_options
+
+            context.update(csrf(request))
+            form = ScansForm(instance=scan_obj)
+            context['form'] = form
+            return live_scan(request, context)
+
+        elif request.POST.get("btn_delete_scan"):
+            print 'delete'
+            context = {}
+
+            if request.user.is_authenticated():
+                saved_scans = ScanType.objects.filter(user=request.user)
+                context['saved_scans'] = saved_scans
+
+            context.update(csrf(request))
+            form = ScansForm()
+            context['form'] = form
+
+            return delete_scan(request, context)
+
+        else:
+
+            # Get form information.
+            print 'else'
+
+            form = ScansForm(request.POST)
+
+            print request.POST
+
+            if form.is_valid():
+
+                scan_name = form.cleaned_data['scan_name']
+                host_address = form.cleaned_data['host_address']
+                ports = form.cleaned_data['ports']
+                scan_options = form.cleaned_data['scan_options'].split(',')
+
+                # Append important info to context.
+
+                context.update(csrf(request))
+                context['scan_name'] = scan_name
+                context['host_address'] = host_address
+                context['ports'] = ports
+                context['scan_options'] = scan_options
+                context['form'] = form
+
+                '''
+                existing_scan_instance = None
+                if ScanType.objects.filter(scan_name=scan_name).exists():
+                    existing_scan_instance = get_object_or_404(ScanType, scan_name=scan_name)
+                '''
+
+                if live_scanning:
+                    # Perform live nmap scan.
+                    return live_scan(request, context)
+                else:
+                    # Save scantype to db.
+                    if request.user.is_authenticated():
+                        user = request.user
+
+                        str_scan_options = ''
+                        for option in scan_options[:-1]:
+                            str_scan_options += option + ','
+                        str_scan_options += scan_options[-1]
+                        print str_scan_options
+
+                        new_scan = ScanType(scan_name=scan_name, user=user,
+                                            host_address=host_address, ports=ports,
+                                            scan_options=scan_options)
+                        new_scan.save()
+
+                # We're not exporting, so render the page with a table.
+                return render(request, 'scans/scans.html', context)
+            else:
+
+                scan_name = request.POST.get("scan_name")
+                host_address = request.POST.get("host_address")
+                ports = request.POST.get("ports")
+
+                scan_options = []
+
+                dirty_scan_options = request.POST.get("scan_options")
+
+                scan_obj = ScanType(scan_name=scan_name, user=request.user,
+                                    host_address=host_address, ports=ports,
+                                    scan_options=scan_options)
+
+                if dirty_scan_options:
+                    if 'version_detection' in dirty_scan_options:
+                        scan_options.append('version_detection')
+                    if 'os_and_services' in dirty_scan_options:
+                        scan_options.append('os_and_services')
+                    if 'fast' in dirty_scan_options:
+                        scan_options.append('fast')
+                    if 'no_ping' in dirty_scan_options:
+                        scan_options.append('no_ping')
+
+                # Append important info to context.
+
+                context.update(csrf(request))
+                context['scan_name'] = scan_name
+                context['host_address'] = host_address
+                context['ports'] = ports
+                context['scan_options'] = scan_options
+
+                if request.user.is_authenticated():
+                    saved_scans = ScanType.objects.filter(user=request.user)
+                    context['saved_scans'] = saved_scans
+
+                scan_obj.scan_options = scan_options
+
+                context.update(csrf(request))
+                form = ScansForm(instance=scan_obj)
+                context['form'] = form
+                live_scanning = 'live_scan' in request.POST
+                if live_scanning:
+                    # Perform live nmap scan.
+                    return live_scan(request, context)
+                else:
+                    # Save scantype to db.
+                    if request.user.is_authenticated():
+                        user = request.user
+
+                        str_scan_options = ''
+                        for option in scan_options[:-1]:
+                            str_scan_options += option + ','
+                        str_scan_options += scan_options[-1]
+                        print str_scan_options
+
+                        existing_scan_instance = None
+                        if ScanType.objects.filter(scan_name=scan_name).exists():
+                            existing_scan_instance = get_object_or_404(ScanType, scan_name=scan_name)
+
+                        if not existing_scan_instance:
+                            new_scan = ScanType(scan_name=scan_name, user=user,
+                                                host_address=host_address, ports=ports,
+                                                scan_options=scan_options)
+                            new_scan.save()
+                        else:
+                            context['msg'] = 'Scan Name already exists. Delete the old one first.'
+
     context.update(csrf(request))
     context['form'] = ScansForm()
-    context['checks'] = ['ipv4_address', 'host_name', 'ports']
     return render(request, 'scans/scans.html', context)
-
-
-def process_query(form, checks, rad):
-    '''
-    Parses data from form and gets all objects that have that data.
-    Returns QuerySet of Hosts.
-    '''
-    ipv4_address = form.cleaned_data['ipv4_address']
-    host_name = form.cleaned_data['host_name']
-    ports = form.cleaned_data['ports']
-    os = form.cleaned_data['os']
-    lsp = form.cleaned_data['lsp']
-    host_groups = form.cleaned_data['host_groups']
-    location = form.cleaned_data['location']
-    tags = form.cleaned_data['tags']
-    notes = form.cleaned_data['notes']
-
-    host_list = []
-
-    # Check if multiple ports entered (ex 80, 443)
-    if ',' in ports:
-        ports = ports.split(',')
-        host_list = Host.objects.filter(ipv4_address__icontains=ipv4_address,
-                                        host_name__icontains=host_name,
-                                        os__icontains=os,
-                                        lsp__icontains=lsp,
-                                        host_groups__icontains=host_groups,
-                                        location__icontains=location,
-                                        tags__icontains=tags,
-                                        notes__icontains=notes)
-        # Filter each specified port, one at a time.
-        for p in ports:
-            p = p.strip()
-            host_list = host_list.filter(ports__icontains='"'+p+'"')
-    elif ports.strip():
-        # Single port entered, so single filter needed:
-        host_list = Host.objects.filter(ipv4_address__icontains=ipv4_address,
-                                        host_name__icontains=host_name,
-                                        ports__icontains='"'+ports+'"',
-                                        os__icontains=os,
-                                        lsp__icontains=lsp,
-                                        host_groups__icontains=host_groups,
-                                        location__icontains=location,
-                                        tags__icontains=tags,
-                                        notes__icontains=notes)
-    else:
-        # No port entered:
-        host_list = Host.objects.filter(ipv4_address__icontains=ipv4_address,
-                                        host_name__icontains=host_name,
-                                        os__icontains=os,
-                                        lsp__icontains=lsp,
-                                        host_groups__icontains=host_groups,
-                                        location__icontains=location,
-                                        tags__icontains=tags,
-                                        notes__icontains=notes)
-
-    '''
-    # Did we select Online-Only or Offline-Only or All Hosts?
-    if 'online' in rad:
-        host_list = host_list.exclude(status__icontains='Offline')
-    elif 'offline' in rad:
-        host_list = host_list.filter(status__icontains='Offline')
-    '''
-
-    return host_list
-
-
-def get_open_ports_and_new_list(host_list):
-    '''
-    Returns a tuple following (open_ports, host_list).
-    open_ports is a dict following {ip: [ports]}.
-    host_list is a QuerySet.
-    Example return value:
-        {'123.45.67.89': ['80', '443']}, <Host QuerySet>
-    If a port is not open, then we won't add the port to the dict.
-    If a port is not open, then we will remove the respective Host
-    from the host_list since we don't want to display that Host.
-    '''
-    open_ports = {}
-    for h in host_list:
-        if h.ports: # If the host has ports:
-            port_json = json.loads(h.ports)
-            h_ports = []
-            has_open_port = False
-            for p in port_json:
-                # Port is open, add to list .
-                if port_json[p][0] == 'open':
-                    h_ports.append(str(p))
-                    has_open_port = True
-                # Port is closed, remove Host from host_list.
-                elif port_json[p][0] == 'closed':
-                    host_list = host_list.exclude(ipv4_address=h.ipv4_address)
-                else:
-                    print 'Something went wrong! (scans/views.py -> get_open_ports_and_new_list())'
-            # Make sure it has an open port before we add it to the final dict.
-            # Otherwise, we are throwing in an empty list, and who needs that?
-            if has_open_port:
-                open_ports[str(h.ipv4_address)] = h_ports
-    return open_ports, host_list
-
-
-def get_subnet_list(host_list):
-    subnet_list = []
-    for h in host_list:
-        h_ip = h.ipv4_address
-        subnet_address = h_ip.rsplit('.', 1)
-        try:
-            subnet_list.append(Subnet.objects.get(ipv4_address__startswith=subnet_address[0]))
-        except:
-            print 'ERROR: Could not find subnet for ' + h_ip
-    return subnet_list
-
-
-class Echo(object):
-    '''
-    An object that implements just the write method of the file-like
-    interface.
-    '''
-    def write(self, value):
-        '''Write the value by returning it, instead of storing in a buffer.'''
-        return value
-
-def export(request, context):
-    '''
-    Looks at what info the user wants exported, and parses that out of
-    'context'.
-    Returns a response that creates a popup on the page asking the user
-    to download a CSV file.
-    Uses the Echo class (above) as a means of storing data in a buffer.
-    '''
-
-    existing_header_columns = []
-
-    # Bools to keep track of what was selected.
-    # Will be used for determining what gets outputted to csv file.
-    sel_ip = sel_name = sel_ports = sel_os = sel_lsp = sel_groups \
-    = sel_location = sel_tags = sel_notes = sel_status = False
-
-    if 'ipv4_address' in context['checks']:
-        existing_header_columns.append('IPv4')
-        sel_ip = True
-    if 'host_name' in context['checks']:
-        existing_header_columns.append('Name')
-        sel_name = True
-    if 'ports' in context['checks']:
-        existing_header_columns.append('Ports')
-        sel_ports = True
-    if 'os' in context['checks']:
-        existing_header_columns.append('OS')
-        sel_os = True
-    if 'lsp' in context['checks']:
-        existing_header_columns.append('LSP')
-        sel_lsp = True
-    if 'host_groups' in context['checks']:
-        existing_header_columns.append('Host Groups')
-        sel_groups = True
-    if 'location' in context['checks']:
-        existing_header_columns.append('Location')
-        sel_location = True
-    if 'tags' in context['checks']:
-        existing_header_columns.append('Tags')
-        sel_tags = True
-    if 'notes' in context['checks']:
-        existing_header_columns.append('Notes')
-        sel_notes = True
-    '''# Removed status
-        if 'status' in context['checks']:
-        existing_header_columns.append('Status')
-        sel_status = True
-    '''
-
-    ipv4_addresses = [host.ipv4_address for host in context['host_list']]
-    host_names = [host.host_name for host in context['host_list']]
-    open_ports = context['open_ports']
-    oses = [host.os for host in context['host_list']]
-    lsps = [host.lsp for host in context['host_list']]
-    host_groups = [host.host_groups for host in context['host_list']]
-    locations = [host.location for host in context['host_list']]
-    tags = [host.tags for host in context['host_list']]
-    notes = [host.notes for host in context['host_list']]
-    ''' # Removed status
-    statuses = [host.status for host in context['host_list']]
-    '''
-
-    host_data = zip(ipv4_addresses, host_names, oses, lsps,
-                    host_groups, locations, tags, notes)
-
-    # NOTE: Lines with #new utilize a buffer and a stream.
-    #       They're great for dealing with large CSV files.
-    #       Lines with #old just write lines one-by-one into the file.
-
-    pseudo_buffer = Echo() #new
-    writer = csv.writer(pseudo_buffer) #new
-    #response = HttpResponse(content_type='text/csv') #old
-    #writer = csv.writer(response) #old
-    output = []
-    output.append(existing_header_columns)
-
-    for ip, name, os, lsp, group, loc, tag, note in host_data:
-        tmp = []
-        if sel_ip:
-            tmp.append(ip)
-        if sel_name:
-            tmp.append(name)
-        if sel_ports:
-            if ip in open_ports:
-                tmp.append(open_ports[ip])
-            else:
-                tmp.append('')
-        if sel_os:
-            tmp.append(os)
-        if sel_lsp:
-            tmp.append(lsp)
-        if sel_groups:
-            tmp.append(group)
-        if sel_location:
-            tmp.append(loc)
-        if sel_tags:
-            tmp.append(tag)
-        if sel_notes:
-            tmp.append(note)
-        ''' Removed status
-        if sel_status:
-            tmp.append(status)
-        '''
-        output.append(tmp)
-    response = StreamingHttpResponse((writer.writerow(row) for row in output),
-                                        content_type="text/csv") #new
-    #writer.writerows(output) #old
-    response['Content-Disposition'] = 'attachment; filename="export.csv"' #new
-    return response

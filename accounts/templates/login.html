@@ -7,11 +7,29 @@
 {% endif %}
 
 <center>
+<h1>Login</h1>
+<hr><br>
 <form action="/accounts/auth/" method="post">{% csrf_token %}
-    <label for="username">Username:</label>
-    <input type="text" name="username" value="" id="username" />
-    <label for="password">Password:</label>
-    <input type="password" name="password" value="" id="password" />
+    <table>
+        <tr>
+            <td class="td-content-login">
+                <label for="username">Username:</label>
+            </td>
+            <td class="td-content-login">
+                <input type="text" placeholder="Enter Your Username" name="username" value="" id="username" />
+            </td>
+        </tr>
+        <tr>
+            <td class="td-content-login">
+                <label for="password">Password:</label>
+            </td>
+            <td class="td-content-login">
+                <input type="password" placeholder="Enter Your Password" name="password" value="" id="password" />
+            </td>
+        </tr>
+    </table>
+    <br>
+
     <input type="submit" value="Login" />
 
     <input type="hidden" name="next" value="{{ next }}" />

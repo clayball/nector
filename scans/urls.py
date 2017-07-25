@@ -3,5 +3,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^export/$', views.export, name='export'),
+    url(r'^edit/$', views.edit_scan, name='edit_scan'),
+    url(r'^delete/$', views.delete_scan, name='delete_scan'),
 ]

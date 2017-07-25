@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.50 scan initiated Thu Jul  6 17:13:35 2017 as: nmap -Pn -sV -&#45;version-light -vv -T5 -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 -iL tst.txt -&#45;open -oX sample-openports.xml -->
+<nmaprun scanner="nmap" args="nmap -Pn -sV -&#45;version-light -vv -T5 -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 -iL tst.txt -&#45;open -oX sample-openports.xml" start="1499375615" startstr="Thu Jul  6 17:13:35 2017" version="7.50" xmloutputversion="1.04">
+<scaninfo type="connect" protocol="tcp" numservices="33" services="17,19,21-23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337"/>
+<verbose level="2"/>
+<debugging level="0"/>
+<taskbegin task="Parallel DNS resolution of 5 hosts." time="1499375616"/>
+<taskend task="Parallel DNS resolution of 5 hosts." time="1499375616"/>
+<taskbegin task="Connect Scan" time="1499375616"/>
+<taskend task="Connect Scan" time="1499375622" extrainfo="165 total ports"/>
+<taskbegin task="Service scan" time="1499375622"/>
+<taskend task="Service scan" time="1499375634" extrainfo="10 services on 5 hosts"/>
+<taskbegin task="NSE" time="1499375634"/>
+<taskend task="NSE" time="1499375634"/>
+<taskbegin task="NSE" time="1499375634"/>
+<taskend task="NSE" time="1499375634"/>
+<host starttime="1499375616" endtime="1499375634"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="104.108.168.140" addrtype="ipv4"/>
+<hostnames>
+<hostname name="a104-108-168-140.deploy.static.akamaitechnologies.com" type="PTR"/>
+</hostnames>
+<ports><extraports state="filtered" count="31">
+<extrareasons reason="no-responses" count="31"/>
+</extraports>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" tunnel="ssl" method="probed" conf="10"/></port>
+</ports>
+<times srtt="115094" rttvar="61688" to="300000"/>
+</host>
+<host starttime="1499375616" endtime="1499375634"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="104.112.22.22" addrtype="ipv4"/>
+<hostnames>
+<hostname name="a104-112-22-22.deploy.static.akamaitechnologies.com" type="PTR"/>
+</hostnames>
+<ports><extraports state="filtered" count="31">
+<extrareasons reason="no-responses" count="31"/>
+</extraports>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" tunnel="ssl" method="probed" conf="10"/></port>
+</ports>
+<times srtt="28355" rttvar="22239" to="117311"/>
+</host>
+<host starttime="1499375616" endtime="1499375634"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="216.178.100.28" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="filtered" count="31">
+<extrareasons reason="no-responses" count="31"/>
+</extraports>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="Apache httpd" method="probed" conf="10"><cpe>cpe:/a:apache:http_server</cpe></service></port>
+<port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="Apache httpd" tunnel="ssl" method="probed" conf="10"><cpe>cpe:/a:apache:http_server</cpe></service></port>
+</ports>
+<times srtt="79136" rttvar="40188" to="239888"/>
+</host>
+<host starttime="1499375616" endtime="1499375634"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="23.196.121.95" addrtype="ipv4"/>
+<hostnames>
+<hostname name="a23-196-121-95.deploy.static.akamaitechnologies.com" type="PTR"/>
+</hostnames>
+<ports><extraports state="filtered" count="31">
+<extrareasons reason="no-responses" count="31"/>
+</extraports>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" tunnel="ssl" method="probed" conf="10"/></port>
+</ports>
+<times srtt="40506" rttvar="31064" to="164762"/>
+</host>
+<host starttime="1499375616" endtime="1499375634"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="128.91.34.250" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="filtered" count="31">
+<extrareasons reason="no-responses" count="31"/>
+</extraports>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="AkamaiGHost" extrainfo="Akamai&apos;s HTTP Acceleration/Mirror service" tunnel="ssl" method="probed" conf="10"/></port>
+</ports>
+<times srtt="12599" rttvar="10198" to="53391"/>
+</host>
+<runstats><finished time="1499375634" timestr="Thu Jul  6 17:13:54 2017" elapsed="18.91" summary="Nmap done at Thu Jul  6 17:13:54 2017; 5 IP addresses (5 hosts up) scanned in 18.91 seconds" exit="success"/><hosts up="5" down="0" total="5"/>
+</runstats>
+</nmaprun>

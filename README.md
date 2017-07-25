@@ -37,6 +37,15 @@ $ source venv-nector/bin/activate
 ```
 
 
+### Downloading Dependencies
+
+Install [pip](https://pypi.python.org/pypi/pip) dependencies.
+
+```
+$ pip install -r requirements.txt
+```
+
+
 ### Trying the Demo (Optional)
 
 If you want to try out the demo of NECTOR before making a full
@@ -48,16 +57,142 @@ $ make demo
 
 Then, open a browser and go to **http://127.0.0.1:8000**
 
-If you like what you see, continue onto the next steps.
-
-
-### Downloading Dependencies
-
-Install [pip](https://pypi.python.org/pypi/pip) dependencies.
+If you like what you see, delete the sample database and move on to the next step.
 
 ```
-$ pip install -r requirements.txt
+$ rm db.sqlite3
 ```
+
+
+### Choosing a Database
+
+NECTOR is configured to work with three types of RDBMSs easily: **SQLite3**, **MySQL**, and **PostgreSQL**.
+
+SQLite3 is light-weight, server-less, and requires practically no configuration. However, a SQLite3 database stores its information in a single binary file, and imposes limits on its users when querying a large amount of data.
+
+MySQL is a popular, large-scale database server that's easy to setup, and features lots of third-party support,
+expansive functionality for its users, and reads / writes data very quickly. Although, some functionalities get handled
+a bit less-reliably with MySQL than other RDBMSs, and MySQL does not adhere to SQL compliancy rules.
+
+PostgreSQL is much more server-friendly, featuring high concurrency and the ability to deal with large datasets. Though, it does need to be set up and configured, which may pose as a nuisance toward someone wanting to use NECTOR out of the box. It features
+tons of bells and whistles, gearing it toward advanced RDBMS users.
+
+Ideally, if you intend on hosting NECTOR on a public-facing server, MySQL or PostgreSQL should be your choice.
+Otherwise, if you're working locally or only dealing with a small amount of traffic, SQLite3 will work great.
+
+[If you're still unsure which RDMBS you should use, checkout this DigitalOcean article.](https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems)
+
+#### Setting up a SQLite3 Database (Option A)
+
+1. No manual setup required for a SQLite3 database.
+
+
+#### Setting up a MySQL Database (Option B)
+
+1. Install necessary components.
+
+    ```
+    $ sudo dnf install mysql mysql-server MySQL-python
+    ```
+
+2. Start MySQL on boot. (Optional)
+
+    ```
+    $ chkconfig --levels 235 mysqld on
+    ```
+
+3. Start MySQL process.
+
+    ```
+    $ service mysqld start
+    ```
+
+4. Get MySQL dependency through pip.
+
+    ```
+    pip install mysql-python
+    ```
+
+5. Create a database and a database user.
+
+    ```
+    $ mysql -u root -p
+    $ CREATE DATABASE nector CHARACTER SET UTF8;
+    $ CREATE USER myuser@localhost IDENTIFIED BY 'password123';
+    $ GRANT ALL PRIVILEGES ON nector.* TO myuser@localhost;
+    $ FLUSH PRIVILEGES;
+    $ exit
+    ```
+
+6. Modify project settings to use your database.
+
+    ```
+    $ vi nector/settings.py
+    ```
+    Find the 'DATABASE' section and replace it with:
+
+    ```
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'nector',
+            'USER': 'myuser',
+            'PASSWORD': 'password123',
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'ATOMIC_REQUESTS': True,
+        }
+    }
+    ```
+
+    Make sure you change the NAME, USER, PASSWORD, and PORT sections to fit your needs!
+
+
+#### Setting up a PostgreSQL Database (Option C)
+
+1. Install necessary components.
+
+    ```
+    $ sudo dnf install postgresql postgresql-contrib postgresql-devel postgresql-server
+    ```
+
+2. Create a database and a database user.
+
+    ```
+    $ sudo su - postgres
+    $ psql
+    $ CREATE DATABASE nector;
+    $ CREATE USER myuser WITH PASSWORD 'password123';
+    $ ALTER ROLE myuser SET client_encoding TO 'utf8';
+    $ ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';
+    $ ALTER ROLE myuser SET timezone TO 'EST';
+    $ GRANT ALL PRIVILEGES ON DATABASE nector TO myuser;
+    $ \q
+    $ exit
+    ```
+
+3. Modify project settings to use your database.
+
+    ```
+    $ vi nector/settings.py
+    ```
+    Find the 'DATABASE' section and replace it with:
+
+    ```
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'nector',
+            'USER': 'myuser',
+            'PASSWORD': 'password123',
+            'HOST': 'localhost',
+            'PORT': '',
+            'ATOMIC_REQUESTS': True,
+        }
+    }
+    ```
+
+    Make sure you change the USER and PASSWORD sections to fit your needs!
 
 
 ### Using Your Secret Key
@@ -82,15 +217,15 @@ and replace it with your own Django secret key.
 Django uses [migrations](https://docs.djangoproject.com/en/1.11/topics/migrations/)
 to keep track of changes to the database's tables.
 
-First, create new migrations based on the Django models of our project.
+First, create new migrations based on the Django models of your project.
 
 ```
 $ python manage.py makemigrations
 ```
 
-Next, apply the migrations to our database (this will create a database if
-one does not already exist). Doing this will fill our database with the tables
-we need for the project.
+Next, apply the migrations to your database (this will create a database if
+one does not already exist). Doing this will fill your database with the tables
+you need for the project.
 
 ```
 $ python manage.py migrate
@@ -98,6 +233,7 @@ $ python manage.py migrate
 
 
 ### Creating Your Data
+
 
 #### Getting Hosts with Nmap
 
@@ -130,20 +266,35 @@ Make sure _only_ 'Plugin ID', 'Plugin Name', 'Severity', 'IP Address', and
 
 Click submit, and save this file as _vulnlist.csv_ in your NECTOR root directory.
 
+
 #### Getting Events
 
 Todo.
 
+
 #### Getting Ports
 
-Todo.
+If you haven't already, create a file `subnets.txt` and fill it with your subnets.
+
+```
+$ vi subnets.txt
+```
+
+Use [nmap](https://nmap.org/) to run a popular-ports scan on all the hosts in your subnets.
+
+Save this scan as openports.xml
+
+```
+$ nmap -Pn -sV --version-light -vv -T5 -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 -iL subnets.txt --open -oX openports.xml 2>&1 > /dev/null
+```
+
+This scan may take some time to complete.
+
 
 #### Filling in the Gaps
 
 If you were unable to perform any of the above four steps, keep reading.
 Otherwise, you should skip this step.
-
-##### Missing Hosts, Vulnerabilities, or Events
 
 Copy the sample data you need from `sample-data/` into this project's root folder.
 
@@ -151,28 +302,29 @@ Copy the sample data you need from `sample-data/` into this project's root folde
 $ cp sample-data/MISSING-FILE .
 ```
 
-Remove the '_sample-_' prefix from the file(s).
+Note that you will have to remove the _sample-_ prefix from each file.
 
+Missing Hosts:
 ```
-$ mv sample-events.csv events.csv
-$ mv sample-hosts.xml hosts.xml
-$ mv sample-vulnlist.csv vulnlist.csv
+$ cp sample-data/sample-hosts.xml hosts.xml
+```
+
+Missing Ports:
+```
+$ cp sample-data/sample-openports.xml openports.xml
+```
+
+Missing Vulnerabilities:
+```
+$ cp sample-data/sample-vulnlist.csv vulnlist.csv
+```
+
+Missing Events:
+```
+$ cp sample-data/sample-events.csv events.csv
 ```
 
 Edit the file(s) to use your data.
-
-Do not mess up the formatting!
-
-##### Missing Ports
-
-Rename the sample port files in `port-scans/` to remove the '_sample-_' prefix.
-
-```
-$ mv port-scans/sample-port-22-open-170502.csv port-scans/port-22-open-170502.csv
-$ mv port-scans/sample-port-80-open-170509.txt port-scans/port-80-open-170509.txt
-```
-
-Edit the sample port files in `port-scans/`.
 
 Do not mess up the formatting!
 
@@ -183,12 +335,10 @@ In order to use your data, you will have to import it into the database.
 
 ```
 $ python import-data.py
-$ python import-ports.py
 ```
 
 
 ### Running NECTOR
-
 
 Start the server.
 
@@ -214,7 +364,7 @@ If you make frequent changes to NECTOR (which is expected), you will
 want to run `$ make` to take care of everything for you.
 
     Note: The makefile will not activate or deactivate your virtualenv.
-    If you plan on using one, you must do so manually.
+          If you plan on using one, you must do so manually.
 
 
 ---
