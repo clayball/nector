@@ -6,4 +6,5 @@ lxml==3.8.0
 packaging==16.8
 psycopg2==2.7.1
 pyparsing==2.1.10
+python-nmap==0.6.1
 six==1.10.0
