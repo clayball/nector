@@ -132,28 +132,32 @@ def live_scan(request, context):
 
     host_address, args = get_nmap_command(request, context)
 
-    nm.scan(hosts=host_address, arguments=args)
+    try:
+        nm.scan(hosts=host_address, arguments=args)
 
-    nmap_output = [nm.command_line()]
+        nmap_output = [nm.command_line()]
 
-    for host in nm.all_hosts():
-        nmap_output.append('-------------------------------')
-        nmap_output.append('Host : %s (%s)' % (host, nm[host].hostname()))
-        nmap_output.append('State : %s' % nm[host].state())
-        for proto in nm[host].all_protocols():
-            nmap_output.append('~~~~~~~~')
-            nmap_output.append('Protocol : %s' % proto)
-            lport = nm[host][proto].keys()
-            lport.sort()
-            for port in lport:
-                nmap_output.append('port : %s | state : %s | name : %s' % \
-                    (port,
-                     nm[host][proto][port]['state'],
-                     nm[host][proto][port]['product'] + ' ' + \
-                     nm[host][proto][port]['version'] + ' ' + \
-                     nm[host][proto][port]['extrainfo']))
+        for host in nm.all_hosts():
+            nmap_output.append('-------------------------------')
+            nmap_output.append('Host : %s (%s)' % (host, nm[host].hostname()))
+            nmap_output.append('State : %s' % nm[host].state())
+            for proto in nm[host].all_protocols():
+                nmap_output.append('~~~~~~~~')
+                nmap_output.append('Protocol : %s' % proto)
+                lport = nm[host][proto].keys()
+                lport.sort()
+                for port in lport:
+                    nmap_output.append('port : %s | state : %s | name : %s' % \
+                        (port,
+                         nm[host][proto][port]['state'],
+                         nm[host][proto][port]['product'] + ' ' + \
+                         nm[host][proto][port]['version'] + ' ' + \
+                         nm[host][proto][port]['extrainfo']))
 
-    context['nmap_output'] = nmap_output
+        context['nmap_output'] = nmap_output
+    except Exception as e:
+        print e
+        context['nmap_output'] = ['Something went wrong!']
 
     return render(request, 'scans/scans.html', context)
 
