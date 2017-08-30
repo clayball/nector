@@ -14,7 +14,7 @@ import nmap
 import json
 
 '''
-    Useful nmap scans we can use as defaults:
+    Useful nmap scans we can use as defaults (todo):
         1. Scan for UDP DDOS reflectors:
             nmap -sU -A -PN -n -pU:19,53,123,161 -script=ntp-monlist,dns-recursion,snmp-sysdescr 192.168.1.0/24
         2. Get HTTP headers of web services:
