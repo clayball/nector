@@ -9,12 +9,12 @@ from forms import ScansForm
 
 from models import ScanType
 
-import subprocess # For nmap
+import nmap
 
 import json
 
 '''
-    Useful nmap scans we can use as defaults:
+    Useful nmap scans we can use as defaults (todo):
         1. Scan for UDP DDOS reflectors:
             nmap -sU -A -PN -n -pU:19,53,123,161 -script=ntp-monlist,dns-recursion,snmp-sysdescr 192.168.1.0/24
         2. Get HTTP headers of web services:
@@ -31,30 +31,28 @@ import json
 def get_nmap_command(request, context):
     """TODO: Add results of the live scan to context. Display on page."""
 
-
     scan_name = context['scan_name']
     host_address = context['host_address']
     ports = context['ports']
     scan_options = context['scan_options']
 
-    nmap_command = ['nmap']
+    args = ''
 
     for opt in scan_options:
-        if opt == 'version_detection':
-            nmap_command.append('-sV')
-        elif opt == 'os_and_services':
-            nmap_command.append('-A')
-        elif opt == 'fast':
-            nmap_command.append('-F')
-        elif opt == 'no_ping':
-            nmap_command.append('-Pn')
-
-    nmap_command.append(host_address)
+        print opt
+        if 'version_detection' in opt:
+            args += '-sV '
+        if 'os_and_services' in opt:
+            args += '-A '
+        if 'fast' in opt:
+            args += '-F '
+        if 'no_ping' in opt:
+            args += '-Pn '
 
     if ports:
         tmp_ports = []
         if ',' in ports:
-            nmap_command.append('-p')
+            args += '-p'
 
             tmp_ports = ports.split(',')
 
@@ -63,7 +61,7 @@ def get_nmap_command(request, context):
             for p in tmp_ports:
                 p = p.strip()
                 try:
-                    if int(p) > 0 and int(p) < 65535:
+                    if int(p) > 0 and int(p) <= 65535:
                         str_port_list += str(p) + ','
                     else:
                         print 'Invalid port %s' % p
@@ -72,10 +70,10 @@ def get_nmap_command(request, context):
                     print 'Invalid port %s' % p
                     return None
 
-            nmap_command.append(str_port_list)
+            args += str_port_list
 
         elif '-' in ports:
-            nmap_command.append('-p')
+            args += '-p'
 
             tmp_ports = ports.split('-')
 
@@ -83,7 +81,7 @@ def get_nmap_command(request, context):
             for p in tmp_ports:
                 p = p.strip()
                 try:
-                    if int(p) > 0 and int(p) < 65535:
+                    if int(p) > 0 and int(p) <= 65535:
                         print 'Good'
                     else:
                         is_valid_range = False
@@ -92,10 +90,10 @@ def get_nmap_command(request, context):
                     return None
 
             if is_valid_range:
-                nmap_command.append(ports)
+                args += ports
 
         elif ' ' in ports:
-            nmap_command.append('-p')
+            args += '-p'
 
             tmp_ports = ports.split(' ')
 
@@ -104,7 +102,7 @@ def get_nmap_command(request, context):
             for p in tmp_ports:
                 p = p.strip()
                 try:
-                    if int(p) > 0 and int(p) < 65535:
+                    if int(p) > 0 and int(p) <= 65535:
                         str_port_list += str(p) + ','
                     else:
                         print 'Invalid port %s' % p
@@ -113,40 +111,53 @@ def get_nmap_command(request, context):
                     print 'Invalid port %s' % p
                     return None
 
-            nmap_command.append(str_port_list)
+            args += str_port_list
 
         else:
             p = ports.strip()
             try:
-                if int(p) > 0 and int(p) < 65535:
-                    nmap_command.append('-p')
-                    nmap_command.append(p)
+                if int(p) > 0 and int(p) <= 65535:
+                    args += '-p'
+                    args += p
             except:
                 print 'Invalid port %s' % p
                 return None
 
-    return nmap_command
-
+    return host_address, args
 
 
 def live_scan(request, context):
 
-    nmap_command = get_nmap_command(request, context)
+    nm = nmap.PortScanner()
 
-    # We're using check_output w/ universal_newlines & splitlines
-    # in order to retain the shell's formatting.
+    host_address, args = get_nmap_command(request, context)
 
-    if nmap_command:
-        process = subprocess.check_output(nmap_command, universal_newlines=True).splitlines()
-        context['nmap_output'] = process
+    try:
+        nm.scan(hosts=host_address, arguments=args)
 
-    '''
-    process = subprocess.Popen(nmap_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    out, err = process.communicate()
+        nmap_output = [nm.command_line()]
 
-    context['nmap_output'] = out
+        for host in nm.all_hosts():
+            nmap_output.append('-------------------------------')
+            nmap_output.append('Host : %s (%s)' % (host, nm[host].hostname()))
+            nmap_output.append('State : %s' % nm[host].state())
+            for proto in nm[host].all_protocols():
+                nmap_output.append('~~~~~~~~')
+                nmap_output.append('Protocol : %s' % proto)
+                lport = nm[host][proto].keys()
+                lport.sort()
+                for port in lport:
+                    nmap_output.append('port : %s | state : %s | name : %s' % \
+                        (port,
+                         nm[host][proto][port]['state'],
+                         nm[host][proto][port]['product'] + ' ' + \
+                         nm[host][proto][port]['version'] + ' ' + \
+                         nm[host][proto][port]['extrainfo']))
 
-    '''
+        context['nmap_output'] = nmap_output
+    except Exception as e:
+        print e
+        context['nmap_output'] = ['Something went wrong!']
 
     return render(request, 'scans/scans.html', context)
 
@@ -202,19 +213,10 @@ def edit_scan(request):
 
 def index(request):
     '''
-    Default search page.
+    Default scanning page.
     If a POST request was made to get here, then our form was submitted,
-    so display a table of the query made.
+    so display the results of the query made.
     Otherwise, just display the form.
-    '''
-
-    '''
-    Author's Note:
-
-    Hi, this is the cludgiest function I have written. Ever.
-    It works, but I really want to clean up the code eventually.
-    So, at the time being, you shouldn't feel stupid while reading this code;
-    just angry and confused. My apologies in advance.
     '''
 
     context = {}
@@ -227,7 +229,7 @@ def index(request):
 
 
     if request.POST.get("live_scan"):
-        # User pressed Export button.
+        # User pressed Live Scan button.
         live_scanning = True
 
     if request.method == "POST":

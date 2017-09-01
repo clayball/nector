@@ -7,7 +7,7 @@ class ScansForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ScansForm, self).__init__(*args, **kwargs)
-        self.fields['scan_name'].required    = True
+        self.fields['scan_name'].required    = False
         self.fields['host_address'].required = True
         self.fields['ports'].required        = False
         self.fields['scan_options'].required = False
@@ -24,7 +24,7 @@ class ScansForm(forms.ModelForm):
         # Checkboxes for options..
         SCAN_OPTIONS_CHOICES = [
                                 ('version_detection', 'Version Scan (-sV)'),
-                                ('os_and_services', 'OS & Services (-A)'),
+                                #('os_and_services', 'OS & Services (-A)'),
                                 ('fast', 'Common Ports (-F)'),
                                 ('no_ping', 'No Ping (-Pn)'),
                                ]
