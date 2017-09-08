@@ -1,7 +1,7 @@
 # ===========================================================================
 # Usage: $ make [run|demo]
 # Prerequisites
-#  hosts.xml, openports.csv, vulnlist.csv, events.csv exist with data.
+#  hosts.xml, openports.xml, vulnlist.csv, events.csv exist with data.
 # Post-conditions
 #  Performs migrations, imports data from above files to db.sqlite3, then runs
 #  the NECTOR server.
@@ -12,6 +12,7 @@
 run :
 	python manage.py makemigrations
 	python manage.py migrate
+	./get-data.sh
 	python import-data.py
 	python manage.py runserver
 

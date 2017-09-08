@@ -16,8 +16,8 @@
 #    ^ IP we want to traceroute,  ^first hop           , ^next hop
 
 
-rm hops.csv       # Remove the file if it exists. (Easy way to clear the results)
-touch hops.csv    # Create the file if it doesn't exist.
+rm hops.csv >/dev/null       # Remove the file if it exists. (Easy way to clear the results)
+touch hops.csv >/dev/null    # Create the file if it doesn't exist.
 
 # Iterate through each line of file. Each line stored in $host.
 while IFS= read -r host;

@@ -7,11 +7,11 @@
 # Second nmap scan gets a list of the open ports and their hosts.
 # Creates two files: hosts.xml and openports.xml
 
-rm hosts.xml        # Remove the file if it exists. (Easy way to clear the results)
-touch hosts.xml     # Create the file if it doesn't exist.
+rm hosts.xml >/dev/null         # Remove the file if it exists. (Easy way to clear the results)
+touch hosts.xml >/dev/null      # Create the file if it doesn't exist.
 
-rm openports.xml    # Remove the file if it exists. (Easy way to clear results)
-touch openports.xml # Create the file if it doesn't exist.
+rm openports.xml >/dev/null     # Remove the file if it exists. (Easy way to clear results)
+touch openports.xml >/dev/null  # Create the file if it doesn't exist.
 
 echo '[*] Scanning subnets for existing hosts...'
 # Run nmap scan on all subnets to generate list of hosts.
