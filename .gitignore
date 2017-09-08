@@ -14,3 +14,4 @@ censys-keys.csv
 openports.xml
 scan-full-*
 hosts/migrations/*
+hops.csv
