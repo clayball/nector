@@ -8,7 +8,7 @@
 # get-hops.sh will create hops.csv.
 
 
-if [[ -s subnets.txt ]]
+if [[ -s ../subnets.txt ]]
 then
     echo '[*] subnets.txt found and is populated.';
     ./get-hosts.sh;
