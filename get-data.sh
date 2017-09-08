@@ -13,6 +13,8 @@ then
     echo '[*] subnets.txt found and is populated.';
     ./get-hosts.sh;
     ./get-hops.sh;
+    ./check-vulns.sh;
+    ./check-events.sh;
 else
     echo '[!] File subnets.txt not found or is empty!';
     echo '[!] Creating subnets.txt and prompting user...';
@@ -25,4 +27,6 @@ else
     vi subnets.txt;
     ./get-hosts.sh;
     ./get-hops.sh;
+    ./check-vulns.sh;
+    ./check-events.sh;
 fi
