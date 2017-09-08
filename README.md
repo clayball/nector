@@ -26,7 +26,7 @@ configuration, incident reporting,  and more.
 ## Getting Started
 
 
-### Setting up a Virtual Environment (Optional)
+### Setting up a Virtual Environment (Recommended)
 
 Create a [virtualenv](https://virtualenv.pypa.io/en/stable/) to work in, and
 activate it.
@@ -35,6 +35,38 @@ activate it.
 $ virtualenv venv-nector
 $ source venv-nector/bin/activate
 ```
+
+
+### Quick Setup (Optional)
+
+If you already know what you're getting into, or simply don't feel like reading
+this whole README, run:
+
+```
+$ make
+```
+
+If you are not using a virtual environment, you will have to run:
+
+```
+$ make no-venv
+```
+
+You will be prompted to enter some information. Fill this in appropriately.
+
+Then, open a browser and go to **http://127.0.0.1:8000**
+
+**And you're done.**
+
+Any time you want to start the server again, run:
+
+```
+$ python manage.py runserver
+```
+
+_Note_: You may want to fill in `subnets.txt`, `events.csv`, and `vulnlist.csv`
+manually prior to running the makefile. Though, you can always run it again
+after doing so.
 
 
 ### Downloading Dependencies
