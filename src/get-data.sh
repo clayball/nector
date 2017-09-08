@@ -11,22 +11,23 @@
 if [[ -s subnets.txt ]]
 then
     echo '[*] subnets.txt found and is populated.';
-    src/get-hosts.sh;
-    src/get-hops.sh;
-    src/check-vulns.sh;
-    src/check-events.sh;
+    ./get-hosts.sh;
+    ./get-hops.sh;
+    ./check-vulns.sh;
+    ./check-events.sh;
 else
     echo '[!] File subnets.txt not found or is empty!';
     echo '[!] Creating subnets.txt and prompting user...';
-    touch subnets.txt;
-    echo '# List of Subnets' >> subnets.txt;
-    echo '# Add your subnet(s) or individual hosts here.' >> subnets.txt;
-    echo '# ------------------------' >> subnets.txt;
-    echo '0.0.0.0/24 #(Follow this format for subnets and delete this line before saving)' >> subnets.txt;
-    echo '0.0.0.0 #(Follow this format for hosts and delete this line before saving)' >> subnets.txt
-    vi subnets.txt;
-    src/get-hosts.sh;
-    src/get-hops.sh;
-    src/check-vulns.sh;
-    src/check-events.sh;
+    touch ../subnets.txt;
+    echo '# List of Subnets' >> ../subnets.txt;
+    echo '# Add your subnet(s) or individual hosts here.' >> ../subnets.txt;
+    echo '# ------------------------' >> ../subnets.txt;
+    echo '0.0.0.0/24 #(Follow this format for subnets and delete this line before saving)' >> ../subnets.txt;
+    echo '0.0.0.0 #(Follow this format for hosts and delete this line before saving)' >> ../subnets.txt
+    echo '' >> ../subnets.txt
+    vi ../subnets.txt;
+    ./get-hosts.sh;
+    ./get-hops.sh;
+    ./check-vulns.sh;
+    ./check-events.sh;
 fi
