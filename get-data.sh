@@ -17,10 +17,10 @@ else
     echo '[!] File subnets.txt not found or is empty!';
     echo '[!] Creating subnets.txt and prompting user...';
     touch subnets.txt;
-    echo '# List of Subnets'
-    echo '# Add your subnet(s) here.'
-    echo '# ------------------------'
-    echo '0.0.0.0/24 #(Follow this format and delete this line before saving)' > subnets.txt;
+    echo '# List of Subnets' >> subnets.txt;
+    echo '# Add your subnet(s) here.' >> subnets.txt;
+    echo '# ------------------------' >> subnets.txt;
+    echo '0.0.0.0/24 #(Follow this format and delete this line before saving)' >> subnets.txt;
     vi subnets.txt;
     ./get-hosts.sh;
     ./get-hops.sh;
