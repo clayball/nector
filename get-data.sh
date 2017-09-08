@@ -19,4 +19,6 @@ else
     touch subnets.txt;
     echo '0.0.0.0/24 (Follow this format and delete this line before saving.)' > subnets.txt;
     vi subnets.txt;
+    ./get-hosts.sh;
+    ./get-hops.sh;
 fi
