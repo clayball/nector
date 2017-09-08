@@ -10,6 +10,7 @@
 .PHONY : run
 
 run :
+	pip install -r requirements.txt
 	python manage.py makemigrations
 	python manage.py migrate
 	./get-data.sh
