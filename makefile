@@ -1,5 +1,5 @@
 # ===========================================================================
-# Usage: $ make [run|demo]
+# Usage: $ make [run|demo|quick|no-venv]
 # Prerequisites
 #  hosts.xml, openports.xml, vulnlist.csv, events.csv exist with data.
 # Post-conditions
@@ -7,13 +7,7 @@
 #  the NECTOR server.
 # ===========================================================================
 
-.PHONY : quick
-
-run :
-	python manage.py makemigrations
-	python manage.py migrate
-	python import-data.py
-	python manage.py runserver
+.PHONY : run
 
 
 quick :
@@ -21,6 +15,13 @@ quick :
 	python manage.py makemigrations
 	python manage.py migrate
 	./update-database.sh
+	python manage.py runserver
+
+
+run :
+	python manage.py makemigrations
+	python manage.py migrate
+	python import-data.py
 	python manage.py runserver
 
 
