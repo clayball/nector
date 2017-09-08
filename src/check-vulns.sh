@@ -6,10 +6,10 @@
 # If so, we're good. Otherwise, do it here.
 
 
-if [[ -s ../vulnlist.csv ]]
+if [[ -s vulnlist.csv ]]
 then
     echo '[*] vulnlist.csv found and is populated.';
 else
-    touch ../vulnlist.csv
-	echo '"Plugin","Plugin Name","Severity","IP Address","DNS Name"' > ../vulnlist.csv
+    touch vulnlist.csv
+	echo '"Plugin","Plugin Name","Severity","IP Address","DNS Name"' > vulnlist.csv
 fi
