@@ -13,6 +13,8 @@ run :
 	pip install -r requirements.txt
 	python manage.py makemigrations
 	python manage.py migrate
+	touch vulnlist.csv
+	touch events.csv
 	./get-data.sh
 	python import-data.py
 	python manage.py runserver
