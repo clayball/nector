@@ -16,8 +16,8 @@
 #    ^ IP we want to traceroute,  ^first hop           , ^next hop
 
 
-rm hops.csv >/dev/null       # Remove the file if it exists. (Easy way to clear the results)
-touch hops.csv >/dev/null    # Create the file if it doesn't exist.
+rm ../hops.csv >/dev/null       # Remove the file if it exists. (Easy way to clear the results)
+touch ../hops.csv >/dev/null    # Create the file if it doesn't exist.
 
 # Iterate through each line of file. Each line stored in $host.
 while IFS= read -r host;
@@ -32,9 +32,9 @@ do
         echo '[*] Performing traceroute on' $ip;
         # Perform traceroute and parse hops into csv format.
         # First column of each line will be the IP tracerouted to.
-        $(traceroute $ip | awk -F ' ' '{print $2 $3}' | xargs | sed -e 's/ /,/g' | cut -d ',' -f1- | cut -c 3- >> hops.csv);
+        $(traceroute $ip | awk -F ' ' '{print $2 $3}' | xargs | sed -e 's/ /,/g' | cut -d ',' -f1- | cut -c 3- >> ../hops.csv);
     fi
-done < hosts.xml # Use hosts.xml as file to read from throughout the loop.
+done < ../hosts.xml # Use hosts.xml as file to read from throughout the loop.
 
 # Inform user that we're done.
 echo ''
