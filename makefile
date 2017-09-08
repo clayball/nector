@@ -22,10 +22,10 @@ quick :
 	python manage.py migrate
 	touch vulnlist.csv
 	echo '"Plugin","Plugin Name","Severity","IP Address","DNS Name"' > vulnlist.csv
-	echo ',,,,' >> vulnlist.csv
+	#echo ',,,,' >> vulnlist.csv
 	touch events.csv
 	echo 'Request Number,Date Submitted,Title,Status,Last Edit Date,Submitted By,Assignees' > events.csv
-	echo ',,,,,,' >> events.csv
+	#echo ',,,,,,' >> events.csv
 	./get-data.sh
 	python import-data.py
 	python manage.py runserver

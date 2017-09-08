@@ -18,9 +18,10 @@ else
     echo '[!] Creating subnets.txt and prompting user...';
     touch subnets.txt;
     echo '# List of Subnets' >> subnets.txt;
-    echo '# Add your subnet(s) here.' >> subnets.txt;
+    echo '# Add your subnet(s) or individual hosts here.' >> subnets.txt;
     echo '# ------------------------' >> subnets.txt;
-    echo '0.0.0.0/24 #(Follow this format and delete this line before saving)' >> subnets.txt;
+    echo '0.0.0.0/24 #(Follow this format for subnets and delete this line before saving)' >> subnets.txt;
+    echo '0.0.0.0 #(Follow this format for hosts and delete this line before saving)' >> subnets.txt
     vi subnets.txt;
     ./get-hosts.sh;
     ./get-hops.sh;
