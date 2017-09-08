@@ -24,7 +24,9 @@ while IFS= read -r host;
 do
     # Get the IP addr and remove surrounding parenthesis.
     ip=$(echo $host | awk '{print $6}' | tr --delete '(' | tr --delete ')');
-    # Ensure it is an IP addr (this is a weak form of validation, only checks for nums, periods, and spaces)
+    # Ensure it is an IP addr. This is a weak form of validation, it
+    # only checks if $ip consists of nums, periods, and spaces,
+    # but this is all we need as long as our nmap scans stay consistent.
     if [[ $ip =~ [0-9\.\b]. ]] ;
     then
         echo '[*] Performing traceroute on' $ip;
