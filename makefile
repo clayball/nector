@@ -20,7 +20,7 @@ quick :
 	pip install -r requirements.txt
 	python manage.py makemigrations
 	python manage.py migrate
-	./get-data.sh
+	src/get-data.sh
 	python import-data.py
 	python manage.py runserver
 
@@ -29,7 +29,7 @@ no-venv :
 	sudo pip install -r requirements.txt
 	python manage.py makemigrations
 	python manage.py migrate
-	./get-data.sh
+	src/get-data.sh
 	python import-data.py
 	python manage.py runserver
 
