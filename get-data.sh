@@ -17,6 +17,6 @@ else
     echo '[!] File subnets.txt not found or is empty!';
     echo '[!] Creating subnets.txt and prompting user...';
     touch subnets.txt;
-    echo '0.0.0.0/24' > subnets.txt;
+    echo '0.0.0.0/24 (Follow this format and delete this line before saving.)' > subnets.txt;
     vi subnets.txt;
 fi
