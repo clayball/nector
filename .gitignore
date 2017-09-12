@@ -15,3 +15,4 @@ openports.xml
 scan-full-*
 hosts/migrations/*
 hops.csv
+malware.csv

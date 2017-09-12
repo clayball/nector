@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'blacklist',
     'scans',
     'trending',
+    'malware',
     'django_tables2'
 ]
 

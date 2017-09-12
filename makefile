@@ -7,7 +7,9 @@
 #  the NECTOR server.
 # ===========================================================================
 
-.PHONY : run
+all : quick run no-venv demo
+
+.PHONY : all
 
 
 quick :

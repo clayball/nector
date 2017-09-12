@@ -42,11 +42,13 @@ $ source venv-nector/bin/activate
 If you already know what you're getting into, or simply don't feel like reading
 this whole README, run:
 
+(With Virtual Environment):
+
 ```
 $ make
 ```
 
-If you are not using a virtual environment, you will have to run:
+(Without Virtual Environment):
 
 ```
 $ make no-venv
@@ -393,7 +395,7 @@ The makefile exists to automate making migrations and importing
 data.
 
 If you make frequent changes to NECTOR (which is expected), you will
-want to run `$ make` to take care of everything for you.
+want to run `$ make run` to take care of everything for you.
 
     Note: The makefile will not activate or deactivate your virtualenv.
           If you plan on using one, you must do so manually.

@@ -4,28 +4,29 @@
 Purpose
 =======
 
-Uses provided Hosts, Vulnerabilities, Events data to populate the
-Nector database.
+Uses provided Hosts, Vulnerabilities, Events, Ports, Malware data to populate
+the Nector database.
 
 
 Prerequisites
 =============
 
-hosts.xml, vulnlist.csv, events.csv, and openports.xml must exist in the current
-directory, contain desired information, and be formatted properly.
+hosts.xml, vulnlist.csv, events.csv, malware.csv, and openports.xml must exist
+in the current directory, contain desired information, and be formatted properly.
 
 Sample data files stored in sample-data/
 - sample_hosts.xml
 - sample-vulnlist.csv
 - sample-events.csv
 - sample-openports.xml
+- sample-malware.csv
 
 
 Postconditions
 ==============
 
 The database will be populated with Hosts, Vulnerabilities, Events, and Ports
-specified in hosts.xml, vulnlist.csv, events.csv, and openports.xml.
+specified in hosts.xml, vulnlist.csv, events.csv, malware.csv, and openports.xml.
 '''
 
 # Import necessary libraries.
@@ -37,7 +38,7 @@ import os
 import django
 # Used for getting args
 from optparse import OptionParser
-# Used for parsing vulnlist.csv, events.csv, & censys-keys.csv
+# Used for parsing vulnlist.csv, events.csv, & malware.csv
 import csv
 # Used for parsing ports from nmap xml file.
 from lxml import etree
@@ -61,6 +62,7 @@ from hosts.models import Host
 from hosts.models import Alert
 from vulnerabilities.models import Vulnerability
 from events.models import Event
+from malware.models import Malware
 
 # Get names of files containing Host, Subnet, Vulnerability, Events, & censys
 # data that we want to import.
@@ -68,6 +70,7 @@ host_file_name = 'hosts.xml'
 vulnerability_file_name = 'vulnlist.csv'
 events_file_name = 'events.csv'
 openports_file_name = 'openports.xml'
+malware_file_name = 'malware.csv'
 
 # Open files
 host_file = open(host_file_name, 'r')
@@ -76,6 +79,8 @@ vulnerability_csv = csv.reader(vulnerability_file)
 events_file = open(events_file_name, 'r')
 events_csv = csv.reader(events_file)
 openports_file = open(openports_file_name, 'r')
+malware_file = open(malware_file_name, 'r')
+malware_csv = csv.reader(malware_file)
 
 # Get & Set Options / Args
 parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
@@ -88,6 +93,7 @@ verbose = options.verbose
 MSG_HOST_ADD = "Host added to database"
 MSG_HOST_REMOVE = "Host removed from database"
 MSG_NEW_VULN = "New vulnerability discovered"
+MSG_NEW_MALWARE = "New malware discovered"
 MSG_OPEN_PORT = "Port %s opened"
 MSG_CLOSED_PORT = "Port %s closed"
 
@@ -436,6 +442,48 @@ def populate_openports():
     print '[*] Open Ports: Done!'
 
 
+# Adds Malware Info to database
+def populate_malware():
+
+    print '\n[*] Importing Malware Info...'
+
+    with transaction.atomic():
+        next(malware_csv) # Skip first entry of the csv file, a header.
+        for row in malware_csv:
+
+            # Check if malware info is already in database.
+            # If it's not, it'd throw an error if we didn't have this check.
+            # If an error is thrown, then transaction.atomic() breaks,
+            # meaning it won't save any vulns to the database.
+            if Malware.objects.filter(alert_id=row[0], alert_type=row[1], file_name=row[2],
+                    computer=row[3], numeric_ip=row[4], contact_group=row[5], virus=row[6],
+                    actual_action=row[7], comment=row[8]).exists():
+                # Warn user.
+                if verbose:
+                    print '[!] Malware info already in database.'
+
+            else:
+                m = Malware(alert_id=row[0], alert_type=row[1], file_name=row[2],
+                        computer=row[3], numeric_ip=row[4], contact_group=row[5],
+                        virus=row[6], actual_action=row[7], comment=row[8])
+
+                # Create an alert for new malware.
+                #a = Alert(ipv4_address=row[4], message=MSG_NEW_MALWARE, date=DATE)
+
+                # Save Malware Info to db (won't actually happen until
+                #  'with transaction.atomic()' is completed):
+                try:
+                    m.save()
+                    #a.save()
+                except Exception as e:
+                    # This shouldn't happen, unless the user screwed up
+                    # the malware file.
+                    # If we get an exception here, then the database
+                    # will not save the malware info.
+                    print '[!] %s' % e
+    print '[*] Malware: Done!'
+
+
 def main():
     # Call functions.
     populate_hosts()
@@ -443,12 +491,14 @@ def main():
     populate_vulnerabilities()
     populate_events()
     populate_openports()
+    populate_malware()
 
     # Close files.
     host_file.close()
     vulnerability_file.close()
     events_file.close()
     openports_file.close()
+    malware_file.close()
 
 
 if __name__ == "__main__":
