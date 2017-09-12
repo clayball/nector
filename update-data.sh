@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# get-data.sh by Brian Jopling, 2017
+# update-data.sh by Brian Jopling, 2017
 # ----------------------------------
 # Calls get-data.sh, which will update hosts.xml, openports.xml, and hops.csv.
 # Then imports this new data into the database.

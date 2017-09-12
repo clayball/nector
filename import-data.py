@@ -72,15 +72,41 @@ events_file_name = 'events.csv'
 openports_file_name = 'openports.xml'
 malware_file_name = 'malware.csv'
 
+# Vars used for ensuring file was found.
+host_file_exists = True
+vulnerability_file_exists = True
+events_file_exists = True
+openports_file_exists = True
+malware_file_exists = True
+
 # Open files
-host_file = open(host_file_name, 'r')
-vulnerability_file = open(vulnerability_file_name, 'r')
-vulnerability_csv = csv.reader(vulnerability_file)
-events_file = open(events_file_name, 'r')
-events_csv = csv.reader(events_file)
-openports_file = open(openports_file_name, 'r')
-malware_file = open(malware_file_name, 'r')
-malware_csv = csv.reader(malware_file)
+try:
+    host_file = open(host_file_name, 'r')
+except:
+    host_file_exists = False
+
+try:
+    vulnerability_file = open(vulnerability_file_name, 'r')
+    vulnerability_csv = csv.reader(vulnerability_file)
+except:
+    vulnerability_file_exists = False
+
+try:
+    events_file = open(events_file_name, 'r')
+    events_csv = csv.reader(events_file)
+except:
+    events_file_exists = False
+
+try:
+    openports_file = open(openports_file_name, 'r')
+except:
+    openports_file_exists = False
+
+try:
+    malware_file = open(malware_file_name, 'r')
+    malware_csv = csv.reader(malware_file)
+except:
+    malware_file_exists = False
 
 # Get & Set Options / Args
 parser = OptionParser(usage="usage: %prog [options]", version="%prog 1.0")
@@ -102,6 +128,10 @@ DATE = time.strftime("%m/%d/%Y")
 
 # Adds Hosts to database
 def populate_hosts():
+
+    if not host_file_exists:
+        print '[!] Did not find hosts.xml'
+        return
 
     print '[*] Importing Hosts...'
 
@@ -183,6 +213,9 @@ def populate_hosts():
 # Get subnets from Hosts and add them to database
 def populate_subnets():
 
+    if not host_file_exists:
+        return
+
     print '\n[*] Getting Subnets from Hosts...'
 
     # Allow changes to be made to db after nested blocks have been
@@ -225,6 +258,10 @@ def populate_subnets():
 # Adds Vulnerabilities to database
 def populate_vulnerabilities():
 
+    if not vulnerability_file_exists:
+        print '[!] Did not find vulnlist.csv'
+        return
+
     print '\n[*] Importing Vulnerabilities...'
 
     with transaction.atomic():
@@ -266,6 +303,10 @@ def populate_vulnerabilities():
 
 # Adds Events to database
 def populate_events():
+
+    if not events_file_exists:
+        print '[!] Did not find events.csv'
+        return
 
     print '\n[*] Importing Events...'
 
@@ -310,6 +351,10 @@ def populate_events():
 
 # Adds Open Ports to database
 def populate_openports():
+
+    if not openports_file_exists:
+        print '[!] Did not find openports.xml'
+        return
 
     print '\n[*] Importing Open Ports...'
 
@@ -444,6 +489,10 @@ def populate_openports():
 
 # Adds Malware Info to database
 def populate_malware():
+
+    if not malware_file_exists:
+        print '[!] Did not find malware.csv'
+        return
 
     print '\n[*] Importing Malware Info...'
 

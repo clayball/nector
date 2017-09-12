@@ -12,6 +12,13 @@ all : quick run no-venv demo
 .PHONY : all
 
 
+run :
+	python manage.py makemigrations
+	python manage.py migrate
+	python import-data.py
+	python manage.py runserver
+
+
 quick :
 	pip install -r requirements.txt
 	python manage.py makemigrations
@@ -20,14 +27,7 @@ quick :
 	python manage.py runserver
 
 
-run :
-	python manage.py makemigrations
-	python manage.py migrate
-	python import-data.py
-	python manage.py runserver
-
-
-no-venv :
+quick-no-venv :
 	sudo pip install -r requirements.txt
 	python manage.py makemigrations
 	python manage.py migrate
