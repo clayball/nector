@@ -40,6 +40,7 @@ demo :
 	cp -i sample-data/sample-vulnlist.csv vulnlist.csv
 	cp -i sample-data/sample-events.csv events.csv
 	cp -i sample-data/sample-openports.xml openports.xml
+	cp -i sample-data/sample-malware.csv malware.csv
 	python manage.py makemigrations
 	python manage.py migrate
 	python import-data.py
