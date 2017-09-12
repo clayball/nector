@@ -19,6 +19,7 @@ from nector_home import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^about/', views.about, name='about'),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^blacklist/', include('blacklist.urls')),
@@ -30,6 +31,7 @@ urlpatterns = [
     url(r'^osint/', views.osint, name='osint'),
     url(r'^reports/', views.reports, name='reports'),
     url(r'^scans/', include('scans.urls')),
+    url(r'^status/', views.status, name='status'),
     url(r'^trending/', include('trending.urls')),
     url(r'^vulnz/', include('vulnerabilities.urls')),
 
