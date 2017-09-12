@@ -2,7 +2,12 @@
 
 {% block content %}
 <div class="content">
-<h1>NECTOR Installation Status</h1>
+
+{% if installation_complete %}
+<h1>NECTOR Installation Status: <span style="color:green">Complete</span></h1>
+{% else %}
+<h1>NECTOR Installation Status: <span style="color:lightcoral">Incomplete</span></h1>
+{% endif %}
 
 <h2>Hosts</h2>
 {% if hosts_installed %}

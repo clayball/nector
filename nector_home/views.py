@@ -17,14 +17,15 @@ def index(request):
     events_installed = Event.objects.all().exists()
     malware_installed = Malware.objects.all().exists()
 
+    if hosts_installed and vulns_installed and events_installed and malware_installed:
+        installation_complete = True
+
     context = {'hosts_installed' : hosts_installed,
                'vulns_installed' : vulns_installed,
                'events_installed' : events_installed,
                'malware_installed' : malware_installed,
+               'installation_complete' : installation_complete,
                'db_type' : connection.vendor}
-
-    if hosts_installed and vulns_installed and events_installed and malware_installed:
-        installation_complete = True
 
     if installation_complete:
         return about(request)
@@ -55,13 +56,14 @@ def status(request):
     events_installed = Event.objects.all().exists()
     malware_installed = Malware.objects.all().exists()
 
+    if hosts_installed and vulns_installed and events_installed and malware_installed:
+        installation_complete = True
+
     context = {'hosts_installed' : hosts_installed,
                'vulns_installed' : vulns_installed,
                'events_installed' : events_installed,
                'malware_installed' : malware_installed,
+               'installation_complete' : installation_complete,
                'db_type' : connection.vendor}
-
-    if hosts_installed and vulns_installed and events_installed and malware_installed:
-        installation_complete = True
 
     return render(request, 'nector_home/status.html', context)
