@@ -156,7 +156,14 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     $ sudo dnf install postgresql postgresql-contrib postgresql-devel postgresql-server
     ```
 
-2. Create a database and a database user.
+
+2. Get PostgreSQL dependency through pip.
+
+    ```
+    pip install psycopg2
+    ```
+
+3. Create a database and a database user.
 
     ```
     $ sudo su - postgres
@@ -171,7 +178,7 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     $ exit
     ```
 
-3. Modify project settings to use your database.
+4. Modify project settings to use your database.
 
     ```
     $ vi nector/settings.py

@@ -4,35 +4,35 @@
 <div class="content">
 <h1>NECTOR Installation Status</h1>
 
-<h3>Hosts</h3>
+<h2>Hosts</h2>
 {% if hosts_installed %}
-<p>Hosts found!</p>
+<p style="color:green">&#10004; Hosts found!</p>
 {% else %}
-<p>Hosts <b>NOT</b> found!</p>
+<p style="color:lightcoral">&#8226; Hosts <b>NOT</b> found!</p>
 {% endif %}
 
-<h3>Events</h3>
+<h2>Events</h2>
 {% if events_installed %}
-<p>Events found!</p>
+<p style="color:green">&#10004; Events found!</p>
 {% else %}
-<p>Events <b>NOT</b> found!</p>
+<p style="color:lightcoral">&#8226; Events <b>NOT</b> found!</p>
 {% endif %}
 
-<h3>Vulnerabilities</h3>
+<h2>Vulnerabilities</h2>
 {% if vulns_installed %}
-<p>Vulnerabilities found!</p>
+<p style="color:green">&#10004; Vulnerabilities found!</p>
 {% else %}
-<p>Vulnerabilities <b>NOT</b> found!</p>
+<p style="color:lightcoral">&#8226; Vulnerabilities <b>NOT</b> found!</p>
 {% endif %}
 
-<h3>Malware Info</h3>
+<h2>Malware Info</h2>
 {% if malware_installed %}
-<p>Malware Info found!</p>
+<p style="color:green">&#10004; Malware Info found!</p>
 {% else %}
-<p>Malware Info <b>NOT</b> found!</p>
+<p style="color:lightcoral">&#8226; Malware Info <b>NOT</b> found!</p>
 {% endif %}
 
-<h3>Database</h3>
+<h2>Database</h2>
 <p>Using {{db_type}} database!</p>
 
 </div>
