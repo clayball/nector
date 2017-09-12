@@ -543,11 +543,16 @@ def main():
     populate_malware()
 
     # Close files.
-    host_file.close()
-    vulnerability_file.close()
-    events_file.close()
-    openports_file.close()
-    malware_file.close()
+    if host_file_exists:
+        host_file.close()
+    if vulnerability_file_exists:
+        vulnerability_file.close()
+    if events_file_exists:
+        events_file.close()
+    if openports_file_exists:
+        openports_file.close()
+    if malware_file_exists:
+        malware_file.close()
 
 
 if __name__ == "__main__":
