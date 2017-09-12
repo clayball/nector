@@ -57,10 +57,10 @@ $ make demo
 
 Then, open a browser and go to **http://127.0.0.1:8000**
 
-If you like what you see, delete the sample database and move on to the next step.
+If you like what you see, delete the sample data and database and move on to the next step.
 
 ```
-$ rm db.sqlite3
+$ rm db.sqlite3 events.csv vulnlist.csv hosts.xml malware.csv openports.xml
 ```
 
 ### Beginner Setup
