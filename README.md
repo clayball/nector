@@ -80,6 +80,12 @@ You will be shown a page containing your installation progress.
 But, sadly, for now, you'll have to read through the Advanced Setup section to see
 how to continue with the installation.
 
+When you're done with the virtualenv, run:
+
+```
+$ deactivate
+```
+
 Any time you wish to run NECTOR again, use the command:
 
 ```
