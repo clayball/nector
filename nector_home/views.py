@@ -48,6 +48,10 @@ def about(request):
     return render(request, 'nector_home/about.html')
 
 
+def settings(request):
+    return render(request, 'nector_home/settings.html')
+
+
 def status(request):
     installation_complete = False
 
