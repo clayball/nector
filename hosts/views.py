@@ -404,6 +404,9 @@ def ports(request):
 
     context = {}
 
+    context['user'] = request.user
+    context['request'] = request
+
     if request.method == "POST":
 
         form = request.POST
@@ -414,6 +417,7 @@ def ports(request):
         port_dates    = ''
 
         context['request'] = request
+        context['user'] = request.user
 
         if 'port_nums' in request.POST:
             port_numbers = request.POST['port_nums'].strip()
