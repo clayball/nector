@@ -70,20 +70,83 @@
 {% if sup_events %}
 <div style="float:right; margin-right:100px">
 <h2>Events Setup</h2>
-<form>
-    <input type="textarea">
-    <input type="button">
+
+<p>Enter the following info for your Events:</p><br>
+<b>
+<p>Request Number&nbsp;&nbsp;&nbsp;Date Submitted&nbsp;&nbsp;&nbsp;Title&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Status
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Last Edit Date&nbsp;&nbsp;&nbsp;Submitted By
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assignees</p>
+</b>
+<form name="event_form" action="/status/submit-events/" method="post">{% csrf_token %}
+    {{ events_form.management_form }}
+    {% for event_form in events_form %}
+    {{event_form}}<br><br>
+    {% endfor %}
+    <input type="hidden" name="num_extra_forms" value={{extra_forms}}>
+    <br><button type="submit" name="add-additional-event" class="btn-link"><u>[Add another Event]</u></button>
+    <br><br><br><input type="submit" value="Submit">
 </form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Events.<br>
+   Follow the formatting of <i>sample-data/sample-events.csv</i>.</p>
+<form action="/status/submit-events/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="event_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
 </div>
 {% endif %}
 
 {% if sup_vulns %}
 <div style="float:right; margin-right:100px">
 <h2>Vulnerabilities Setup</h2>
-<form>
-    <input type="textarea">
-    <input type="button">
+
+<p>Enter the following info for your Vulnerabilities:</p><br>
+<b>
+<p>Plugin ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plugin Name&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;Severity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    IPv4 Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;Host Name</p>
+</b>
+<form name="vuln_form" action="/status/submit-vulns/" method="post">{% csrf_token %}
+    {{ vulns_form.management_form }}
+    {% for vuln_form in vulns_form %}
+    {{vuln_form}}<br><br>
+    {% endfor %}
+    <input type="hidden" name="num_extra_forms" value={{extra_forms}}>
+    <br><button type="submit" name="add-additional-event" class="btn-link"><u>[Add another Vulnerability]</u></button>
+    <br><br><br><input type="submit" value="Submit">
 </form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Vulnerabilities.<br>
+   Follow the formatting of <i>sample-data/sample-vulnlist.csv</i>.<br>
+   If you have Nessus, you can easily generate this file by doing the following:</p>
+   <ol>
+       <li>Go into Nessus.</li>
+       <li>Under the <i>Analysis</i> dropdown, select <i>Vulnerabilities.</i></li>
+       <li>From the new dropdown box in the top left corner, select <i>Vulnerability List.</i></li>
+       <li>In the top right corner, click on the <i>Options</i> dropdown, and select <i>Export as CSV.</i></li>
+       <li>Make sure only 'Plugin ID', 'Plugin Name', 'Severity', 'IP Address', and 'DNS Name' are selected.</li>
+       <li>Click submit, save the file, and upload it here.</li>
+   </ol>
+   <br>
+<form action="/status/submit-vulns/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="vuln_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
 </div>
 {% endif %}
 

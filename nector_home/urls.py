@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^submit-subnets/', views.submit_subnets, name='submit_subnets'),
     url(r'^nmap-hosts/', views.nmap_hosts, name='nmap_hosts'),
     url(r'^nmap-ports/', views.nmap_ports, name='nmap_ports'),
+    url(r'^submit-events/', views.submit_events, name='submit_events'),
+    url(r'^submit-vulns/', views.submit_vulns, name='submit_vulns'),
 ]

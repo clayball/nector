@@ -3,11 +3,14 @@ from django.http import HttpResponse
 from django.template import loader
 from django.db import connection
 from django.template.context_processors import csrf
+from django.forms import formset_factory
 
 from hosts.models import Host
 from vulnerabilities.models import Vulnerability
 from events.models import Event
 from malware.models import Malware
+
+from forms import EventForm, VulnForm
 
 import os.path # Used to check for existing subnets.txt
 import subprocess # Used for performing nmap scans.
@@ -65,6 +68,14 @@ def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vuln
                'sup_vulns'   : sup_vulns,
                'sup_malware' : sup_malware,
                'db_type' : connection.vendor}
+
+    if sup_events:
+        context['events_form'] = formset_factory(EventForm)
+        context['extra_forms'] = 1
+
+    if sup_vulns:
+        context['vulns_form'] = formset_factory(VulnForm)
+        context['extra_forms'] = 1
 
     if installation_complete:
         return about(request)
@@ -127,3 +138,148 @@ def nmap_ports(request):
     nmap_status = subprocess.call(['nmap', '-Pn', '-sV', '--version-light', '-T5', '-p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337', '-iL', 'subnets.txt', '--open', '-oX', 'openports.xml', '2>&1', '>', '/dev/null'])
     update_db()
     return status(request)
+
+
+def submit_events(request):
+    if not request.POST:
+        return status(request, sup_events=True)
+
+    extra_forms = 1
+
+    if 'add-additional-event' in request.POST:
+
+        extra_forms = int(request.POST['num_extra_forms']) + 1
+        events_formset = formset_factory(EventForm, extra=extra_forms)
+
+        installation_complete = False
+
+        subnets_installed = os.path.isfile('subnets.txt')
+
+        hosts_installed = Host.objects.all().exists()
+        vulns_installed = Vulnerability.objects.all().exists()
+        events_installed = Event.objects.all().exists()
+        malware_installed = Malware.objects.all().exists()
+        ports_installed = Host.objects.all().filter(ports__icontains='"').exists()
+
+        if hosts_installed and vulns_installed and events_installed and malware_installed:
+            installation_complete = True
+
+        context = {'subnets_installed' : subnets_installed,
+                   'hosts_installed'   : hosts_installed,
+                   'vulns_installed'   : vulns_installed,
+                   'events_installed'  : events_installed,
+                   'malware_installed' : malware_installed,
+                   'ports_installed'   : ports_installed,
+                   'installation_complete' : installation_complete,
+                   'db_type' : connection.vendor}
+
+        context['events_form'] = events_formset
+        context['sup_events'] = True
+        context['extra_forms'] = extra_forms
+
+        if installation_complete:
+            return about(request)
+        return render(request, 'nector_home/status.html', context)
+
+    elif 'event_file' in request.FILES:
+        input_file = request.FILES['event_file'].read()
+        with open('events.csv', 'w') as events_csv:
+            for line in input_file:
+                events_csv.write(line)
+            events_csv.close()
+        update_db()
+        return status(request)
+
+    else:
+        extra_forms = int(request.POST['num_extra_forms'])
+        events_formset = formset_factory(EventForm, extra=extra_forms)
+        events_formset = events_formset(request.POST)
+        with open('events.csv', 'w') as events_csv:
+            events_csv.write('Request Number,Date Submitted,Title,Status,Last Edit Date,Submitted By,Assignees\n')
+            for f in events_formset:
+                try:
+                    instance = f.save(commit=False)
+                    instance.save()
+                except Exception as e:
+                    print e
+                clean = f.cleaned_data
+                line = '%s,%s,%s,%s,%s,%s,%s\n' % (clean['request_number'],
+                                                 clean['date_submitted'],
+                                                 clean['title'],
+                                                 clean['status'],
+                                                 clean['date_last_edited'],
+                                                 clean['submitters'],
+                                                 clean['assignees'])
+                events_csv.write(line)
+            events_csv.close()
+        return status(request)
+
+
+def submit_vulns(request):
+    if not request.POST:
+        return status(request, sup_vulns=True)
+
+    extra_forms = 1
+
+    if 'add-additional-event' in request.POST:
+
+        extra_forms = int(request.POST['num_extra_forms']) + 1
+        vulns_formset = formset_factory(VulnForm, extra=extra_forms)
+
+        installation_complete = False
+
+        subnets_installed = os.path.isfile('subnets.txt')
+
+        hosts_installed = Host.objects.all().exists()
+        vulns_installed = Vulnerability.objects.all().exists()
+        events_installed = Event.objects.all().exists()
+        malware_installed = Malware.objects.all().exists()
+        ports_installed = Host.objects.all().filter(ports__icontains='"').exists()
+
+        if hosts_installed and vulns_installed and events_installed and malware_installed:
+            installation_complete = True
+
+        context = {'subnets_installed' : subnets_installed,
+                   'hosts_installed'   : hosts_installed,
+                   'vulns_installed'   : vulns_installed,
+                   'events_installed'  : events_installed,
+                   'malware_installed' : malware_installed,
+                   'ports_installed'   : ports_installed,
+                   'installation_complete' : installation_complete,
+                   'db_type' : connection.vendor}
+
+        context['vulns_form'] = vulns_formset
+        context['sup_vulns'] = True
+        context['extra_forms'] = extra_forms
+
+        if installation_complete:
+            return about(request)
+        return render(request, 'nector_home/status.html', context)
+
+    elif 'vuln_file' in request.FILES:
+        input_file = request.FILES['vuln_file'].read()
+        with open('vulnlist.csv', 'w') as vulnlist_csv:
+            for line in input_file:
+                vulnlist_csv.write(line)
+            vulnlist_csv.close()
+        update_db()
+        return status(request)
+
+    else:
+        extra_forms = int(request.POST['num_extra_forms'])
+        vulns_formset = formset_factory(VulnForm, extra=extra_forms)
+        vulns_formset = vulns_formset(request.POST)
+        with open('vulnlist.csv', 'w') as vulnlist_csv:
+            vulnlist_csv.write('"Plugin","Plugin Name","Severity","IP Address","DNS Name"\n')
+            for f in vulns_formset:
+                clean = f.cleaned_data
+                line = '"%s","%s","%s","%s","%s"\n' % (clean['plugin_id'],
+                                                 clean['plugin_name'],
+                                                 clean['severity'],
+                                                 clean['ipv4_address'],
+                                                 clean['host_name'],)
+
+                vulnlist_csv.write(line)
+            vulnlist_csv.close()
+        update_db()
+        return status(request)

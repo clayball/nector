@@ -80,6 +80,24 @@ a:hover {
   color: yellow;
 }
 
+.btn-link {
+    background-color: transparent;
+    text-decoration: underline;
+    border: none;
+    color: green;
+    cursor: pointer;
+}
+
+.btn-link:hover {
+  outline: none;
+  color: yellow;
+}
+
+.btn-link:focus {
+  outline: none;
+  color: yellow;
+}
+
 .content {
     text-align: justify;
     padding: 12px 12px 40px 12px;
