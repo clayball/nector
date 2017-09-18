@@ -9,11 +9,108 @@
 <h1>NECTOR Installation Status: <span style="color:lightcoral">Incomplete</span></h1>
 {% endif %}
 
+{% if sup_hosts %}
+<div style="float:right; margin-right:100px">
+<h2>Hosts Setup</h2>
+{% if subnets_installed %}
+<p>An <a href="https://nmap.org/download.html">nmap</a> scan is required to obtain host info from <i>subnets.txt</i>.<br>
+    Please ensure you have nmap installed before proceeding.</p>
+<a href="/status/nmap-hosts/">Click here to run an nmap scan on the provided IP address.</a>
+<p>Note: This may take a while! Please remain on this page until it is complete.</p>
+{% else %}
+<p>Enter a list of subnets or individual IP addresses.<br> Separate each with a newline.</p>
+<form action="/status/submit-subnets/" method="post">{% csrf_token %}
+    <textarea name="subnet_ips" style="font-size:18px" rows="15" cols="30" placeholder="0.0.2.3                                  0.0.1.10-254                                  0.0.0.0/24"></textarea>
+    <br><br><input type="submit" value="Submit">
+</form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing a list of subnets / IP addresses.<br>
+    Adhere to the above formatting rules.</p>
+<form action="/status/submit-subnets/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="subnet_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
+{% endif %}
+</div>
+{% endif %}
+
+{% if sup_ports %}
+<div style="float:right; margin-right:100px">
+<h2>Ports Setup</h2>
+{% if subnets_installed %}
+<p>An <a href="https://nmap.org/download.html">nmap</a> scan is required to obtain port info from <i>subnets.txt</i>.<br>
+    Please ensure you have nmap installed before proceeding.</p>
+<a href="/status/nmap-ports/">Click here to run an nmap scan on the provided IP address.</a>
+<p>Note: This may take a while! Please remain on this page until it is complete.</p>
+{% else %}
+<p>Enter a list of subnets or individual IP addresses.<br> Separate each with a newline.</p>
+<form action="/status/submit-subnets/" method="post">{% csrf_token %}
+    <textarea name="subnet_ips" style="font-size:18px" rows="15" cols="30" placeholder="0.0.2.3                                  0.0.1.10-254                                  0.0.0.0/24"></textarea>
+    <br><br><input type="submit" value="Submit">
+</form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing a list of subnets / IP addresses.<br>
+    Adhere to the above formatting rules.</p>
+<form action="/status/submit-subnets/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="subnet_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
+{% endif %}
+</div>
+{% endif %}
+
+{% if sup_events %}
+<div style="float:right; margin-right:100px">
+<h2>Events Setup</h2>
+<form>
+    <input type="textarea">
+    <input type="button">
+</form>
+</div>
+{% endif %}
+
+{% if sup_vulns %}
+<div style="float:right; margin-right:100px">
+<h2>Vulnerabilities Setup</h2>
+<form>
+    <input type="textarea">
+    <input type="button">
+</form>
+</div>
+{% endif %}
+
+{% if sup_malware %}
+<div style="float:right; margin-right:100px">
+<h2>Malware Setup</h2>
+<form>
+    <input type="textarea">
+    <input type="button">
+</form>
+</div>
+{% endif %}
+
 <h2>Hosts</h2>
 {% if hosts_installed %}
 <p style="color:green">&#10004; Hosts found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Hosts <b>NOT</b> found!</p>
+<a href="/status/setup-hosts/">Click here to setup.</a>
+{% endif %}
+
+<h2>Ports</h2>
+{% if ports_installed %}
+<p style="color:green">&#10004; Ports found!</p>
+{% else %}
+<p style="color:lightcoral">&#10008; Ports <b>NOT</b> found!</p>
+<a href="/status/setup-ports/">Click here to setup.</a>
 {% endif %}
 
 <h2>Events</h2>
@@ -21,6 +118,7 @@
 <p style="color:green">&#10004; Events found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Events <b>NOT</b> found!</p>
+<a href="/status/setup-events/">Click here to setup.</a>
 {% endif %}
 
 <h2>Vulnerabilities</h2>
@@ -28,6 +126,7 @@
 <p style="color:green">&#10004; Vulnerabilities found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Vulnerabilities <b>NOT</b> found!</p>
+<a href="/status/setup-vulns/">Click here to setup.</a>
 {% endif %}
 
 <h2>Malware Info</h2>
@@ -35,10 +134,13 @@
 <p style="color:green">&#10004; Malware Info found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Malware Info <b>NOT</b> found!</p>
+<a href="/status/setup-malware/">Click here to setup.</a>
 {% endif %}
 
 <h2>Database</h2>
 <p>Using {{db_type}} database!</p>
+
+
 
 </div>
 {% endblock %}
