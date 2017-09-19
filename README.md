@@ -1,4 +1,4 @@
-# NECTOR - by haX0rs for haX0rs
+# NECTOR
 
 ![nector home](nector-home.png)
 
