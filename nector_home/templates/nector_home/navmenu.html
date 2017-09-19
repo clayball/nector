@@ -31,6 +31,13 @@
       </div>
     </span>
 
+    <span class="dropdown">
+        <span><a href="/settings/" class="nav_link">SeTTiNGs</a> &#8226;</span>
+        <div class="dropdown-content">
+          {% include 'nector_home/settings-tools.html' %}
+        </div>
+    </span>
+
     {% if user.is_authenticated %}
         <a href="/accounts/logout" class="nav_link">Logout</a>
     {% else %}

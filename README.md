@@ -26,7 +26,7 @@ configuration, incident reporting,  and more.
 ## Getting Started
 
 
-### Setting up a Virtual Environment (Optional)
+### Setting up a Virtual Environment (Recommended)
 
 Create a [virtualenv](https://virtualenv.pypa.io/en/stable/) to work in, and
 activate it.
@@ -45,6 +45,12 @@ Install [pip](https://pypi.python.org/pypi/pip) dependencies.
 $ pip install -r requirements.txt
 ```
 
+Install [nmap](https://nmap.org/download.html).
+
+```
+$ dnf install nmap
+```
+
 
 ### Trying the Demo (Optional)
 
@@ -57,14 +63,53 @@ $ make demo
 
 Then, open a browser and go to **http://127.0.0.1:8000**
 
-If you like what you see, delete the sample database and move on to the next step.
+If you like what you see, delete the sample data and database and move on to the next step.
 
 ```
-$ rm db.sqlite3
+$ rm db.sqlite3 events.csv vulnlist.csv hosts.xml malware.csv openports.xml
+```
+
+### Setup
+
+To start using NECTOR, run:
+
+```
+$ make
+```
+
+Then, open a browser and go to **http://127.0.0.1:8000**
+
+You will be shown a page containing your installation progress.
+
+You can now complete the installation right from the browser!
+
+
+### Working with the Server and Virtual Environment
+
+When you're done with the virtualenv, run:
+
+```
+$ deactivate
+```
+
+Any time you wish to use it again, run:
+
+```
+$ source venv-nector/bin/activate
+```
+
+When you're done with NECTOR, use `CTRL + C` to terminate the process.
+
+Any time you wish to run NECTOR again, use the command:
+
+```
+$ python manage.py runserver
 ```
 
 
-### Choosing a Database
+### Advanced Setup
+
+#### Choosing a Database (Optional) ((SQLite is default))
 
 NECTOR is configured to work with three types of RDBMSs easily: **SQLite3**, **MySQL**, and **PostgreSQL**.
 
@@ -82,12 +127,12 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
 
 [If you're still unsure which RDMBS you should use, checkout this DigitalOcean article.](https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems)
 
-#### Setting up a SQLite3 Database (Option A)
+##### Setting up a SQLite3 Database (Option A)
 
 1. No manual setup required for a SQLite3 database.
 
 
-#### Setting up a MySQL Database (Option B)
+##### Setting up a MySQL Database (Option B)
 
 1. Install necessary components.
 
@@ -110,7 +155,7 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
 4. Get MySQL dependency through pip.
 
     ```
-    pip install mysql-python
+    $ pip install mysql-python
     ```
 
 5. Create a database and a database user.
@@ -148,7 +193,7 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     Make sure you change the NAME, USER, PASSWORD, and PORT sections to fit your needs!
 
 
-#### Setting up a PostgreSQL Database (Option C)
+##### Setting up a PostgreSQL Database (Option C)
 
 1. Install necessary components.
 
@@ -156,7 +201,14 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     $ sudo dnf install postgresql postgresql-contrib postgresql-devel postgresql-server
     ```
 
-2. Create a database and a database user.
+
+2. Get PostgreSQL dependency through pip.
+
+    ```
+    $ pip install psycopg2
+    ```
+
+3. Create a database and a database user.
 
     ```
     $ sudo su - postgres
@@ -171,7 +223,7 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     $ exit
     ```
 
-3. Modify project settings to use your database.
+4. Modify project settings to use your database.
 
     ```
     $ vi nector/settings.py
@@ -195,7 +247,9 @@ Otherwise, if you're working locally or only dealing with a small amount of traf
     Make sure you change the USER and PASSWORD sections to fit your needs!
 
 
-### Using Your Secret Key
+#### Using Your Secret Key
+
+    Note: We should automate this when the user runs the makefile.
 
 Traverse into the nector/ subdirectory and open settings.py in a text editor.
 
@@ -212,7 +266,7 @@ and replace it with your own Django secret key.
 [Click here to obtain a Secret Key.](http://www.miniwebtool.com/django-secret-key-generator/)
 
 
-### Initializing the Database
+#### Initializing the Database
 
 Django uses [migrations](https://docs.djangoproject.com/en/1.11/topics/migrations/)
 to keep track of changes to the database's tables.
@@ -232,10 +286,10 @@ $ python manage.py migrate
 ```
 
 
-### Creating Your Data
+#### Creating Your Data Manually
 
 
-#### Getting Hosts with Nmap
+##### Getting Hosts with Nmap
 
 Create a file `subnets.txt` and fill it with your subnets.
 
@@ -250,7 +304,7 @@ Save this scan as hosts.xml
 $ nmap -sL -iL subnets.txt -oN hosts.xml
 ```
 
-#### Getting Vulnerabilities with Nessus
+##### Getting Vulnerabilities with Nessus
 
 Go into Nessus.
 
@@ -267,12 +321,12 @@ Make sure _only_ 'Plugin ID', 'Plugin Name', 'Severity', 'IP Address', and
 Click submit, and save this file as _vulnlist.csv_ in your NECTOR root directory.
 
 
-#### Getting Events
+##### Getting Events
 
 Todo.
 
 
-#### Getting Ports
+##### Getting Ports
 
 If you haven't already, create a file `subnets.txt` and fill it with your subnets.
 
@@ -291,7 +345,7 @@ $ nmap -Pn -sV --version-light -vv -T5 -p17,19,21,22,23,25,53,80,123,137,139,153
 This scan may take some time to complete.
 
 
-#### Filling in the Gaps
+##### Filling in the Gaps
 
 If you were unable to perform any of the above four steps, keep reading.
 Otherwise, you should skip this step.
@@ -329,7 +383,7 @@ Edit the file(s) to use your data.
 Do not mess up the formatting!
 
 
-### Populating the Database
+#### Populating the Database
 
 In order to use your data, you will have to import it into the database.
 
@@ -338,7 +392,7 @@ $ python import-data.py
 ```
 
 
-### Running NECTOR
+#### Running NECTOR
 
 Start the server.
 
@@ -349,47 +403,20 @@ $ python manage.py runserver
 Open a browser and go to **http://127.0.0.1:8000**
 
 
-### Deactivating the Virtual Environment
+#### Deactivating the Virtual Environment
 
 If you set up a Virtual Environment, run `$ deactivate` once you're done
 working on NECTOR.
 
 
-### The Makefile
-
-The makefile exists to automate making migrations and importing
-data.
-
-If you make frequent changes to NECTOR (which is expected), you will
-want to run `$ make` to take care of everything for you.
-
-    Note: The makefile will not activate or deactivate your virtualenv.
-          If you plan on using one, you must do so manually.
-
-
 ---
 
 
-## Misc. Notes
-
-Let's try to stick with Python2 for now.
-
-This is the main NECTOR project repo.
-
-We'll be adding small applications to this project over time.
-
-Applications:
-
-- hosts (subnets)
-- detection
-- osint
-- events
-- reports
-
-
-## Events
+## FAQ
 
 TODO: Add more to this section.
+
+### What's the difference between Events, Alerts, and Incidents?
 
 - An event is an observed change to the normal behavior of a system, environment, process, workflow or person. Examples: router ACLs were updated, firewall policy was pushed.
 - An alert is a notification that a particular event (or series of events) has occurred, which is sent to responsible parties for the purpose of spawning action. Examples: the events above sent to on-call personnel.

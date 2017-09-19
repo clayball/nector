@@ -1,0 +1,272 @@
+{% extends 'nector_home/base.html' %}
+
+{% block content %}
+<div class="content">
+
+{% if installation_complete %}
+<h1>NECTOR Installation Status: <span style="color:green">Complete</span></h1>
+{% else %}
+<h1>NECTOR Installation Status: <span style="color:lightcoral">Incomplete</span></h1>
+{% endif %}
+
+{% if sup_hosts %}
+<div style="float:right; margin-right:100px">
+<h2>Hosts Setup</h2>
+{% if subnets_installed %}
+<p>An <a href="https://nmap.org/download.html">nmap</a> scan is required to obtain host info from <i>subnets.txt</i>.<br>
+    Please ensure you have nmap installed before proceeding.</p>
+<a href="/status/nmap-hosts/">Click here to run an nmap scan on the provided IP address.</a>
+<p>Note: This may take a while! Please remain on this page until it is complete.</p>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Hosts.<br>
+   Follow the formatting of <i>sample-data/sample-hosts.xml</i>.</p>
+   If you have Nmap, you can manually generate this file by running the following command:</p>
+   <ol>
+       <li><i>nmap -sL -iL subnets.txt -oN hosts.xml</i></li>
+   </ol>
+   <br>
+<form action="/status/submit-hosts/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="hosts_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+{% else %}
+<p>Enter a list of subnets or individual IP addresses.<br> Separate each with a newline.</p>
+<form action="/status/submit-subnets/" method="post">{% csrf_token %}
+    <textarea name="subnet_ips" style="font-size:18px" rows="15" cols="30" placeholder="0.0.2.3                                  0.0.1.10-254                                  0.0.0.0/24"></textarea>
+    <br><br><input type="submit" value="Submit">
+</form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing a list of subnets / IP addresses.<br>
+    Adhere to the above formatting rules.</p>
+<form action="/status/submit-subnets/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="subnet_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
+{% endif %}
+</div>
+{% endif %}
+
+{% if sup_ports %}
+<div style="float:right; margin-right:100px">
+<h2>Ports Setup</h2>
+{% if subnets_installed %}
+<p>An <a href="https://nmap.org/download.html">nmap</a> scan is required to obtain port info from <i>subnets.txt</i>.<br>
+    Please ensure you have nmap installed before proceeding.</p>
+<a href="/status/nmap-ports/">Click here to run an nmap scan on the provided IP address.</a>
+<p>Note: This may take a while! Please remain on this page until it is complete.</p>
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Ports.<br>
+   Follow the formatting of <i>sample-data/sample-openports.xml</i>.<br>
+   If you have Nmap, you can manually generate this file by running the following command:</p>
+   <ol>
+       <li><i>nmap -Pn -sV --version-light -vv -T5 \<br> -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 \ <br> -iL subnets.txt --open -oX openports.xml 2>&1 > /dev/null</i></li>
+   </ol>
+   <br>
+<form action="/status/submit-ports/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="ports_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+{% else %}
+<p>Enter a list of subnets or individual IP addresses.<br> Separate each with a newline.</p>
+<form action="/status/submit-subnets/" method="post">{% csrf_token %}
+    <textarea name="subnet_ips" style="font-size:18px" rows="15" cols="30" placeholder="0.0.2.3                                  0.0.1.10-254                                  0.0.0.0/24"></textarea>
+    <br><br><input type="submit" value="Submit">
+</form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing a list of subnets / IP addresses.<br>
+    Adhere to the above formatting rules.</p>
+<form action="/status/submit-subnets/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="subnet_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
+{% endif %}
+</div>
+{% endif %}
+
+{% if sup_events %}
+<div style="float:right; margin-right:100px">
+<h2>Events Setup</h2>
+
+<p>Enter the following info for your Events:</p><br>
+<b>
+<p>Request Number&nbsp;&nbsp;&nbsp;Date Submitted&nbsp;&nbsp;&nbsp;Title&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Status
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Last Edit Date&nbsp;&nbsp;&nbsp;Submitted By
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assignees</p>
+</b>
+<form name="event_form" action="/status/submit-events/" method="post">{% csrf_token %}
+    {{ events_form.management_form }}
+    {% for event_form in events_form %}
+    {{event_form}}<br><br>
+    {% endfor %}
+    <input type="hidden" name="num_extra_forms" value={{extra_forms}}>
+    <br><button type="submit" name="add-additional-event" class="btn-link"><u>[Add another Event]</u></button>
+    <br><br><br><input type="submit" value="Submit">
+</form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Events.<br>
+   Follow the formatting of <i>sample-data/sample-events.csv</i>.</p>
+<form action="/status/submit-events/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="event_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
+</div>
+{% endif %}
+
+{% if sup_vulns %}
+<div style="float:right; margin-right:100px">
+<h2>Vulnerabilities Setup</h2>
+
+<p>Enter the following info for your Vulnerabilities:</p><br>
+<b>
+<p>Plugin ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plugin Name&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;Severity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    IPv4 Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;Host Name</p>
+</b>
+<form name="vuln_form" action="/status/submit-vulns/" method="post">{% csrf_token %}
+    {{ vulns_form.management_form }}
+    {% for vuln_form in vulns_form %}
+    {{vuln_form}}<br><br>
+    {% endfor %}
+    <input type="hidden" name="num_extra_forms" value={{extra_forms}}>
+    <br><button type="submit" name="add-additional-event" class="btn-link"><u>[Add another Vulnerability]</u></button>
+    <br><br><br><input type="submit" value="Submit">
+</form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Vulnerabilities.<br>
+   Follow the formatting of <i>sample-data/sample-vulnlist.csv</i>.<br>
+   If you have Nessus, you can easily generate this file by doing the following:</p>
+   <ol>
+       <li>Go into Nessus.</li>
+       <li>Under the <i>Analysis</i> dropdown, select <i>Vulnerabilities.</i></li>
+       <li>From the new dropdown box in the top left corner, select <i>Vulnerability List.</i></li>
+       <li>In the top right corner, click on the <i>Options</i> dropdown, and select <i>Export as CSV.</i></li>
+       <li>Make sure only 'Plugin ID', 'Plugin Name', 'Severity', 'IP Address', and 'DNS Name' are selected.</li>
+       <li>Click submit, save the file, and upload it here.</li>
+   </ol>
+   <br>
+<form action="/status/submit-vulns/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="vuln_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
+</div>
+{% endif %}
+
+{% if sup_malware %}
+<div style="float:right; margin-right:20px">
+<h2>Malware Alerts Setup</h2>
+
+<p>Enter the following info for your Malware Alerts:</p><br>
+<b>
+<p>Alert ID&nbsp;&nbsp;&nbsp;Alert Type&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;File Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;
+    Computer&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;IPv4 Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Contact Group&nbsp;&nbsp;&nbsp;&nbsp;Virus&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Action Taken&nbsp;&nbsp;&nbsp;
+    Comment</p>
+</b>
+<form name="malware_form" action="/status/submit-malware/" method="post">{% csrf_token %}
+    {{ mals_form.management_form }}
+    {% for mal_form in mals_form %}
+    {{mal_form}}<br><br>
+    {% endfor %}
+    <input type="hidden" name="num_extra_forms" value={{extra_forms}}>
+    <br><button type="submit" name="add-additional-event" class="btn-link"><u>[Add another Malware Alert]</u></button>
+    <br><br><br><input type="submit" value="Submit">
+</form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Malware Alerts.<br>
+   Follow the formatting of <i>sample-data/sample-malware.csv</i>.<br>
+   If you have use Symantec Endpoint Protection (SEP) Alerts, you can easily
+   generate this file by doing the following:</p>
+   <ol>
+       <li>todo</li>
+   </ol>
+   <br>
+<form action="/status/submit-malware/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="malware_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
+</div>
+{% endif %}
+
+<h2>Hosts</h2>
+{% if hosts_installed %}
+<p style="color:green">&#10004; Hosts found!</p>
+{% else %}
+<p style="color:lightcoral">&#10008; Hosts <b>NOT</b> found!</p>
+<a href="/status/setup-hosts/">Click here to setup.</a>
+{% endif %}
+
+<h2>Ports</h2>
+{% if ports_installed %}
+<p style="color:green">&#10004; Ports found!</p>
+{% else %}
+<p style="color:lightcoral">&#10008; Ports <b>NOT</b> found!</p>
+<a href="/status/setup-ports/">Click here to setup.</a>
+{% endif %}
+
+<h2>Events</h2>
+{% if events_installed %}
+<p style="color:green">&#10004; Events found!</p>
+{% else %}
+<p style="color:lightcoral">&#10008; Events <b>NOT</b> found!</p>
+<a href="/status/setup-events/">Click here to setup.</a>
+{% endif %}
+
+<h2>Vulnerabilities</h2>
+{% if vulns_installed %}
+<p style="color:green">&#10004; Vulnerabilities found!</p>
+{% else %}
+<p style="color:lightcoral">&#10008; Vulnerabilities <b>NOT</b> found!</p>
+<a href="/status/setup-vulns/">Click here to setup.</a>
+{% endif %}
+
+<h2>Malware Alerts</h2>
+{% if malware_installed %}
+<p style="color:green">&#10004; Malware Alerts found!</p>
+{% else %}
+<p style="color:lightcoral">&#10008; Malware Alerts <b>NOT</b> found!</p>
+<a href="/status/setup-malware/">Click here to setup.</a>
+{% endif %}
+
+<h2>Database</h2>
+<p>Using {{db_type}} database!</p>
+
+
+
+</div>
+{% endblock %}

@@ -25,19 +25,29 @@ class Vulnerability(models.Model):
 
     def get_host_id(self):
         """Returns the id of the Subnet that the Host belongs to."""
-        ip = self.ipv4_address
-        host = get_object_or_404(Host, ipv4_address=ip)
-        host_id = host.id
-        return host_id
+        try:
+            ip = self.ipv4_address
+            host = get_object_or_404(Host, ipv4_address=ip)
+            host_id = host.id
+            return host_id
+        except:
+            # I'm returning -1 so, rather than crash the server,
+            # the user experiences a broken link. (Cludge)
+            return '-1'
 
 
     def get_subnet_id(self):
         """Returns the id of the Subnet that the Host belongs to."""
-        ip = self.ipv4_address
-        ip_prefix = ip.rsplit('.', 1)[0]
-        subnet = get_object_or_404(Subnet, ipv4_address__startswith=ip_prefix)
-        subnet_id = subnet.id
-        return subnet_id
+        try:
+            ip = self.ipv4_address
+            ip_prefix = ip.rsplit('.', 1)[0]
+            subnet = get_object_or_404(Subnet, ipv4_address__startswith=ip_prefix)
+            subnet_id = subnet.id
+            return subnet_id
+        except:
+            # I'm returning -1 so, rather than crash the server,
+            # the user experiences a broken link. (Cludge)
+            return '-1'
 
 
     host_id = property(get_host_id)

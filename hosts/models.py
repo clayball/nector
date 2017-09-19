@@ -112,9 +112,14 @@ class Alert(models.Model):
 
     def get_host(self):
         """Returns Host object corresponding to IPv4."""
-        ip = self.ipv4_address
-        host = get_object_or_404(Host, ipv4_address=ip)
-        return host
+        try:
+            ip = self.ipv4_address
+            host = get_object_or_404(Host, ipv4_address=ip)
+            return host
+        except:
+            # I'm returning None so, rather than crash the server,
+            # the user will experience a broken link. (Cludge.)
+            return None
 
     host = property(get_host)
 
