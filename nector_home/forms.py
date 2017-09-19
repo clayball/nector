@@ -1,6 +1,7 @@
 from django import forms
 from events.models import Event
 from vulnerabilities.models import Vulnerability
+from malware.models import Malware
 from django.utils.translation import ugettext_lazy as _
 
 class EventForm(forms.ModelForm):
@@ -75,4 +76,49 @@ class VulnForm(forms.ModelForm):
             'severity'        : forms.TextInput(attrs={'placeholder':'Medium', 'size' : '8'}),
             'ipv4_address'    : forms.TextInput(attrs={'placeholder':'0.0.0.0', 'size' : '20'}),
             'host_name'       : forms.TextInput(attrs={'placeholder':'brians-pc.example.com', 'size' : '30'}),
+        }
+
+
+
+class MalwareForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(MalwareForm, self).__init__(*args, **kwargs)
+        self.fields['alert_id'].required      = False
+        self.fields['alert_type'].required    = False
+        self.fields['file_name'].required     = False
+        self.fields['computer'].required      = False
+        self.fields['numeric_ip'].required    = False
+        self.fields['contact_group'].required = False
+        self.fields['virus'].required         = False
+        self.fields['actual_action'].required = False
+        self.fields['comment'].required       = False
+
+    class Meta:
+        model = Malware
+        fields = ('alert_id', 'alert_type', 'file_name',
+                  'computer', 'numeric_ip', 'contact_group',
+                  'virus', 'actual_action', 'comment',)
+        labels = {
+            'alert_id'      : _(''),
+            'alert_type'    : _(''),
+            'file_name'     : _(''),
+            'computer'      : _(''),
+            'numeric_ip'    : _(''),
+            'contact_group' : _(''),
+            'virus'         : _(''),
+            'actual_action' : _(''),
+            'comment'       : _(''),
+        }
+
+        widgets = {
+            'alert_id'      : forms.TextInput(attrs={'placeholder':'12345', 'size' : '5'}),
+            'alert_type'    : forms.TextInput(attrs={'placeholder':'Virus Alert', 'size' : '8'}),
+            'file_name'     : forms.TextInput(attrs={'placeholder':'darkcomet.exe', 'size' : '10'}),
+            'computer'      : forms.TextInput(attrs={'placeholder':'brians-pc', 'size' : '8'}),
+            'numeric_ip'    : forms.TextInput(attrs={'placeholder':'0.0.0.0', 'size' : '12'}),
+            'contact_group' : forms.TextInput(attrs={'placeholder':'CyberSec Dpt.', 'size' : '10'}),
+            'virus'         : forms.TextInput(attrs={'placeholder':'W64.DarkComet', 'size' : '12'}),
+            'actual_action' : forms.TextInput(attrs={'placeholder':'Deleted', 'size' : '8'}),
+            'comment'       : forms.TextInput(attrs={'placeholder':'Event Time: Apr 24 1:23 PM', 'size' : '21'}),
         }

@@ -151,12 +151,46 @@
 {% endif %}
 
 {% if sup_malware %}
-<div style="float:right; margin-right:100px">
-<h2>Malware Setup</h2>
-<form>
-    <input type="textarea">
-    <input type="button">
+<div style="float:right; margin-right:20px">
+<h2>Malware Alerts Setup</h2>
+
+<p>Enter the following info for your Malware Alerts:</p><br>
+<b>
+<p>Alert ID&nbsp;&nbsp;&nbsp;Alert Type&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;File Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;
+    Computer&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;IPv4 Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Contact Group&nbsp;&nbsp;&nbsp;&nbsp;Virus&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Action Taken&nbsp;&nbsp;&nbsp;
+    Comment</p>
+</b>
+<form name="malware_form" action="/status/submit-malware/" method="post">{% csrf_token %}
+    {{ mals_form.management_form }}
+    {% for mal_form in mals_form %}
+    {{mal_form}}<br><br>
+    {% endfor %}
+    <input type="hidden" name="num_extra_forms" value={{extra_forms}}>
+    <br><button type="submit" name="add-additional-event" class="btn-link"><u>[Add another Malware Alert]</u></button>
+    <br><br><br><input type="submit" value="Submit">
 </form>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Malware Alerts.<br>
+   Follow the formatting of <i>sample-data/sample-malware.csv</i>.<br>
+   If you have use Symantec Endpoint Protection (SEP) Alerts, you can easily
+   generate this file by doing the following:</p>
+   <ol>
+       <li>todo</li>
+   </ol>
+   <br>
+<form action="/status/submit-malware/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="malware_file">
+    <br><br><input type="submit" value="Upload">
+</form>
+
 </div>
 {% endif %}
 
@@ -192,11 +226,11 @@
 <a href="/status/setup-vulns/">Click here to setup.</a>
 {% endif %}
 
-<h2>Malware Info</h2>
+<h2>Malware Alerts</h2>
 {% if malware_installed %}
-<p style="color:green">&#10004; Malware Info found!</p>
+<p style="color:green">&#10004; Malware Alerts found!</p>
 {% else %}
-<p style="color:lightcoral">&#10008; Malware Info <b>NOT</b> found!</p>
+<p style="color:lightcoral">&#10008; Malware Alerts <b>NOT</b> found!</p>
 <a href="/status/setup-malware/">Click here to setup.</a>
 {% endif %}
 

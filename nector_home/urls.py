@@ -15,4 +15,5 @@ urlpatterns = [
     url(r'^nmap-ports/', views.nmap_ports, name='nmap_ports'),
     url(r'^submit-events/', views.submit_events, name='submit_events'),
     url(r'^submit-vulns/', views.submit_vulns, name='submit_vulns'),
+    url(r'^submit-malware/', views.submit_malware, name='submit_malware'),
 ]

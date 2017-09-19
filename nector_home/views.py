@@ -10,14 +10,39 @@ from vulnerabilities.models import Vulnerability
 from events.models import Event
 from malware.models import Malware
 
-from forms import EventForm, VulnForm
+from forms import EventForm, VulnForm, MalwareForm
 
 import os.path # Used to check for existing subnets.txt
 import subprocess # Used for performing nmap scans.
 
 
 def index(request):
-    return status(request)
+    installation_complete = False
+
+    subnets_installed = os.path.isfile('subnets.txt')
+
+    hosts_installed = Host.objects.all().exists()
+    vulns_installed = Vulnerability.objects.all().exists()
+    events_installed = Event.objects.all().exists()
+    malware_installed = Malware.objects.all().exists()
+    ports_installed = Host.objects.all().filter(ports__icontains='"').exists()
+
+    if hosts_installed and vulns_installed and events_installed \
+       and ports_installed and malware_installed:
+        installation_complete = True
+
+    context = {'subnets_installed' : subnets_installed,
+               'hosts_installed'   : hosts_installed,
+               'vulns_installed'   : vulns_installed,
+               'events_installed'  : events_installed,
+               'malware_installed' : malware_installed,
+               'ports_installed'   : ports_installed,
+               'installation_complete' : installation_complete,
+               'db_type' : connection.vendor}
+
+    if installation_complete:
+        return about(request)
+    return render(request, 'nector_home/status.html', context)
 
 
 def osint(request):
@@ -44,6 +69,8 @@ def settings(request):
 def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vulns=False, sup_malware=False):
     installation_complete = False
 
+    print 'x'
+
     subnets_installed = os.path.isfile('subnets.txt')
 
     hosts_installed = Host.objects.all().exists()
@@ -52,7 +79,8 @@ def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vuln
     malware_installed = Malware.objects.all().exists()
     ports_installed = Host.objects.all().filter(ports__icontains='"').exists()
 
-    if hosts_installed and vulns_installed and events_installed and malware_installed:
+    if hosts_installed and vulns_installed and events_installed \
+       and ports_installed and malware_installed:
         installation_complete = True
 
     context = {'subnets_installed' : subnets_installed,
@@ -77,8 +105,10 @@ def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vuln
         context['vulns_form'] = formset_factory(VulnForm)
         context['extra_forms'] = 1
 
-    if installation_complete:
-        return about(request)
+    if sup_malware:
+        context['mals_form'] = formset_factory(MalwareForm)
+        context['extra_forms'] = 1
+
     return render(request, 'nector_home/status.html', context)
 
 
@@ -161,7 +191,8 @@ def submit_events(request):
         malware_installed = Malware.objects.all().exists()
         ports_installed = Host.objects.all().filter(ports__icontains='"').exists()
 
-        if hosts_installed and vulns_installed and events_installed and malware_installed:
+        if hosts_installed and vulns_installed and events_installed \
+           and ports_installed and malware_installed:
             installation_complete = True
 
         context = {'subnets_installed' : subnets_installed,
@@ -177,8 +208,6 @@ def submit_events(request):
         context['sup_events'] = True
         context['extra_forms'] = extra_forms
 
-        if installation_complete:
-            return about(request)
         return render(request, 'nector_home/status.html', context)
 
     elif 'event_file' in request.FILES:
@@ -236,7 +265,8 @@ def submit_vulns(request):
         malware_installed = Malware.objects.all().exists()
         ports_installed = Host.objects.all().filter(ports__icontains='"').exists()
 
-        if hosts_installed and vulns_installed and events_installed and malware_installed:
+        if hosts_installed and vulns_installed and events_installed \
+           and ports_installed and malware_installed:
             installation_complete = True
 
         context = {'subnets_installed' : subnets_installed,
@@ -252,8 +282,6 @@ def submit_vulns(request):
         context['sup_vulns'] = True
         context['extra_forms'] = extra_forms
 
-        if installation_complete:
-            return about(request)
         return render(request, 'nector_home/status.html', context)
 
     elif 'vuln_file' in request.FILES:
@@ -272,14 +300,89 @@ def submit_vulns(request):
         with open('vulnlist.csv', 'w') as vulnlist_csv:
             vulnlist_csv.write('"Plugin","Plugin Name","Severity","IP Address","DNS Name"\n')
             for f in vulns_formset:
-                clean = f.cleaned_data
-                line = '"%s","%s","%s","%s","%s"\n' % (clean['plugin_id'],
-                                                 clean['plugin_name'],
-                                                 clean['severity'],
-                                                 clean['ipv4_address'],
-                                                 clean['host_name'],)
+                if f.is_valid():
+                    clean = f.cleaned_data
+                    line = '"%s","%s","%s","%s","%s"\n' % (clean['plugin_id'],
+                                                     clean['plugin_name'],
+                                                     clean['severity'],
+                                                     clean['ipv4_address'],
+                                                     clean['host_name'],)
 
-                vulnlist_csv.write(line)
+                    vulnlist_csv.write(line)
             vulnlist_csv.close()
+        update_db()
+        return status(request)
+
+
+def submit_malware(request):
+    if not request.POST:
+        return status(request, sup_malware=True)
+
+    extra_forms = 1
+
+    if 'add-additional-event' in request.POST:
+
+        extra_forms = int(request.POST['num_extra_forms']) + 1
+        malware_formset = formset_factory(MalwareForm, extra=extra_forms)
+
+        installation_complete = False
+
+        subnets_installed = os.path.isfile('subnets.txt')
+
+        hosts_installed = Host.objects.all().exists()
+        vulns_installed = Vulnerability.objects.all().exists()
+        events_installed = Event.objects.all().exists()
+        malware_installed = Malware.objects.all().exists()
+        ports_installed = Host.objects.all().filter(ports__icontains='"').exists()
+
+        if hosts_installed and vulns_installed and events_installed \
+           and ports_installed and malware_installed:
+            installation_complete = True
+
+        context = {'subnets_installed' : subnets_installed,
+                   'hosts_installed'   : hosts_installed,
+                   'vulns_installed'   : vulns_installed,
+                   'events_installed'  : events_installed,
+                   'malware_installed' : malware_installed,
+                   'ports_installed'   : ports_installed,
+                   'installation_complete' : installation_complete,
+                   'db_type' : connection.vendor}
+
+        context['mals_form'] = malware_formset
+        context['sup_malware'] = True
+        context['extra_forms'] = extra_forms
+
+        return render(request, 'nector_home/status.html', context)
+
+    elif 'malware_file' in request.FILES:
+        input_file = request.FILES['malware_file'].read()
+        with open('malware.csv', 'w') as malware_csv:
+            for line in input_file:
+                malware_csv.write(line)
+            malware_csv.close()
+        update_db()
+        return status(request)
+
+    else:
+        extra_forms = int(request.POST['num_extra_forms'])
+        mals_formset = formset_factory(MalwareForm, extra=extra_forms)
+        mals_formset = mals_formset(request.POST)
+        with open('malware.csv', 'w') as malware_csv:
+            malware_csv.write('AlertID,AlertType,File,Computer,NumericIP,ContactGroup,Virus,ActualAction,Comment\n')
+            for f in mals_formset:
+                if f.is_valid():
+                    clean = f.cleaned_data
+                    line = '%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (clean['alert_id'],
+                                                     clean['alert_type'],
+                                                     clean['file_name'],
+                                                     clean['computer'],
+                                                     clean['numeric_ip'],
+                                                     clean['contact_group'],
+                                                     clean['virus'],
+                                                     clean['actual_action'],
+                                                     clean['comment'])
+
+                    malware_csv.write(line)
+            malware_csv.close()
         update_db()
         return status(request)
