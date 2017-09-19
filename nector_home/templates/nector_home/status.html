@@ -17,6 +17,21 @@
     Please ensure you have nmap installed before proceeding.</p>
 <a href="/status/nmap-hosts/">Click here to run an nmap scan on the provided IP address.</a>
 <p>Note: This may take a while! Please remain on this page until it is complete.</p>
+
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Hosts.<br>
+   Follow the formatting of <i>sample-data/sample-hosts.xml</i>.</p>
+   If you have Nmap, you can manually generate this file by running the following command:</p>
+   <ol>
+       <li><i>nmap -sL -iL subnets.txt -oN hosts.xml</i></li>
+   </ol>
+   <br>
+<form action="/status/submit-hosts/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="hosts_file">
+    <br><br><input type="submit" value="Upload">
+</form>
 {% else %}
 <p>Enter a list of subnets or individual IP addresses.<br> Separate each with a newline.</p>
 <form action="/status/submit-subnets/" method="post">{% csrf_token %}
@@ -46,6 +61,20 @@
     Please ensure you have nmap installed before proceeding.</p>
 <a href="/status/nmap-ports/">Click here to run an nmap scan on the provided IP address.</a>
 <p>Note: This may take a while! Please remain on this page until it is complete.</p>
+<br><br>
+<b>- OR -</b>
+<br><br>
+<p>Upload a file containing your Ports.<br>
+   Follow the formatting of <i>sample-data/sample-openports.xml</i>.<br>
+   If you have Nmap, you can manually generate this file by running the following command:</p>
+   <ol>
+       <li><i>nmap -Pn -sV --version-light -vv -T5 \<br> -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 \ <br> -iL subnets.txt --open -oX openports.xml 2>&1 > /dev/null</i></li>
+   </ol>
+   <br>
+<form action="/status/submit-ports/" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="file" name="ports_file">
+    <br><br><input type="submit" value="Upload">
+</form>
 {% else %}
 <p>Enter a list of subnets or individual IP addresses.<br> Separate each with a newline.</p>
 <form action="/status/submit-subnets/" method="post">{% csrf_token %}

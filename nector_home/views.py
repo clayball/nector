@@ -168,6 +168,40 @@ def nmap_ports(request):
     return status(request)
 
 
+def submit_hosts(request):
+    if not request.POST:
+        return status(request, sup_hosts=True)
+
+    elif 'hosts_file' in request.FILES:
+        input_file = request.FILES['hosts_file'].read()
+        with open('hosts.xml', 'w') as hosts_xml:
+            for line in input_file:
+                hosts_xml.write(line)
+            hosts_xml.close()
+        update_db()
+        return status(request)
+
+    else:
+        return status(request)
+
+
+def submit_ports(request):
+    if not request.POST:
+        return status(request, sup_ports=True)
+
+    elif 'ports_file' in request.FILES:
+        input_file = request.FILES['ports_file'].read()
+        with open('openports.xml', 'w') as openports_xml:
+            for line in input_file:
+                openports_xml.write(line)
+            openports_xml.close()
+        update_db()
+        return status(request)
+
+    else:
+        return status(request)
+
+
 def submit_events(request):
     if not request.POST:
         return status(request, sup_events=True)
