@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    #url(r'^vulnz/$', views.SOMEFUNC, name='vulnerabilities'),
+    url(r'^search/$', views.search, name='search')
 ]

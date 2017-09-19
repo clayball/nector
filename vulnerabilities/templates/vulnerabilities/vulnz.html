@@ -3,9 +3,30 @@
 
 {% block content %}
 <div class="content">
-  {% if vuln_list %}
+
     <h1>Vulnerabilities</h1>
     <hr><br>
+
+    <div style="float:right; padding-right:7%">
+
+        <form method="post" action="/vulnz/search/">{% csrf_token %}
+            <table>
+                <tr>
+                    <td class="td-content-scans">
+                        Vulnerability Keyword(s):
+                        <input type="text" name="vulnz_keywords" placeholder="Medium, SSL" value="{{ request.POST.vulnz_keywords }}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="Search" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+  {% if vuln_list %}
 
     {% render_table vuln_table %}
 
