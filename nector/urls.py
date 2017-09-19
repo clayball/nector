@@ -32,7 +32,8 @@ urlpatterns = [
     url(r'^reports/', views.reports, name='reports'),
     url(r'^scans/', include('scans.urls')),
     url(r'^settings/', views.settings, name='settings'),
-    url(r'^status/', views.status, name='status'),
+    url(r'^status/$', views.status, name='status'),
+    url(r'^status/', include('nector_home.urls')),
     url(r'^trending/', include('trending.urls')),
     url(r'^vulnz/', include('vulnerabilities.urls')),
 

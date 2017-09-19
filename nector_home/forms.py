@@ -9,13 +9,13 @@ class EventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
-        self.fields['request_number'].required    = False
-        self.fields['date_submitted'].required             = False
-        self.fields['title'].required    = False
-        self.fields['status'].required            = False
-        self.fields['date_last_edited'].required  = False
-        self.fields['submitters'].required        = False
-        self.fields['assignees'].required         = False
+        self.fields['request_number'].required    = True
+        self.fields['date_submitted'].required    = True
+        self.fields['title'].required             = True
+        self.fields['status'].required            = True
+        self.fields['date_last_edited'].required  = True
+        self.fields['submitters'].required        = True
+        self.fields['assignees'].required         = True
 
 
     class Meta:
@@ -51,11 +51,11 @@ class VulnForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(VulnForm, self).__init__(*args, **kwargs)
         #self.fields['plugin_and_host'].required = False
-        self.fields['plugin_id'].required       = False
-        self.fields['plugin_name'].required     = False
-        self.fields['severity'].required        = False
-        self.fields['ipv4_address'].required    = False
-        self.fields['host_name'].required       = False
+        self.fields['plugin_id'].required       = True
+        self.fields['plugin_name'].required     = True
+        self.fields['severity'].required        = True
+        self.fields['ipv4_address'].required    = True
+        self.fields['host_name'].required       = True
 
 
     class Meta:
@@ -84,15 +84,15 @@ class MalwareForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MalwareForm, self).__init__(*args, **kwargs)
-        self.fields['alert_id'].required      = False
-        self.fields['alert_type'].required    = False
-        self.fields['file_name'].required     = False
-        self.fields['computer'].required      = False
-        self.fields['numeric_ip'].required    = False
-        self.fields['contact_group'].required = False
-        self.fields['virus'].required         = False
-        self.fields['actual_action'].required = False
-        self.fields['comment'].required       = False
+        self.fields['alert_id'].required      = True
+        self.fields['alert_type'].required    = True
+        self.fields['file_name'].required     = True
+        self.fields['computer'].required      = True
+        self.fields['numeric_ip'].required    = True
+        self.fields['contact_group'].required = True
+        self.fields['virus'].required         = True
+        self.fields['actual_action'].required = True
+        self.fields['comment'].required       = True
 
     class Meta:
         model = Malware

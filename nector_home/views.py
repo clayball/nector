@@ -69,8 +69,6 @@ def settings(request):
 def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vulns=False, sup_malware=False):
     installation_complete = False
 
-    print 'x'
-
     subnets_installed = os.path.isfile('subnets.txt')
 
     hosts_installed = Host.objects.all().exists()
