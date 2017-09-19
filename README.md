@@ -45,6 +45,12 @@ Install [pip](https://pypi.python.org/pypi/pip) dependencies.
 $ pip install -r requirements.txt
 ```
 
+Install [nmap](https://nmap.org/download.html).
+
+```
+$ dnf install nmap
+```
+
 
 ### Trying the Demo (Optional)
 
@@ -63,7 +69,7 @@ If you like what you see, delete the sample data and database and move on to the
 $ rm db.sqlite3 events.csv vulnlist.csv hosts.xml malware.csv openports.xml
 ```
 
-### Beginner Setup
+### Setup
 
 To start using NECTOR, run:
 
@@ -75,16 +81,24 @@ Then, open a browser and go to **http://127.0.0.1:8000**
 
 You will be shown a page containing your installation progress.
 
-**Soon,** you will be able to complete the installation right from the browser!
+You can now complete the installation right from the browser!
 
-But, sadly, for now, you'll have to read through the Advanced Setup section to see
-how to continue with the installation.
+
+### Working with the Server and Virtual Environment
 
 When you're done with the virtualenv, run:
 
 ```
 $ deactivate
 ```
+
+Any time you wish to use it again, run:
+
+```
+$ source venv-nector/bin/activate
+```
+
+When you're done with NECTOR, use `CTRL + C` to terminate the process.
 
 Any time you wish to run NECTOR again, use the command:
 
@@ -272,7 +286,7 @@ $ python manage.py migrate
 ```
 
 
-#### Creating Your Data
+#### Creating Your Data Manually
 
 
 ##### Getting Hosts with Nmap
@@ -395,41 +409,14 @@ If you set up a Virtual Environment, run `$ deactivate` once you're done
 working on NECTOR.
 
 
-#### The Makefile
-
-The makefile exists to automate making migrations and importing
-data.
-
-If you make frequent changes to NECTOR (which is expected), you will
-want to run `$ make run` to take care of everything for you.
-
-    Note: The makefile will not activate or deactivate your virtualenv.
-          If you plan on using one, you must do so manually.
-
-
 ---
 
 
-## Misc. Notes
-
-Let's try to stick with Python2 for now.
-
-This is the main NECTOR project repo.
-
-We'll be adding small applications to this project over time.
-
-Applications:
-
-- hosts (subnets)
-- detection
-- osint
-- events
-- reports
-
-
-## Events
+## FAQ
 
 TODO: Add more to this section.
+
+### What's the difference between Events, Alerts, and Incidents?
 
 - An event is an observed change to the normal behavior of a system, environment, process, workflow or person. Examples: router ACLs were updated, firewall policy was pushed.
 - An alert is a notification that a particular event (or series of events) has occurred, which is sent to responsible parties for the purpose of spawning action. Examples: the events above sent to on-call personnel.
