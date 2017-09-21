@@ -228,7 +228,7 @@
 <div style="float:right; margin-right:12%">
 <h2>Info</h2>
 <p>This page is used for setting up NECTOR through the browser.<br>
-    If you would rather do so via terminal, please see the "Advanced Setup" section
+    If you would rather do so via terminal, please see the "Manual Setup" section
     in <i>INSTALL.txt</i></p>
 <h2>Setup Process</h2>
 <ol>
@@ -272,82 +272,34 @@
 {% if changing_db %}
 <div style="float:right; margin-right:12%">
 <h2>Switching to a new Database</h2>
-<h3>SQLite3</h3>
-<ol><li>No manual configuration required from default setup.</li></ol>
-<h3>MySQL</h3>
-<ol>
-    <li>Delete the current database.</li>
-        <ul><li>$<i> rm db.sqlite3</i></li></ul>
-    <li>Install necessary components.</li>
-        <ul><li>$<i> dnf install mysql mysql-server MySQL-python</i></li></ul>
-    <li>Start MySQL process.</li>
-        <ul><li>$<i> service mysqld start</i></li></ul>
-    <li>Get MySQL dependency through pip.</li>
-        <ul><li>$<i> pip install mysql-python</i></li></ul>
-    <li>Create a database and a database user.</li>
-        <ul><li>$<i> mysql -u root -p</i></li></ul>
-        <ul><li>mysql><i> CREATE DATABASE nector CHARACTER SET UTF8;</i></li></ul>
-        <ul><li>mysql><i> CREATE USER myuser@localhost IDENTIFIED BY 'password123';</i></li></ul>
-        <ul><li>mysql><i> GRANT ALL PRIVILEGES ON nector.* TO myuser@localhost;</i></li></ul>
-        <ul><li>mysql><i> FLUSH PRIVILEGES;</i></li></ul>
-        <ul><li>mysql><i> exit;</i></li></ul>
-    <li>Modify NECTOR's settings to use your database.</li>
-        <ul><li>$<i> vi nector/settings.py</i></li></ul>
-        <ul><li>Find the 'DATABASES' section and replace it with:</li></ul>
-        <pre>
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': 'nector',
-                'USER': 'myuser',
-                'PASSWORD': 'password123',
-                'HOST': 'localhost',
-                'PORT': '3306',
-                'ATOMIC_REQUESTS': True,
-            }
-        }</pre></li></ul>
-    <li>Reset NECTOR.</li>
-        <ul><li>$<i> make</i></li></ul>
-    <li>Start using NECTOR.</li>
-</ol>
-<h3>PostgreSQL</h3>
-<ol>
-    <li>Delete the current database.</li>
-        <ul><li>$<i> rm db.sqlite3</i></li></ul>
-    <li>Install necessary components.</li>
-        <ul><li>$<i> dnf install postgresql postgresql-contrib postgresql-devel postgresql-server</i></li></ul>
-    <li>Get PostgreSQL dependency through pip.</li>
-        <ul><li>$<i> pip install psycopg2</i></li></ul>
-    <li>Create a database and a database user.</li>
-        <ul><li>$<i> sudo su - postgres</i></li></ul>
-        <ul><li>$<i> psql</i></li></ul>
-        <ul><li>$<i> CREATE DATABASE nector;</i></li></ul>
-        <ul><li>postgres=#<i> CREATE USER myuser WITH PASSWORD 'password123';</i></li></ul>
-        <ul><li>postgres=#<i> ALTER ROLE myuser SET client_encoding TO 'utf8';</i></li></ul>
-        <ul><li>postgres=#<i> ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';</i></li></ul>
-        <ul><li>postgres=#<i> ALTER ROLE myuser SET timezone to 'EST';</i></li></ul>
-        <ul><li>postgres=#<i> GRANT ALL PRIVILEGES ON DATABASE nector TO myuser;</i></li></ul>
-        <ul><li>postgres=#<i> \q</i></li></ul>
-        <ul><li>$<i> exit</i></li></ul>
-    <li>Modify NECTOR's settings to use your database.</li>
-        <ul><li>$<i> vi nector/settings.py</i></li></ul>
-        <ul><li>Find the 'DATABASES' section and replace it with:</li></ul>
-        <pre>
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                    'NAME': 'nector',
-                    'USER': 'myuser',
-                    'PASSWORD': 'password123',
-                    'HOST': 'localhost',
-                    'PORT': '',
-                    'ATOMIC_REQUESTS': True,
-                }
-            }</pre></li></ul>
-    <li>Reset NECTOR.</li>
-        <ul><li>$<i> make</i></li></ul>
-    <li>Start using NECTOR.</li>
-</ol>
+<p>See the "Advanced Setup" section of <i>INSTALL.txt</i> for more info.</p>
+<p>
+NECTOR is configured to work with three types of RDBMSs easily: SQLite3, MySQL, and PostgreSQL.
+</p>
+<p>
+SQLite3 is light-weight, server-less, and requires practically no configuration. However, a
+<br>SQLite3 database stores its information in a single binary file, and imposes limits on its
+<br>users when querying a large amount of data.
+</p>
+<p>
+MySQL is a popular, large-scale database server that's easy to setup, and features lots of
+<br>third-party support, expansive functionality for its users, and reads / writes data very
+<br>quickly. Although, some functionalities get handled a bit less-reliably with MySQL than other
+<br>RDBMSs, and MySQL does not adhere to SQL compliancy rules.
+</p>
+<p>
+PostgreSQL is much more server-friendly, featuring high concurrency and the ability to deal
+<br>with large datasets. Though, it does need to be set up and configured, which may pose as a
+<br>nuisance toward someone wanting to use NECTOR out of the box. It features tons of bells and
+<br>whistles, gearing it toward advanced RDBMS users.
+</p>
+<p>
+Ideally, if you intend on hosting NECTOR on a public-facing server, MySQL or PostgreSQL should
+<br>be your choice. Otherwise, if you're working locally or only dealing with a small amount of
+<br>traffic, SQLite3 will work great.
+</p>
+<p><a href="https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems">
+    If you're still unsure which RDMBS you should use, checkout this DigitalOcean article.</a></p>
 </div>
 {% endif %}
 
