@@ -4,11 +4,20 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^status/', views.status, name='status'),
+
+    url(r'^change-db/', views.change_db, name='change_db'),
+
     url(r'^setup-hosts/', views.status_setup_hosts, name='status_setup_hosts'),
     url(r'^setup-ports/', views.status_setup_ports, name='status_setup_ports'),
     url(r'^setup-events/', views.status_setup_events, name='status_setup_events'),
     url(r'^setup-vulns/', views.status_setup_vulns, name='status_setup_vulns'),
     url(r'^setup-malware/', views.status_setup_malware, name='status_setup_malware'),
+
+    url(r'^skip-hosts/', views.status_skip_hosts, name='status_skip_hosts'),
+    url(r'^skip-ports/', views.status_skip_ports, name='status_skip_ports'),
+    url(r'^skip-events/', views.status_skip_events, name='status_skip_events'),
+    url(r'^skip-vulns/', views.status_skip_vulns, name='status_skip_vulns'),
+    url(r'^skip-malware/', views.status_skip_malware, name='status_skip_malware'),
 
     url(r'^submit-subnets/', views.submit_subnets, name='submit_subnets'),
     url(r'^nmap-hosts/', views.nmap_hosts, name='nmap_hosts'),
