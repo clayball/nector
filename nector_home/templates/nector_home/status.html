@@ -269,20 +269,9 @@
 </div>
 {% endif %}
 
-{% if changing_db %}
-<div style="float:right; margin-right:12%">
-no
-</div>
-{% endif %}
 
 <h2>Database</h2>
 <p>Using {{db_type}} database.</p>
-{% if not hosts_installed and not ports_installed and not events_installed and not vulns_installed and not malware_installed %}
-<form style="display:inline-block" action="/status/change-db/">
-    <input type="submit" value="Change">
-</form>
-{% endif %}
-
 
 <h2>Hosts</h2>
 {% if hosts_installed %}
