@@ -232,7 +232,7 @@
     in <i>INSTALL.txt</i></p>
 <h2>Setup Process</h2>
 <ol>
-    <li>Select your <i>Database</i>.</li>
+    <li>Change your <i>Database</i> (Optional).</li>
         <ul>
             <li>The database is where all your information will be stored.</li>
             <li>There are three you can choose from: SQLite, MySQL, and PostgreSQL.</li>
@@ -269,9 +269,92 @@
 </div>
 {% endif %}
 
+{% if changing_db %}
+<div style="float:right; margin-right:12%">
+<h2>Switching to a new Database</h2>
+<h3>SQLite3</h3>
+<ol><li>No manual configuration required from default setup.</li></ol>
+<h3>MySQL</h3>
+<ol>
+    <li>Delete the current database.</li>
+        <ul><li>$<i> rm db.sqlite3</i></li></ul>
+    <li>Install necessary components.</li>
+        <ul><li>$<i> dnf install mysql mysql-server MySQL-python</i></li></ul>
+    <li>Start MySQL process.</li>
+        <ul><li>$<i> service mysqld start</i></li></ul>
+    <li>Get MySQL dependency through pip.</li>
+        <ul><li>$<i> pip install mysql-python</i></li></ul>
+    <li>Create a database and a database user.</li>
+        <ul><li>$<i> mysql -u root -p</i></li></ul>
+        <ul><li>mysql><i> CREATE DATABASE nector CHARACTER SET UTF8;</i></li></ul>
+        <ul><li>mysql><i> CREATE USER myuser@localhost IDENTIFIED BY 'password123';</i></li></ul>
+        <ul><li>mysql><i> GRANT ALL PRIVILEGES ON nector.* TO myuser@localhost;</i></li></ul>
+        <ul><li>mysql><i> FLUSH PRIVILEGES;</i></li></ul>
+        <ul><li>mysql><i> exit;</i></li></ul>
+    <li>Modify NECTOR's settings to use your database.</li>
+        <ul><li>$<i> vi nector/settings.py</i></li></ul>
+        <ul><li>Find the 'DATABASES' section and replace it with:</li></ul>
+        <pre>
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': 'nector',
+                'USER': 'myuser',
+                'PASSWORD': 'password123',
+                'HOST': 'localhost',
+                'PORT': '3306',
+                'ATOMIC_REQUESTS': True,
+            }
+        }</pre></li></ul>
+    <li>Reset NECTOR.</li>
+        <ul><li>$<i> make</i></li></ul>
+    <li>Start using NECTOR.</li>
+</ol>
+<h3>PostgreSQL</h3>
+<ol>
+    <li>Delete the current database.</li>
+        <ul><li>$<i> rm db.sqlite3</i></li></ul>
+    <li>Install necessary components.</li>
+        <ul><li>$<i> dnf install postgresql postgresql-contrib postgresql-devel postgresql-server</i></li></ul>
+    <li>Get PostgreSQL dependency through pip.</li>
+        <ul><li>$<i> pip install psycopg2</i></li></ul>
+    <li>Create a database and a database user.</li>
+        <ul><li>$<i> sudo su - postgres</i></li></ul>
+        <ul><li>$<i> psql</i></li></ul>
+        <ul><li>$<i> CREATE DATABASE nector;</i></li></ul>
+        <ul><li>postgres=#<i> CREATE USER myuser WITH PASSWORD 'password123';</i></li></ul>
+        <ul><li>postgres=#<i> ALTER ROLE myuser SET client_encoding TO 'utf8';</i></li></ul>
+        <ul><li>postgres=#<i> ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';</i></li></ul>
+        <ul><li>postgres=#<i> ALTER ROLE myuser SET timezone to 'EST';</i></li></ul>
+        <ul><li>postgres=#<i> GRANT ALL PRIVILEGES ON DATABASE nector TO myuser;</i></li></ul>
+        <ul><li>postgres=#<i> \q</i></li></ul>
+        <ul><li>$<i> exit</i></li></ul>
+    <li>Modify NECTOR's settings to use your database.</li>
+        <ul><li>$<i> vi nector/settings.py</i></li></ul>
+        <ul><li>Find the 'DATABASES' section and replace it with:</li></ul>
+        <pre>
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                    'NAME': 'nector',
+                    'USER': 'myuser',
+                    'PASSWORD': 'password123',
+                    'HOST': 'localhost',
+                    'PORT': '',
+                    'ATOMIC_REQUESTS': True,
+                }
+            }</pre></li></ul>
+    <li>Reset NECTOR.</li>
+        <ul><li>$<i> make</i></li></ul>
+    <li>Start using NECTOR.</li>
+</ol>
+</div>
+{% endif %}
 
 <h2>Database</h2>
 <p>Using {{db_type}} database.</p>
+<a style="font-size:10px" href="/status/change-db/">Want to use a different database?</a>
+
 
 <h2>Hosts</h2>
 {% if hosts_installed %}
