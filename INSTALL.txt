@@ -8,7 +8,7 @@
 ~~ The Next Hector ~~
 
 
-NECTOR Installation
+Getting Started
 ===================
 
 NECTOR requires the following be installed:
@@ -16,20 +16,33 @@ NECTOR requires the following be installed:
 - NECTOR (see https://github.com/clayball/nector )
 - Python 2 (see https://www.python.org )
 - Pip (comes with Python 2.7.9+)
-- Django ( pip install Django==1.10 )
-	Note: You may use any version of Django past 1.10. NECTOR was developed
-	 with Django 1.10, but newer versions should work. 1.10 guarantees
-	 usability, however.
-- [OPTIONAL] nmap (see https://nmap.org/download.html )
-	Note: nmap is only necessary for gathering hosts/subnets for the
-	 Hosts/Subnets feature.
-       (See 'Import Hosts/Subnets/Vulnerabilities' below.)
 
-Run Demo (OPTIONAL)
-=====================
 
-NOTE: This step is optional. Performing this step may interfere with the
-semantics of future steps, but will not render them unusable.
+Setting up a Virtual Environment (Recommended)
+==============================================
+
+Create a virtualenv to work in, and activate it.
+
+    $ virtualenv venv-nector
+    $ source venv-nector/bin/activate
+
+
+Downloading Dependencies
+========================
+
+Install pip dependencies.
+
+    $ pip install -r requirements.txt
+
+Install nmap.
+
+    $ dnf install nmap
+
+
+Trying the Demo (OPTIONAL)
+==========================
+
+NOTE: This step is optional.
 
 If you want to see what NECTOR is like before committing to the rest of the
 install instructions, run:
@@ -45,6 +58,8 @@ automatically. All you'll have to do after this is open a browser and go to
 Add Key to settings.py
 ======================
 
+NOTE: This will be automated in future versions of NECTOR.
+
 Traverse into the nector/ subdirectory and open settings.py in a text editor.
 
 Find the line
@@ -58,48 +73,288 @@ You can generate one at
     http://www.miniwebtool.com/django-secret-key-generator/
 
 
-Import Hosts/Subnets/Vulnerabilities
-====================================
+Easy Setup
+==========
 
-Once the above is installed, IF YOU INTEND ON USING THE SUBNETS/HOSTS, VULNZ,
-EVENTS, & CENSYS FEATURES (recommended), modify the following files to fit your
-needs:
+To start using NECTOR, run:
 
-- sample-hosts.xml
-	- Collection of hosts gathered through nmap host discovery list scan.
-- sample-subnets.txt
-	- Collection of subnets.
-- sample-vulnlist.csv
-	- Collection of vulnerabilities related to hosts.
-- sample-events.csv
-	- Collection of events.
-- port-scans/sample-port-22-open-170502.csv
-	- Collection of hosts with port 22 open.
-	- Note: Create new files for each port, following the same format.
-	- Note: The filename is important, as NECTOR uses the date at the end.
+    $ make
 
-Next, rename the six files to:
+Then, open a browser and go to http://127.0.0.1:8000
+You will be shown a page containing your installation progress.
+You can complete the remainder of the installation right from the browser.
 
-- hosts.xml
-- subnets.txt
-- vulnlist.csv
-- events.csv
-- port-22-open-170502.csv
+If you'd prefer to finish the install via terminal, go to the "Manual Setup"
+section of this document.
+
+
+Working with the Server and Virtual Environment
+===============================================
+
+When you're done with NECTOR, use CTRL + C to terminate the process.
+When you're done with the virtualenv, run:
+
+    $ deactivate
+
+When you want to run NECTOR's server again, run:
+
+    $ python manage.py runserver
+
+When you want to use the virtualenv again, run:
+
+    $ source venv-nector/bin/activate
+
+
+Manual Setup
+============
+
+Initializing the Database
+-------------------------
+
+Django uses migrations to keep track of changes to the database's tables.
+
+First, create new migrations based on the Django models of your project.
+
+    $ python manage.py makemigrations
+
+Next, apply the migrations to your database (this will create a database if
+one does not already exist). Doing this will fill your database with the tables
+you need for the project.
+
+    $ python manage.py migrate
+
+Next, you'll need to collect your data.
+
+
+Getting Hosts with Nmap
+-----------------------
+
+Create a file subnets.txt and fill it with your subnets.
+
+    $ vi subnets.txt
+
+Use nmap to run a scan on all the hosts in those subnets. Save this scan as hosts.xml
+
+    $ nmap -sL -iL subnets.txt -oN hosts.xml
+
+
+Getting Vulnerabilities with Nessus
+-----------------------------------
+
+Go into Nessus.
+
+Under the Analysis dropdown, select Vulnerabilities.
+
+From the new dropdown box in the top left corner, select Vulnerability List.
+
+In the top right corner, click on the Options dropdown, and select Export as CSV.
+
+Make sure only 'Plugin ID', 'Plugin Name', 'Severity', 'IP Address', and 'DNS Name' are selected.
+
+Click submit, and save this file as vulnlist.csv in your NECTOR root directory.
+
+
+Getting Events
+--------------
+
+Todo.
+
+
+Getting Ports
+-------------
+
+If you haven't already, create a file subnets.txt and fill it with your subnets.
+
+    $ vi subnets.txt
+
+Use nmap to run a popular-ports scan on all the hosts in your subnets.
+
+Save this scan as openports.xml
+
+    $ nmap -Pn -sV --version-light -vv -T5 -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 -iL subnets.txt --open -oX openports.xml 2>&1 > /dev/null
+
+This scan may take some time to complete.
+
+
+Filling in the Gaps
+-------------------
+
+If you were unable to perform any of the above four steps, keep reading. Otherwise, you should skip this step.
+
+Copy the sample data you need from sample-data/ into this project's root folder.
+
+    $ cp sample-data/MISSING-FILE .
+
+Note that you will have to remove the sample- prefix from each file.
+
+Missing Hosts:
+
+    $ cp sample-data/sample-hosts.xml hosts.xml
+
+Missing Ports:
+
+    $ cp sample-data/sample-openports.xml openports.xml
+
+Missing Vulnerabilities:
+
+    $ cp sample-data/sample-vulnlist.csv vulnlist.csv
+
+Missing Events:
+
+    $ cp sample-data/sample-events.csv events.csv
+
+Missing Malware:
+
+    $ cp sample-data/sample-malware.csv malware.csv
+
+Edit the file(s) to use your data.
+
+Do not mess up the formatting!
+
+
+Populating the Database
+-----------------------
+
+In order to use your data, you will have to import it into the database.
+
+    $ python import-data.py
 
 
 Running NECTOR
+--------------
+
+Start the server.
+
+    $ python manage.py runserver
+
+Open a browser and go to http://127.0.0.1:8000
+
+
+==============
+Advanced Setup
 ==============
 
-To utilize NECTOR, run the provided makefile:
+Choosing a Database
+===================
+NECTOR is configured to work with three types of RDBMSs easily: SQLite3, MySQL, and PostgreSQL.
 
-$ make
+SQLite3 is light-weight, server-less, and requires practically no
+configuration. However, a SQLite3 database stores its information
+in a single binary file, and imposes limits on its users when querying
+a large amount of data.
 
-This performs necessary migrations and imports, then runs a NECTOR server.
-Finally, open your favorite internet browser and enter the address:
+MySQL is a popular, large-scale database server that's easy to setup,
+and features lots of third-party support, expansive functionality for
+its users, and reads / writes data very quickly. Although, some
+functionalities get handled a bit less-reliably with MySQL than other
+RDBMSs, and MySQL does not adhere to SQL compliancy rules.
 
-127.0.0.1:8000
+PostgreSQL is much more server-friendly, featuring high concurrency
+and the ability to deal with large datasets. Though, it does need
+to be set up and configured, which may pose as a nuisance toward
+someone wanting to use NECTOR out of the box. It features tons of
+bells and whistles, gearing it toward advanced RDBMS users.
 
-Enjoy! :)
+Ideally, if you intend on hosting NECTOR on a public-facing server,
+MySQL or PostgreSQL should be your choice. Otherwise, if you're working
+locally or only dealing with a small amount of traffic, SQLite3 will work great.
+
+Setting up a SQLite3 Database (Option A)
+----------------------------------------
+
+    No manual setup required for a SQLite3 database.
+
+Setting up a MySQL Database (Option B)
+--------------------------------------
+
+    Install necessary components.
+
+    $ sudo dnf install mysql mysql-server MySQL-python
+
+    Start MySQL on boot. (Optional)
+
+    $ chkconfig --levels 235 mysqld on
+
+    Start MySQL process.
+
+    $ service mysqld start
+
+    Get MySQL dependency through pip.
+
+    $ pip install mysql-python
+
+    Create a database and a database user.
+
+    $ mysql -u root -p
+    $ CREATE DATABASE nector CHARACTER SET UTF8;
+    $ CREATE USER myuser@localhost IDENTIFIED BY 'password123';
+    $ GRANT ALL PRIVILEGES ON nector.* TO myuser@localhost;
+    $ FLUSH PRIVILEGES;
+    $ exit
+
+    Modify project settings to use your database.
+
+    $ vi nector/settings.py
+
+    Find the 'DATABASE' section and replace it with:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'nector',
+            'USER': 'myuser',
+            'PASSWORD': 'password123',
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'ATOMIC_REQUESTS': True,
+        }
+    }
+
+    Make sure you change the NAME, USER, PASSWORD, and PORT sections to fit your needs!
+
+Setting up a PostgreSQL Database (Option C)
+-------------------------------------------
+
+    Install necessary components.
+
+    $ sudo dnf install postgresql postgresql-contrib postgresql-devel postgresql-server
+
+    Get PostgreSQL dependency through pip.
+
+    $ pip install psycopg2
+
+    Create a database and a database user.
+
+    $ sudo su - postgres
+    $ psql
+    $ CREATE DATABASE nector;
+    $ CREATE USER myuser WITH PASSWORD 'password123';
+    $ ALTER ROLE myuser SET client_encoding TO 'utf8';
+    $ ALTER ROLE myuser SET default_transaction_isolation TO 'read committed';
+    $ ALTER ROLE myuser SET timezone TO 'EST';
+    $ GRANT ALL PRIVILEGES ON DATABASE nector TO myuser;
+    $ \q
+    $ exit
+
+    Modify project settings to use your database.
+
+    $ vi nector/settings.py
+
+    Find the 'DATABASE' section and replace it with:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'nector',
+            'USER': 'myuser',
+            'PASSWORD': 'password123',
+            'HOST': 'localhost',
+            'PORT': '',
+            'ATOMIC_REQUESTS': True,
+        }
+    }
+
+    Make sure you change the USER and PASSWORD sections to fit your needs!
 
 
 Contributing
