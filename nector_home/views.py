@@ -66,7 +66,7 @@ def settings(request):
 
 
 # 'sup' is shorthand for 'setup'
-def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vulns=False, sup_malware=False):
+def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vulns=False, sup_malware=False, changing_db=False):
     installation_complete = False
 
     subnets_installed = os.path.isfile('subnets.txt')
@@ -93,6 +93,7 @@ def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vuln
                'sup_events'  : sup_events,
                'sup_vulns'   : sup_vulns,
                'sup_malware' : sup_malware,
+               'changing_db' : changing_db,
                'db_type' : connection.vendor}
 
     if sup_events:
@@ -108,6 +109,10 @@ def status(request, sup_hosts=False, sup_ports=False, sup_events=False, sup_vuln
         context['extra_forms'] = 1
 
     return render(request, 'nector_home/status.html', context)
+
+
+def change_db(request):
+    return status(request, changing_db=True)
 
 
 def status_setup_hosts(request):
@@ -131,6 +136,30 @@ def status_setup_vulns(request):
 
 def status_setup_malware(request):
     return status(request, sup_malware=True)
+
+
+def status_skip_hosts(request):
+    Host.objects.create(ipv4_address="0", ports='"":""')
+    return status(request)
+
+
+def status_skip_ports(request):
+    return status_skip_hosts(request)
+
+
+def status_skip_events(request):
+    Event.objects.create(request_number="")
+    return status(request)
+
+
+def status_skip_vulns(request):
+    Vulnerability.objects.create(plugin_and_host="")
+    return status(request)
+
+
+def status_skip_malware(request):
+    Malware.objects.create()
+    return status(request)
 
 
 def submit_subnets(request):

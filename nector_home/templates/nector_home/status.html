@@ -10,7 +10,7 @@
 {% endif %}
 
 {% if sup_hosts %}
-<div style="float:right; margin-right:100px">
+<div style="float:right; margin-right:10%">
 <h2>Hosts Setup</h2>
 {% if subnets_installed %}
 <p>An <a href="https://nmap.org/download.html">nmap</a> scan is required to obtain host info from <i>subnets.txt</i>.<br>
@@ -54,7 +54,7 @@
 {% endif %}
 
 {% if sup_ports %}
-<div style="float:right; margin-right:100px">
+<div style="float:right; margin-right:10%">
 <h2>Ports Setup</h2>
 {% if subnets_installed %}
 <p>An <a href="https://nmap.org/download.html">nmap</a> scan is required to obtain port info from <i>subnets.txt</i>.<br>
@@ -97,7 +97,7 @@
 {% endif %}
 
 {% if sup_events %}
-<div style="float:right; margin-right:100px">
+<div style="float:right; margin-right:5%">
 <h2>Events Setup</h2>
 
 <p>Enter the following info for your Events:</p><br>
@@ -134,7 +134,7 @@
 {% endif %}
 
 {% if sup_vulns %}
-<div style="float:right; margin-right:100px">
+<div style="float:right; margin-right:8%">
 <h2>Vulnerabilities Setup</h2>
 
 <p>Enter the following info for your Vulnerabilities:</p><br>
@@ -180,7 +180,7 @@
 {% endif %}
 
 {% if sup_malware %}
-<div style="float:right; margin-right:20px">
+<div style="float:right; margin-right:5%">
 <h2>Malware Alerts Setup</h2>
 
 <p>Enter the following info for your Malware Alerts:</p><br>
@@ -223,12 +223,102 @@
 </div>
 {% endif %}
 
+
+{% if not sup_hosts and not sup_ports and not sup_events and not sup_vulns and not sup_malware and not changing_db %}
+<div style="float:right; margin-right:12%">
+<h2>Info</h2>
+<p>This page is used for setting up NECTOR through the browser.<br>
+    If you would rather do so via terminal, please see the "Manual Setup" section
+    in <i>INSTALL.txt</i></p>
+<h2>Setup Process</h2>
+<ol>
+    <li>Change your <i>Database</i> (Optional).</li>
+        <ul>
+            <li>The database is where all your information will be stored.</li>
+            <li>There are three you can choose from: SQLite, MySQL, and PostgreSQL.</li>
+            <li>SQLite is default, and requires no further setup.</li>
+        </ul>
+    <li>Import your <i>Hosts</i>.</li>
+        <ul>
+            <li>Hosts are the computers you will be managing and auditing.</li>
+            <li>You will be prompted to provide the IP addresses of the hosts or subnets<br> of hosts you want to bring into NECTOR.</li>
+            <li>Afterward, NECTOR will perform an nmap scan on those IP addresses to get<br> their current statuses.</li>
+        </ul>
+    <li>Import the <i>Open Ports</i> of your Hosts.</li>
+        <ul>
+            <li>Open Ports are commonly used as attack vectors, so it's important NECTOR<br> knows them since they pose as risks.</li>
+            <li>NECTOR will perform an nmap scan on all of your hosts to get their open<br> ports.</li>
+            <li>You must have Hosts set up (step 2) to do this.</li>
+        </ul>
+    <li>Import your <i>Events</i>.</li>
+        <ul>
+            <li>Events are used to notify the user when there is an observed change to<br> the normal behavior of a system, environment, process, workflow, or person.</li>
+            <li>You will be prompted for information on your Events.</li>
+        </ul>
+    <li>Import your <i>Vulnerabilities</i>.</li>
+        <ul>
+            <li>Vulnerability information is used to notify the user when a Host features<br> an exploitable flaw.</li>
+            <li>You will be prompted for information on your Vulnerabilities.</li>
+        </ul>
+    <li>Import your <i>Malware</i>.</li>
+        <ul>
+            <li>Malware information is used to notify the user and keep track of when a<br> Host has been infected.</li>
+            <li>You will be prompted for information on your Malware.</li>
+        </ul>
+</ol>
+</div>
+{% endif %}
+
+{% if changing_db %}
+<div style="float:right; margin-right:12%">
+<h2>Switching to a new Database</h2>
+<p>See the "Advanced Setup" section of <i>INSTALL.txt</i> for more info.</p>
+<p>
+NECTOR is configured to work with three types of RDBMSs easily: SQLite3, MySQL, and PostgreSQL.
+</p>
+<p>
+SQLite3 is light-weight, server-less, and requires practically no configuration. However, a
+<br>SQLite3 database stores its information in a single binary file, and imposes limits on its
+<br>users when querying a large amount of data.
+</p>
+<p>
+MySQL is a popular, large-scale database server that's easy to setup, and features lots of
+<br>third-party support, expansive functionality for its users, and reads / writes data very
+<br>quickly. Although, some functionalities get handled a bit less-reliably with MySQL than other
+<br>RDBMSs, and MySQL does not adhere to SQL compliancy rules.
+</p>
+<p>
+PostgreSQL is much more server-friendly, featuring high concurrency and the ability to deal
+<br>with large datasets. Though, it does need to be set up and configured, which may pose as a
+<br>nuisance toward someone wanting to use NECTOR out of the box. It features tons of bells and
+<br>whistles, gearing it toward advanced RDBMS users.
+</p>
+<p>
+Ideally, if you intend on hosting NECTOR on a public-facing server, MySQL or PostgreSQL should
+<br>be your choice. Otherwise, if you're working locally or only dealing with a small amount of
+<br>traffic, SQLite3 will work great.
+</p>
+<p><a href="https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems">
+    If you're still unsure which RDMBS you should use, checkout this DigitalOcean article.</a></p>
+</div>
+{% endif %}
+
+<h2>Database</h2>
+<p>Using {{db_type}} database.</p>
+<a style="font-size:10px" href="/status/change-db/">Want to use a different database?</a>
+
+
 <h2>Hosts</h2>
 {% if hosts_installed %}
 <p style="color:green">&#10004; Hosts found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Hosts <b>NOT</b> found!</p>
-<a href="/status/setup-hosts/">Click here to setup.</a>
+<form style="display:inline-block" action="/status/setup-hosts/">
+    <input type="submit" value="Setup">
+</form>
+<form style="display:inline-block" action="/status/skip-hosts/">
+    <input type="submit" value="Skip">
+</form>
 {% endif %}
 
 <h2>Ports</h2>
@@ -236,7 +326,12 @@
 <p style="color:green">&#10004; Ports found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Ports <b>NOT</b> found!</p>
-<a href="/status/setup-ports/">Click here to setup.</a>
+<form style="display:inline-block" action="/status/setup-ports/">
+    <input type="submit" value="Setup">
+</form>
+<form style="display:inline-block" action="/status/skip-ports/">
+    <input type="submit" value="Skip">
+</form>
 {% endif %}
 
 <h2>Events</h2>
@@ -244,7 +339,12 @@
 <p style="color:green">&#10004; Events found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Events <b>NOT</b> found!</p>
-<a href="/status/setup-events/">Click here to setup.</a>
+<form style="display:inline-block" action="/status/setup-events/">
+    <input type="submit" value="Setup">
+</form>
+<form style="display:inline-block" action="/status/skip-events/">
+    <input type="submit" value="Skip">
+</form>
 {% endif %}
 
 <h2>Vulnerabilities</h2>
@@ -252,7 +352,12 @@
 <p style="color:green">&#10004; Vulnerabilities found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Vulnerabilities <b>NOT</b> found!</p>
-<a href="/status/setup-vulns/">Click here to setup.</a>
+<form style="display:inline-block" action="/status/setup-vulns/">
+    <input type="submit" value="Setup">
+</form>
+<form style="display:inline-block" action="/status/skip-vulns/">
+    <input type="submit" value="Skip">
+</form>
 {% endif %}
 
 <h2>Malware Alerts</h2>
@@ -260,11 +365,15 @@
 <p style="color:green">&#10004; Malware Alerts found!</p>
 {% else %}
 <p style="color:lightcoral">&#10008; Malware Alerts <b>NOT</b> found!</p>
-<a href="/status/setup-malware/">Click here to setup.</a>
+<form style="display:inline-block" action="/status/setup-malware/">
+    <input type="submit" value="Setup">
+</form>
+<form style="display:inline-block" action="/status/skip-malware/">
+    <input type="submit" value="Skip">
+</form>
 {% endif %}
 
-<h2>Database</h2>
-<p>Using {{db_type}} database!</p>
+
 
 
 
