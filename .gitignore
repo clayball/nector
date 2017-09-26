@@ -16,3 +16,4 @@ scan-full-*
 hosts/migrations/*
 hops.csv
 malware.csv
+secretkey.txt

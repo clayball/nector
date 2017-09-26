@@ -13,6 +13,7 @@ all : run quick quick-no-venv demo
 
 
 run :
+	python scripts/update-secret-key.py
 	python manage.py makemigrations
 	python manage.py migrate
 	python import-data.py
@@ -20,6 +21,7 @@ run :
 
 
 quick :
+	python scripts/update-secret-key.py
 	pip install -r requirements.txt
 	python manage.py makemigrations
 	python manage.py migrate
@@ -28,6 +30,7 @@ quick :
 
 
 quick-no-venv :
+	python scripts/update-secret-key.py
 	sudo pip install -r requirements.txt
 	python manage.py makemigrations
 	python manage.py migrate
@@ -41,6 +44,7 @@ demo :
 	cp -i sample-data/sample-events.csv events.csv
 	cp -i sample-data/sample-openports.xml openports.xml
 	cp -i sample-data/sample-malware.csv malware.csv
+	python scripts/update-secret-key.py
 	python manage.py makemigrations
 	python manage.py migrate
 	python import-data.py
