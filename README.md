@@ -47,8 +47,24 @@ $ pip install -r requirements.txt
 
 Install [nmap](https://nmap.org/download.html).
 
+*Fedora:*
 ```
 $ dnf install nmap
+```
+
+*Ubuntu:*
+```
+$ apt-get install nmap
+```
+
+*CentOS:*
+```
+$ yum install nmap
+```
+
+*Mac OS X:*
+```
+https://nmap.org/book/inst-macosx.html
 ```
 
 
