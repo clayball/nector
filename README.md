@@ -63,9 +63,9 @@ $ yum install nmap
 ```
 
 *Mac OS X:*
-
-    https://nmap.org/book/inst-macosx.html
-
+```
+https://nmap.org/book/inst-macosx.html
+```
 
 
 ### Trying the Demo (Optional)
