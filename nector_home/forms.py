@@ -33,10 +33,10 @@ class EventForm(forms.ModelForm):
         }
 
         widgets = {
-            'request_number'   : forms.TextInput(attrs={'placeholder':'1234', 'size' : '10'}),
-            'date_submitted'   : forms.TextInput(attrs={'placeholder':'04/24/2017', 'size' : '10'}),
-            'title'            : forms.TextInput(attrs={'placeholder':'Server 0.0.0.0 has malware: Backdoor-FFBM', 'size' : '45'}),
-            'status'           : forms.TextInput(attrs={'placeholder':'Open', 'size' : '6'}),
+            'request_number'   : forms.TextInput(attrs={'placeholder':'1234', 'size' : '6'}),
+            'date_submitted'   : forms.TextInput(attrs={'placeholder':'04/24/2017', 'size' : '9'}),
+            'title'            : forms.TextInput(attrs={'placeholder':'Server 0.0.0.0 has malware: Backdoor-FFBM', 'size' : '35'}),
+            'status'           : forms.TextInput(attrs={'placeholder':'Open', 'size' : '4'}),
             'date_last_edited' : forms.TextInput(attrs={'placeholder':'05/09/2017', 'size' : '10'}),
             'submitters'       : forms.TextInput(attrs={'placeholder':'Tyrell of E-Corp', 'size' : '12'}),
             'assignees'        : forms.TextInput(attrs={'placeholder':'All-Safe Security', 'size' : '12'}),
@@ -72,10 +72,10 @@ class VulnForm(forms.ModelForm):
 
         widgets = {
             'plugin_id'       : forms.TextInput(attrs={'placeholder':'12345', 'size' : '10'}),
-            'plugin_name'     : forms.TextInput(attrs={'placeholder':'uBlock Origin 1.13.8', 'size' : '35'}),
+            'plugin_name'     : forms.TextInput(attrs={'placeholder':'uBlock Origin 1.13.8', 'size' : '30'}),
             'severity'        : forms.TextInput(attrs={'placeholder':'Medium', 'size' : '8'}),
-            'ipv4_address'    : forms.TextInput(attrs={'placeholder':'0.0.0.0', 'size' : '20'}),
-            'host_name'       : forms.TextInput(attrs={'placeholder':'brians-pc.example.com', 'size' : '30'}),
+            'ipv4_address'    : forms.TextInput(attrs={'placeholder':'0.0.0.0', 'size' : '14'}),
+            'host_name'       : forms.TextInput(attrs={'placeholder':'brians-pc.example.com', 'size' : '25'}),
         }
 
 

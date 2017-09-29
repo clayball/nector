@@ -35,7 +35,8 @@
 {% else %}
 <p>Enter a list of subnets or individual IP addresses.<br> Separate each with a newline.</p>
 <form action="/status/submit-subnets/" method="post">{% csrf_token %}
-    <textarea name="subnet_ips" style="font-size:18px" rows="15" cols="30" placeholder="0.0.2.3                                  0.0.1.10-254                                  0.0.0.0/24"></textarea>
+    <textarea name="subnet_ips" style="font-size:18px" rows="15" cols="30"
+    placeholder="0.0.2.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.0.1.10-254&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.0.0.0/24"></textarea>
     <br><br><input type="submit" value="Submit">
 </form>
 
@@ -54,7 +55,7 @@
 {% endif %}
 
 {% if sup_ports %}
-<div style="float:right; margin-right:10%">
+<div style="float:right; margin-right:6%">
 <h2>Ports Setup</h2>
 {% if subnets_installed %}
 <p>An <a href="https://nmap.org/download.html">nmap</a> scan is required to obtain port info from <i>subnets.txt</i>.<br>
@@ -68,7 +69,7 @@
    Follow the formatting of <i>sample-data/sample-openports.xml</i>.<br>
    If you have Nmap, you can manually generate this file by running the following command:</p>
    <ol>
-       <li><i>nmap -Pn -sV --version-light -vv -T5 \<br> -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,548,636,1194,1337,1900,3306,3389,4380,4444,4672,5353,5900,6000,6881,8000,8080,9050,31337 \ <br> -iL subnets.txt --open -oX openports.xml 2>&1 > /dev/null</i></li>
+       <li><i>nmap -Pn -sV --version-light -vv -T5 \<br> -p17,19,21,22,23,25,53,80,123,137,139,153,161,443,445,\<br>548,636,1194,1337,1900,3306,3389,4380,4444,\<br>4672,5353,5900,6000,6881,8000,8080,9050,31337 \ <br> -iL subnets.txt --open -oX openports.xml 2>&1 > /dev/null</i></li>
    </ol>
    <br>
 <form action="/status/submit-ports/" method="post" enctype="multipart/form-data">{% csrf_token %}
@@ -97,17 +98,16 @@
 {% endif %}
 
 {% if sup_events %}
-<div style="float:right; margin-right:5%">
+<div style="float:right; margin-right:0%">
 <h2>Events Setup</h2>
 
 <p>Enter the following info for your Events:</p><br>
 <b>
-<p>Request Number&nbsp;&nbsp;&nbsp;Date Submitted&nbsp;&nbsp;&nbsp;Title&nbsp;
+<p>Request Num&nbsp;Date Submitted&nbsp;&nbsp;&nbsp;Title&nbsp;
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Status
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Last Edit Date&nbsp;&nbsp;&nbsp;Submitted By
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Status
+    &nbsp;&nbsp;&nbsp;Last Edit Date&nbsp;&nbsp;&nbsp;Submitted By
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assignees</p>
 </b>
 <form name="event_form" action="/status/submit-events/" method="post">{% csrf_token %}
@@ -141,10 +141,10 @@
 <b>
 <p>Plugin ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plugin Name&nbsp;&nbsp;
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;Severity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    IPv4 Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;Host Name</p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;Severity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    IPv4 Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Host Name</p>
 </b>
 <form name="vuln_form" action="/status/submit-vulns/" method="post">{% csrf_token %}
     {{ vulns_form.management_form }}
@@ -219,7 +219,8 @@
     <input type="file" name="malware_file">
     <br><br><input type="submit" value="Upload">
 </form>
-
+<br><br>
+<br><br>
 </div>
 {% endif %}
 
@@ -272,6 +273,8 @@
 {% if changing_db %}
 <div style="float:right; margin-right:12%">
 <h2>Switching to a new Database</h2>
+<p><a href="/status/">
+    Click here to go back.</a></p>
 <p>See the "Advanced Setup" section of <i>INSTALL.txt</i> for more info.</p>
 <p>
 NECTOR is configured to work with three types of RDBMSs easily: SQLite3, MySQL, and PostgreSQL.
@@ -300,6 +303,7 @@ Ideally, if you intend on hosting NECTOR on a public-facing server, MySQL or Pos
 </p>
 <p><a href="https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems">
     If you're still unsure which RDMBS you should use, checkout this DigitalOcean article.</a></p>
+
 </div>
 {% endif %}
 

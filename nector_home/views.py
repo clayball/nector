@@ -287,20 +287,24 @@ def submit_events(request):
         with open('events.csv', 'w') as events_csv:
             events_csv.write('Request Number,Date Submitted,Title,Status,Last Edit Date,Submitted By,Assignees\n')
             for f in events_formset:
-                try:
-                    instance = f.save(commit=False)
-                    instance.save()
-                except Exception as e:
-                    print e
-                clean = f.cleaned_data
-                line = '%s,%s,%s,%s,%s,%s,%s\n' % (clean['request_number'],
-                                                 clean['date_submitted'],
-                                                 clean['title'],
-                                                 clean['status'],
-                                                 clean['date_last_edited'],
-                                                 clean['submitters'],
-                                                 clean['assignees'])
-                events_csv.write(line)
+                if f.is_valid():
+                    try:
+                        instance = f.save(commit=False)
+                        instance.save()
+                    except Exception as e:
+                        print e
+                    clean = f.cleaned_data
+                    try:
+                        line = '%s,%s,%s,%s,%s,%s,%s\n' % (clean['request_number'],
+                                                         clean['date_submitted'],
+                                                         clean['title'],
+                                                         clean['status'],
+                                                         clean['date_last_edited'],
+                                                         clean['submitters'],
+                                                         clean['assignees'])
+                        events_csv.write(line)
+                    except Exception as e:
+                        print e
             events_csv.close()
         return status(request)
 
@@ -363,13 +367,16 @@ def submit_vulns(request):
             for f in vulns_formset:
                 if f.is_valid():
                     clean = f.cleaned_data
-                    line = '"%s","%s","%s","%s","%s"\n' % (clean['plugin_id'],
-                                                     clean['plugin_name'],
-                                                     clean['severity'],
-                                                     clean['ipv4_address'],
-                                                     clean['host_name'],)
+                    try:
+                        line = '"%s","%s","%s","%s","%s"\n' % (clean['plugin_id'],
+                                                         clean['plugin_name'],
+                                                         clean['severity'],
+                                                         clean['ipv4_address'],
+                                                         clean['host_name'],)
 
-                    vulnlist_csv.write(line)
+                        vulnlist_csv.write(line)
+                    except Exception as e:
+                        print e
             vulnlist_csv.close()
         update_db()
         return status(request)
@@ -433,17 +440,20 @@ def submit_malware(request):
             for f in mals_formset:
                 if f.is_valid():
                     clean = f.cleaned_data
-                    line = '%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (clean['alert_id'],
-                                                     clean['alert_type'],
-                                                     clean['file_name'],
-                                                     clean['computer'],
-                                                     clean['numeric_ip'],
-                                                     clean['contact_group'],
-                                                     clean['virus'],
-                                                     clean['actual_action'],
-                                                     clean['comment'])
+                    try:
+                        line = '%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (clean['alert_id'],
+                                                         clean['alert_type'],
+                                                         clean['file_name'],
+                                                         clean['computer'],
+                                                         clean['numeric_ip'],
+                                                         clean['contact_group'],
+                                                         clean['virus'],
+                                                         clean['actual_action'],
+                                                         clean['comment'])
 
-                    malware_csv.write(line)
+                        malware_csv.write(line)
+                    except Exception as e:
+                        print e
             malware_csv.close()
         update_db()
         return status(request)
