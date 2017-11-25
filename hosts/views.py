@@ -1009,7 +1009,16 @@ def screenshot_host(request, subnet_id, host_id):
     if request.POST.get("host_to_screenshot"):
         host = request.POST.get("host_to_screenshot")
     if host:
-        # todo grab screenshot
-        img_path = '/host.png'
+        options = webdriver.ChromeOptions()
+        options.add_argument('--ignore-certificate-errors')
+        options.add_argument("--test-type")
+        options.binary_location = "/usr/bin/chromium"
+        driver = webdriver.Chrome(chrome_options=options)
+        driver.get(host)
+        driver.save_screenshot("host.png")
+        driver.close()
+        
+        img_path = 'host.png'
         return detail_host(request, subnet_id, host_id, screenshot_path=img_path)
+
     return detail_host(request, subnet_id, host_id)
