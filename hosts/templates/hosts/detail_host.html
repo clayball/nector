@@ -53,11 +53,11 @@
     {% for port, status, info, date in port_data %}
       {% if port == '80' %}
         <h4 style="padding-left:10px">Site Screenshot</h4>
-        {% if live_screenshot %}
-            <p style="margin-left:20px"> {{ live_screenshot }} </p>
+        {% if screenshot_path %}
+            <p style="margin-left:20px"> <img src="/{{ screenshot_path }}"> </p>
         {% else %}
-        <form action="/hosts/take-screenshot/" method="post">{% csrf_token %}
-            <input name="host" type="hidden" value="{{host.host_name}}" />
+        <form action="/hosts/{{ host.subnet_id }}/host/{{ host.id }}/" method="post">{% csrf_token %}
+            <input name="host_to_screenshot" type="hidden" value="{{host.host_name}}" />
             <input type="submit" style="margin-left:20px" value="View" />
         </form>
         {% endif %}

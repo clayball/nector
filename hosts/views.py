@@ -25,7 +25,7 @@ import copy
 
 import subprocess # For ping
 
-from ghost import Ghost # For screenshotting host website.
+from selenium import webdriver # For screenshotting host website.
 
 # Exporting CSV
 import csv
@@ -230,8 +230,12 @@ def detail(request, subnet_id):
     return render(request, 'hosts/detail.html', context)
 
 
-def detail_host(request, subnet_id, host_id, ping_status=''):
+def detail_host(request, subnet_id, host_id, ping_status='', screenshot_path=''):
     '''Display selected host information.'''
+
+    # Check if we are just getting a screenshot of the host.
+    if request.POST.get("host_to_screenshot") and screenshot_path == '':
+        return screenshot_host(request, subnet_id, host_id)
 
     # Get selected Host object.
     host = get_object_or_404(Host, pk=host_id)
@@ -294,13 +298,14 @@ def detail_host(request, subnet_id, host_id, ping_status=''):
                    'vuln_list' : vuln_list, 'port_data' : zip(port_list,
                                                               port_status_list,
                                                               port_info_list,
-                                                              port_date_list)
+                                                              port_date_list),
+                   'screenshot_path' : screenshot_path,
                   }
 
     else:
         # Pass context with no port information (bc host has no ports).
         context = {'host': host, 'subnet_id' : subnet_id, 'ping_status' : ping_status,
-                   'vuln_list' : vuln_list, 'port_data' : None}
+                   'vuln_list' : vuln_list, 'port_data' : None, 'screenshot_path' : screenshot_path}
 
     return render(request, 'hosts/detail_host.html', context)
 
@@ -998,16 +1003,12 @@ def export(request, context):
     return response
 
 
-def take_screenshot(request):
+def screenshot_host(request, subnet_id, host_id):
     host = ''
-    if request.POST.get("host"):
-        host = request.POST.get("host")
+    if request.POST.get("host_to_screenshot"):
+        host = request.POST.get("host_to_screenshot")
     if host:
-        obj_host = get_object_or_404(Host, host_name=host)
-        obj_subnet = get_object_or_404(Subnet, ipv4_address=obj_host.ipv4_address.rsplit('.', 1)[0])
-        if host[0:4] != 'http' or host[6] != '/': # Quick way to check for http:// or https://
-            host = 'http://%s' % host
-        ghost = Ghost()
-        ghost.open(host)
-        ghost.capture_to('x.png')
-        return detail_host(request, obj_subnet.id, obj_host.id)
+        # todo grab screenshot
+        img_path = '/host.png'
+        return detail_host(request, subnet_id, host_id, screenshot_path=img_path)
+    return detail_host(request, subnet_id, host_id)

@@ -12,5 +12,5 @@ urlpatterns = [
     url(r'^alerts/$', views.alerts, name='alerts'),
     url(r'^custom-search/$', views.search, name='search'),
     url(r'^export/$', views.export, name='export'),
-    url(r'^take-screenshot/$', views.take_screenshot, name='screenshot'),
+    url(r'^take-screenshot/$', views.screenshot_host, name='screenshot'),
 ]
