@@ -25,6 +25,8 @@ import copy
 
 import subprocess # For ping
 
+from ghost import Ghost # For screenshotting host website.
+
 # Exporting CSV
 import csv
 from django.http import StreamingHttpResponse
@@ -994,3 +996,18 @@ def export(request, context):
     #writer.writerows(output) #old
     response['Content-Disposition'] = 'attachment; filename="export.csv"' #new
     return response
+
+
+def take_screenshot(request):
+    host = ''
+    if request.POST.get("host"):
+        host = request.POST.get("host")
+    if host:
+        obj_host = get_object_or_404(Host, host_name=host)
+        obj_subnet = get_object_or_404(Subnet, ipv4_address=obj_host.ipv4_address.rsplit('.', 1)[0])
+        if host[0:4] != 'http' or host[6] != '/': # Quick way to check for http:// or https://
+            host = 'http://%s' % host
+        ghost = Ghost()
+        ghost.open(host)
+        ghost.capture_to('x.png')
+        return detail_host(request, obj_subnet.id, obj_host.id)
