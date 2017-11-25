@@ -233,6 +233,10 @@ def detail(request, subnet_id):
 def detail_host(request, subnet_id, host_id, ping_status='', screenshot_path=''):
     '''Display selected host information.'''
 
+    # Check if we are just pinging the host.
+    if request.POST.get("host_to_ping") and ping_status == '':
+        return ping(request, subnet_id, host_id)
+
     # Check if we are just getting a screenshot of the host.
     if request.POST.get("host_to_screenshot") and screenshot_path == '':
         return screenshot_host(request, subnet_id, host_id)
@@ -310,14 +314,13 @@ def detail_host(request, subnet_id, host_id, ping_status='', screenshot_path='')
     return render(request, 'hosts/detail_host.html', context)
 
 
-def ping(request):
+def ping(request, subnet_id, host_id):
 
-    if 'host' not in request.POST:
+    if 'host_to_ping' not in request.POST:
         if 'next' in request.POST:
             return HttpResponseRedirect(request.POST['next'])
 
-
-    ip = request.POST['host']
+    ip = request.POST['host_to_ping']
     status = subprocess.call(['ping', '-c1', '-w2', ip])
 
     str_status = ''
@@ -325,10 +328,8 @@ def ping(request):
         str_status = 'Online'
     else:
         str_status = 'Offline'
-    host = get_object_or_404(Host, ipv4_address=ip)
-    subnet = get_object_or_404(Subnet, ipv4_address=ip.rsplit('.', 1)[0])
 
-    return detail_host(request, subnet.id, host.id, str_status)
+    return detail_host(request, subnet_id, host_id, str_status)
 
 
 @login_required

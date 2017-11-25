@@ -44,8 +44,8 @@
     {% if ping_status %}
         <p style="margin-left:20px"> {{ ping_status }} </p>
     {% else %}
-    <form action="/hosts/ping/" method="post">{% csrf_token %}
-        <input name="host" type="hidden" value="{{host.ipv4_address}}" />
+    <form action="/hosts/{{ host.subnet_id }}/host/{{ host.id }}/" method="post">{% csrf_token %}
+        <input name="host_to_ping" type="hidden" value="{{host.ipv4_address}}" />
         <input type="submit" style="margin-left:20px" value="Ping" />
     </form>
     {% endif %}
