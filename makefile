@@ -26,6 +26,7 @@ quick :
 	python manage.py makemigrations
 	python manage.py migrate
 	./update-database.sh
+	./install-phantomjs.sh
 	python manage.py runserver
 
 
@@ -35,6 +36,7 @@ quick-no-venv :
 	python manage.py makemigrations
 	python manage.py migrate
 	./update-database.sh
+	./install-phantomjs.sh
 	python manage.py runserver
 
 
