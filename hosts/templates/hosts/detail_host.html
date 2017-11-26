@@ -40,6 +40,15 @@
     <p style="padding-left:20px"> {{host.tags}} </p>
     <h4 style="padding-left:10px">Notes</h4>
     <p style="padding-left:20px"> {{host.notes}} </p>
+    {% if vuln_list %}
+    <h4 style="padding-left:10px">Vulnerabilities</h4>
+    <table style="margin-left:20px">
+        <tr><td class="td-content">Plugin ID</td><td class="td-content">Plugin Name</td><td class="td-content">Severity</td><td class="td-content">IPv4</td><td class="td-content">Host Name</td></tr>
+      {% for vuln in vuln_list %}
+        <tr><td>{{vuln.plugin_id}}</td><td>{{vuln.plugin_name}}</td><td>{{vuln.severity}}</td><td>{{ vuln.ipv4_address }}</td><td>{{ vuln.host_name }}</td></tr>
+      {% endfor %}
+    </table>
+    {% endif %}
     <h4 style="padding-left:10px">Status</h4>
     {% if ping_status %}
         <p style="margin-left:20px"> {{ ping_status }} </p>
@@ -57,7 +66,9 @@
             {% if screenshot_path == 'MISSINGPHANTOMJS' %}
               <p style="margin-left:20px">Please install PhantomJS and add it to your PATH.</p>
             {% else %}
-              <p style="margin-left:20px"> <img src="/{{ screenshot_path }}"> </p>
+              <p style="margin-left:20px">
+                {% load static %} <img src="{% static 'host.png' %}"/>
+              </p>
             {% endif %}
         {% else %}
         <form action="/hosts/{{ host.subnet_id }}/host/{{ host.id }}/" method="post">{% csrf_token %}
@@ -68,15 +79,6 @@
       {% endif %}
     {% endfor %}
 
-    {% if vuln_list %}
-    <h4 style="padding-left:10px">Vulnerabilities</h4>
-    <table style="margin-left:20px">
-        <tr><td class="td-content">Plugin ID</td><td class="td-content">Plugin Name</td><td class="td-content">Severity</td><td class="td-content">IPv4</td><td class="td-content">Host Name</td></tr>
-      {% for vuln in vuln_list %}
-        <tr><td>{{vuln.plugin_id}}</td><td>{{vuln.plugin_name}}</td><td>{{vuln.severity}}</td><td>{{ vuln.ipv4_address }}</td><td>{{ vuln.host_name }}</td></tr>
-      {% endfor %}
-    </table>
-    {% endif %}
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}

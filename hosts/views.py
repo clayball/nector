@@ -1007,23 +1007,23 @@ def export(request, context):
 
 def screenshot_host(request, subnet_id, host_id):
     host = ''
+    img_name = 'host.png'
     if request.POST.get("host_to_screenshot"):
         host = request.POST.get("host_to_screenshot")
     if host:
-        img_path = 'host.png'
-
+        if host[0:4] != 'http' or host[6] != '/': # Quick way to check for http:// or https://
+            host = 'http://%s' % host
         try:
-            driver = webdriver.PhantomJS()
-            driver.set_window_size(1024, 768)
+            driver = webdriver.PhantomJS(executable_path="path/to/phantomjs") #todo, we don't want this hard-coded... fix
+            driver.set_window_size(512, 384)
             driver.get(host) # Goes to host's url
-
-            driver.save_screenshot(img_path)
+            driver.save_screenshot('nector_home/static/%s' % img_name)
             driver.quit()
         except WebDriverException as e:
             print '[!] Missing PhantomJS: Install and add to PATH!'
             print e
-            img_path = 'MISSINGPHANTOMJS'
+            img_name = 'MISSINGPHANTOMJS'
 
-        return detail_host(request, subnet_id, host_id, screenshot_path=img_path)
+        return detail_host(request, subnet_id, host_id, screenshot_path=img_name)
 
     return detail_host(request, subnet_id, host_id)
