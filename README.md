@@ -67,6 +67,35 @@ $ yum install nmap
 https://nmap.org/book/inst-macosx.html
 ```
 
+Install [npm](https://www.npmjs.com/get-npm).
+
+*Feodra:*
+```
+$ dnf install npm
+```
+
+*Ubuntu:*
+```
+$ apt-get install nodejs
+```
+
+*CentOS:*
+```
+$ yum install npm
+```
+
+*Mac OS X:*
+```
+$ brew install node
+```
+
+Install [PhantomJS](http://phantomjs.org/).
+
+*All (using npm):*
+```
+$ npm install --prefix hosts/ phantomjs
+```
+
 
 ### Trying the Demo (Optional)
 
