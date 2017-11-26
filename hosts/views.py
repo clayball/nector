@@ -1014,13 +1014,13 @@ def screenshot_host(request, subnet_id, host_id):
         if host[0:4] != 'http' or host[6] != '/': # Quick way to check for http:// or https://
             host = 'http://%s' % host
         try:
-            driver = webdriver.PhantomJS(executable_path="path/to/phantomjs") #todo, we don't want this hard-coded... fix
+            driver = webdriver.PhantomJS(executable_path="hosts/node_modules/phantomjs/bin/phantomjs")
             driver.set_window_size(512, 384)
             driver.get(host) # Goes to host's url
             driver.save_screenshot('nector_home/static/%s' % img_name)
             driver.quit()
         except WebDriverException as e:
-            print '[!] Missing PhantomJS: Install and add to PATH!'
+            print '[!] Missing PhantomJS: Install into hosts/.'
             print e
             img_name = 'MISSINGPHANTOMJS'
 
