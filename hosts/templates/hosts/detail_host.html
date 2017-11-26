@@ -54,7 +54,11 @@
       {% if port == '80' %}
         <h4 style="padding-left:10px">Site Screenshot</h4>
         {% if screenshot_path %}
-            <p style="margin-left:20px"> <img src="/{{ screenshot_path }}"> </p>
+            {% if screenshot_path == 'MISSINGPHANTOMJS' %}
+              <p style="margin-left:20px">Please install PhantomJS and add it to your PATH.</p>
+            {% else %}
+              <p style="margin-left:20px"> <img src="/{{ screenshot_path }}"> </p>
+            {% endif %}
         {% else %}
         <form action="/hosts/{{ host.subnet_id }}/host/{{ host.id }}/" method="post">{% csrf_token %}
             <input name="host_to_screenshot" type="hidden" value="{{host.host_name}}" />

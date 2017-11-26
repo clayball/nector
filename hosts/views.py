@@ -26,6 +26,7 @@ import copy
 import subprocess # For ping
 
 from selenium import webdriver # For screenshotting host website.
+from selenium.common.exceptions import WebDriverException # For errors
 
 # Exporting CSV
 import csv
@@ -1009,16 +1010,20 @@ def screenshot_host(request, subnet_id, host_id):
     if request.POST.get("host_to_screenshot"):
         host = request.POST.get("host_to_screenshot")
     if host:
-        options = webdriver.ChromeOptions()
-        options.add_argument('--ignore-certificate-errors')
-        options.add_argument("--test-type")
-        options.binary_location = "/usr/bin/chromium"
-        driver = webdriver.Chrome(chrome_options=options)
-        driver.get(host)
-        driver.save_screenshot("host.png")
-        driver.close()
-        
         img_path = 'host.png'
+
+        try:
+            driver = webdriver.PhantomJS()
+            driver.set_window_size(1024, 768)
+            driver.get(host) # Goes to host's url
+
+            driver.save_screenshot(img_path)
+            driver.quit()
+        except WebDriverException as e:
+            print '[!] Missing PhantomJS: Install and add to PATH!'
+            print e
+            img_path = 'MISSINGPHANTOMJS'
+
         return detail_host(request, subnet_id, host_id, screenshot_path=img_path)
 
     return detail_host(request, subnet_id, host_id)
