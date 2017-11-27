@@ -39,13 +39,13 @@ $ source venv-nector/bin/activate
 
 ### Downloading Dependencies
 
-Install [pip](https://pypi.python.org/pypi/pip) dependencies.
+**Install [pip](https://pypi.python.org/pypi/pip) dependencies.**
 
 ```
 $ pip install -r requirements.txt
 ```
 
-Install [nmap](https://nmap.org/download.html).
+**Install [nmap](https://nmap.org/download.html).**
 
 *Fedora:*
 ```
@@ -65,6 +65,35 @@ $ yum install nmap
 *Mac OS X:*
 ```
 https://nmap.org/book/inst-macosx.html
+```
+
+**Install [npm](https://www.npmjs.com/get-npm).**
+
+*Feodra:*
+```
+$ dnf install npm
+```
+
+*Ubuntu:*
+```
+$ apt-get install nodejs
+```
+
+*CentOS:*
+```
+$ yum install npm
+```
+
+*Mac OS X:*
+```
+$ brew install node
+```
+
+**Install [PhantomJS](http://phantomjs.org/).**
+
+*All (using npm):*
+```
+$ npm install --prefix hosts/ phantomjs
 ```
 
 

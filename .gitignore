@@ -17,3 +17,7 @@ hosts/migrations/*
 hops.csv
 malware.csv
 secretkey.txt
+nector_home/static/host.png
+ghostdriver.log
+hosts/node_modules/
+hosts/package-lock.json

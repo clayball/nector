@@ -40,16 +40,6 @@
     <p style="padding-left:20px"> {{host.tags}} </p>
     <h4 style="padding-left:10px">Notes</h4>
     <p style="padding-left:20px"> {{host.notes}} </p>
-    <h4 style="padding-left:10px">Status</h4>
-    {% if ping_status %}
-        <p style="margin-left:20px"> {{ ping_status }} </p>
-    {% else %}
-    <form action="/hosts/ping/" method="post">{% csrf_token %}
-        <input name="host" type="hidden" value="{{host.ipv4_address}}" />
-        <input type="submit" style="margin-left:20px" value="Ping" />
-    </form>
-    {% endif %}
-
     {% if vuln_list %}
     <h4 style="padding-left:10px">Vulnerabilities</h4>
     <table style="margin-left:20px">
@@ -59,6 +49,37 @@
       {% endfor %}
     </table>
     {% endif %}
+    <h4 style="padding-left:10px">Status</h4>
+    {% if ping_status %}
+        <p style="margin-left:20px"> {{ ping_status }} </p>
+    {% else %}
+    <form action="/hosts/{{ host.subnet_id }}/host/{{ host.id }}/" method="post">{% csrf_token %}
+        <input name="host_to_ping" type="hidden" value="{{host.ipv4_address}}" />
+        <input type="submit" style="margin-left:20px" value="Ping" />
+    </form>
+    {% endif %}
+
+    {% for port, status, info, date in port_data %}
+      {% if port == '80' %}
+        <h4 style="padding-left:10px">Site Screenshot</h4>
+        {% if screenshot_path %}
+            {% if screenshot_path == 'MISSINGPHANTOMJS' %}
+              <p style="margin-left:20px">Please install PhantomJS into the <i>hosts/</i> directory.</p>
+              <p style="margin-left:20px"><i>$ npm install --prefix hosts/ phantomjs</i></p>
+            {% else %}
+              <p style="margin-left:20px">
+                {% load static %} <img src="{% static 'host.png' %}"/>
+              </p>
+            {% endif %}
+        {% else %}
+        <form action="/hosts/{{ host.subnet_id }}/host/{{ host.id }}/" method="post">{% csrf_token %}
+            <input name="host_to_screenshot" type="hidden" value="{{host.host_name}}" />
+            <input type="submit" style="margin-left:20px" value="View" />
+        </form>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
 {% else %}
     <p>No hosts are available.</p>
 {% endif %}

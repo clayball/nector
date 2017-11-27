@@ -25,6 +25,9 @@ import copy
 
 import subprocess # For ping
 
+from selenium import webdriver # For screenshotting host website.
+from selenium.common.exceptions import WebDriverException # For errors
+
 # Exporting CSV
 import csv
 from django.http import StreamingHttpResponse
@@ -228,8 +231,16 @@ def detail(request, subnet_id):
     return render(request, 'hosts/detail.html', context)
 
 
-def detail_host(request, subnet_id, host_id, ping_status=''):
+def detail_host(request, subnet_id, host_id, ping_status='', screenshot_path=''):
     '''Display selected host information.'''
+
+    # Check if we are just pinging the host.
+    if request.POST.get("host_to_ping") and ping_status == '':
+        return ping(request, subnet_id, host_id)
+
+    # Check if we are just getting a screenshot of the host.
+    if request.POST.get("host_to_screenshot") and screenshot_path == '':
+        return screenshot_host(request, subnet_id, host_id)
 
     # Get selected Host object.
     host = get_object_or_404(Host, pk=host_id)
@@ -292,25 +303,25 @@ def detail_host(request, subnet_id, host_id, ping_status=''):
                    'vuln_list' : vuln_list, 'port_data' : zip(port_list,
                                                               port_status_list,
                                                               port_info_list,
-                                                              port_date_list)
+                                                              port_date_list),
+                   'screenshot_path' : screenshot_path,
                   }
 
     else:
         # Pass context with no port information (bc host has no ports).
         context = {'host': host, 'subnet_id' : subnet_id, 'ping_status' : ping_status,
-                   'vuln_list' : vuln_list, 'port_data' : None}
+                   'vuln_list' : vuln_list, 'port_data' : None, 'screenshot_path' : screenshot_path}
 
     return render(request, 'hosts/detail_host.html', context)
 
 
-def ping(request):
+def ping(request, subnet_id, host_id):
 
-    if 'host' not in request.POST:
+    if 'host_to_ping' not in request.POST:
         if 'next' in request.POST:
             return HttpResponseRedirect(request.POST['next'])
 
-
-    ip = request.POST['host']
+    ip = request.POST['host_to_ping']
     status = subprocess.call(['ping', '-c1', '-w2', ip])
 
     str_status = ''
@@ -318,10 +329,8 @@ def ping(request):
         str_status = 'Online'
     else:
         str_status = 'Offline'
-    host = get_object_or_404(Host, ipv4_address=ip)
-    subnet = get_object_or_404(Subnet, ipv4_address=ip.rsplit('.', 1)[0])
 
-    return detail_host(request, subnet.id, host.id, str_status)
+    return detail_host(request, subnet_id, host_id, str_status)
 
 
 @login_required
@@ -994,3 +1003,27 @@ def export(request, context):
     #writer.writerows(output) #old
     response['Content-Disposition'] = 'attachment; filename="export.csv"' #new
     return response
+
+
+def screenshot_host(request, subnet_id, host_id):
+    host = ''
+    img_name = 'host.png'
+    if request.POST.get("host_to_screenshot"):
+        host = request.POST.get("host_to_screenshot")
+    if host:
+        if host[0:4] != 'http' or host[6] != '/': # Quick way to check for http:// or https://
+            host = 'http://%s' % host
+        try:
+            driver = webdriver.PhantomJS(executable_path="hosts/node_modules/phantomjs/bin/phantomjs")
+            driver.set_window_size(512, 384)
+            driver.get(host) # Goes to host's url
+            driver.save_screenshot('nector_home/static/%s' % img_name)
+            driver.quit()
+        except WebDriverException as e:
+            print '[!] Missing PhantomJS: Install into hosts/.'
+            print e
+            img_name = 'MISSINGPHANTOMJS'
+
+        return detail_host(request, subnet_id, host_id, screenshot_path=img_name)
+
+    return detail_host(request, subnet_id, host_id)
